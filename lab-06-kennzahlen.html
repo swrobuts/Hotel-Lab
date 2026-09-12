@@ -36,9 +36,7 @@
   <h1 class="lab-title">Kennzahlen</h1>
   <p class="lab-intro">Eine Kennzahl ist eine Zahl mit einer Definition. Ohne Definition ist „Umsatz 26 Millionen“ ein
     Wort mit einer Zahl dahinter – mit Definition ist es der stornobereinigte Logisumsatz der Buchungen mit Anreise
-    zwischen Juli 2015 und August 2017. Dieses Lab geht die zehn Kennzahlen des Katalogs durch, rechnet sie in SQL
-    nach, erklärt die drei Umsatzbegriffe und den Zeitbezug – und die Farblogik, die im Dashboard sagt, ob ein Anstieg
-    gut oder schlecht für das Ergebnis ist.</p>
+    zwischen Juli 2015 und August 2017. Zehn Kennzahlen, drei Umsatzbegriffe, ein Zeitbezug und eine Farblogik: Blau sagt im Dashboard, dass ein Anstieg gut für das Ergebnis ist, Rot, dass er zu seinen Lasten geht.</p>
   <div class="lernziele">
     <span class="lernziel-chip">KPI-Katalog</span>
     <span class="lernziel-chip">Umsatz · gebucht · entgangen</span>
@@ -55,7 +53,7 @@
     <h2>Der Katalog</h2>
     <p>Zehn Kennzahlen, definiert im Grundgerüst des Projekts, berechnet im Notebook (Abschnitt 4), als Measures in
       Power BI und als Kacheln und Tabelle im Dashboard. Jede hat genau eine Definition – und alle vier Orte zeigen
-      denselben Wert. Die Spalte „Wirkung“ ist die Farblogik aus dem letzten Abschnitt.</p>
+      denselben Wert. Die Spalte „Wirkung“ nennt die Farbe, die das Dashboard der Kennzahl gibt.</p>
     <div class="table-scroll">
       <table class="table">
         <thead><tr><th>Kennzahl</th><th>Definition</th><th>Wert (alle Buchungen)</th><th>Wirkung</th></tr></thead>
@@ -75,8 +73,7 @@
       </table>
     </div>
     <div class="info-box">
-      <p>Elf Zeilen für zehn Kennzahlen: Der entgangene Umsatz ist keine eigene Kennzahl des Katalogs, sondern die
-        Differenz der beiden Umsätze – er steht hier, weil das Dashboard ihn als Kennzahl zeigt und das Stornorisiko
+      <p>Elf Zeilen für zehn Kennzahlen: Der entgangene Umsatz ist die Differenz der beiden Umsätze und keine eigene Kennzahl des Katalogs – er steht hier, weil das Dashboard ihn als Kennzahl zeigt und das Stornorisiko
         ohne ihn eine Quote ohne Geldbetrag wäre.</p>
     </div>
   </section>
@@ -122,8 +119,7 @@
         <li><strong>Summe</strong> – Umsatz, Zimmernächte, Buchungen (Summe von 1). Summen lassen sich zerlegen: Der
           Umsatz beider Hotels ist die Summe der beiden Umsätze.</li>
         <li><strong>Mittelwert</strong> – ADR, Aufenthaltsdauer, Vorlaufzeit. Mittelwerte lassen sich <em>nicht</em>
-          addieren: Der ADR beider Hotels (101,83) ist nicht der Mittelwert aus 105,30 und 94,95, sondern der
-          Mittelwert über alle 119.390 Buchungen – das City Hotel wiegt schwerer, weil es doppelt so viele
+          addieren: Der ADR beider Hotels (101,83) ist der Mittelwert über alle 119.390 Buchungen, nicht der Mittelwert aus 105,30 und 94,95 – das City Hotel wiegt schwerer, weil es doppelt so viele
           Buchungen hat.</li>
         <li><strong>Quote</strong> – Stornoquote, Wiederholungsgäste, Sonderwünsche: der Mittelwert eines 0/1-Flags.
           Auch Quoten lassen sich nicht addieren; sie werden immer aus Zähler und Nenner der jeweiligen Gruppe neu
@@ -131,8 +127,7 @@
       </ul>
     </div>
     <div class="tip-box">
-      <p>Die Kachel „Ø Zimmerpreis 101,83“ im Dashboard ist deshalb kein Bestand und keine Summe, sondern ein Mittel
-        über alle gefilterten Buchungen. Das Dashboard schreibt bewusst „beide Hotels“ und nicht „gesamt“ – gesamt
+      <p>Die Kachel „Ø Zimmerpreis 101,83“ im Dashboard ist deshalb ein Mittel über alle gefilterten Buchungen – weder Bestand noch Summe. Das Dashboard schreibt bewusst „beide Hotels“ und nicht „gesamt“ – gesamt
         klänge nach Summe.</p>
     </div>
   </section>

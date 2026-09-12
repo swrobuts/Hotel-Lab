@@ -125,7 +125,7 @@
             { "de": "Buchungen, deren Gäste nicht wiedergekommen sind" }
           ],
           "richtig": [1],
-          "erklaerung": { "de": "43.017 Canceled plus 1.207 No-Show ergeben die 44.224 stornierten Buchungen. Wer Stornofristen untersucht, braucht nur die erste Gruppe – die zweite hat gar nicht storniert, sondern ist nicht gekommen." }
+          "erklaerung": { "de": "43.017 Canceled plus 1.207 No-Show ergeben die 44.224 stornierten Buchungen. Wer Stornofristen untersucht, braucht nur die erste Gruppe – die zweite ist ohne Stornierung nicht gekommen." }
         }
       ],
       "rueckmeldung": { "de": "Eigenheiten löscht man nicht weg; man kennt sie, benennt sie und entscheidet je Kennzahl, was sie bedeuten." }

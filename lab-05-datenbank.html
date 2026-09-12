@@ -35,11 +35,8 @@
 <div class="lab-header">
   <div class="lab-num-big">05</div>
   <h1 class="lab-title">Datenbank und Zugang</h1>
-  <p class="lab-intro">Das Sternschema aus Lab 04 liegt nicht in Colab, sondern in einer PostgreSQL-Datenbank auf einem
-    Server der Hochschule – damit Power BI, DBeaver, Python und das Dashboard dieselben Zahlen lesen, ohne dass
-    jemand CSV-Dateien herumschickt. Dieses Lab zeigt, wo die Datenbank läuft, was die Rolle <code>studi_hotel</code>
-    darf und was nicht, wie sich vier Werkzeuge verbinden und wie man die typischen Fehlermeldungen liest. Und es
-    erklärt, warum ein Kennwort öffentlich im Repository stehen darf – und wann auf keinen Fall.</p>
+  <p class="lab-intro">Das Sternschema aus Lab 04 liegt in einer PostgreSQL-Datenbank auf einem Server der Hochschule, damit Power BI, DBeaver, Python und das Dashboard dieselben Zahlen lesen, ohne dass
+    jemand CSV-Dateien herumschickt. Die Rolle <code>studi_hotel</code> darf lesen und sonst nichts; vier Werkzeuge verbinden sich mit denselben sechs Angaben; sechs Fehlermeldungen decken die Probleme des Kurses ab. Und ein Kennwort darf hier öffentlich im Repository stehen – aus drei Gründen, von denen keiner fehlen darf.</p>
   <div class="lernziele">
     <span class="lernziel-chip">PostgreSQL 17</span>
     <span class="lernziel-chip">Supabase, selbst gehostet</span>
@@ -163,7 +160,7 @@
     </div>
     <div class="warn-box">
       <p>Power BI und Tableau zeigen bei SSL-Zwang eine eigene Meldung: „The server does not support SSL“ oder
-        ähnlich. Ursache ist nicht die Datenbank, sondern das Häkchen <em>Verbindung verschlüsseln</em> bzw.
+        ähnlich. Ursache ist das Häkchen <em>Verbindung verschlüsseln</em> bzw.
         <em>SSL erforderlich</em> – abwählen, dann fragt Power BI, ob es unverschlüsselt verbinden soll: ja.</p>
     </div>
   </section>

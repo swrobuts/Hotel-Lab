@@ -39,8 +39,7 @@
   <h1 class="lab-title">Google Colab</h1>
   <p class="lab-intro">
     Ein Notebook im Browser, ohne Installation, mit einem Rechner von Google dahinter: Damit ist in
-      fünf Minuten eine Auswertung begonnen. Der Stoff dieses Labs ist trotzdem nicht die Oberfläche – die erklärt
-      sich selbst –, sondern der <em>Zustand</em>. Wer nicht sagen kann, was nach einem Neustart noch da ist und was
+      fünf Minuten eine Auswertung begonnen. Die Oberfläche erklärt sich selbst; der <em>Zustand</em> nicht. Wer nicht sagen kann, was nach einem Neustart noch da ist und was
       nicht, verliert irgendwann eine Stunde Arbeit. Und wer nicht erklären kann, warum ein Notebook von oben nach
       unten laufen muss, gibt Auswertungen ab, die niemand nachvollziehen kann – auch er selbst nicht.
     </p>
@@ -62,8 +61,7 @@
       Ein <strong>Jupyter-Notebook</strong> ist ein Dokument, das Code, dessen Ausgabe und
         erläuternden Text in einer Datei zusammenhält und zellenweise ausgeführt wird. Die Datei trägt die Endung
         <code>.ipynb</code> und enthält beides: Eingabe und die zuletzt erzeugte Ausgabe. Genau darin liegt der Nutzen
-        für Analytics – eine Auswertung und ihre Begründung stehen nebeneinander – und genau daraus folgen zwei
-        Probleme, auf die dieses Lab hinausläuft.
+        für Analytics – eine Auswertung und ihre Begründung stehen nebeneinander – und genau daraus folgen zwei Probleme: der Zustand der Laufzeit und die Reihenfolge der Zellen.
       </p>
     <div class="concept-box">
       <h3>Drei Begriffe, die auseinandergehalten werden müssen</h3>
@@ -117,7 +115,7 @@
     <p>
       Die Laufzeit ist eine virtuelle Maschine, die Ihnen geliehen wird. Sie endet – bei Untätigkeit
         nach etwa neunzig Minuten, spätestens nach bis zu zwölf Stunden, und sofort, wenn Sie den Browser-Tab
-        schließen. Dabei verschwindet alles, was in ihr lag. Was das genau heißt, zeigt die Tabelle.
+        schließen. Dabei verschwindet alles, was in ihr lag. Was im Einzelnen verschwindet, hängt davon ab, ob nur der Kernel neu startet, die Laufzeit gelöscht wird oder der Tab morgen wieder aufgeht.
       </p>
     <div class="table-scroll">
       <table>
@@ -175,7 +173,7 @@
         gestern – sie stehen in der Datei. Der <code>DataFrame</code>, aus dem sie entstanden sind, existiert
         allerdings nicht mehr. Die nächste Zelle, die <code>df</code> benutzt, scheitert mit
         <code>NameError: name 'df' is not defined</code>, obwohl <code>df</code> zwei Zellen weiter oben scheinbar
-        gefüllt ist. Genau hier setzt der Reflex an, den dieses Lab einüben will: <strong>Laufzeit → Alle
+        gefüllt ist. Dagegen hilft ein Reflex: <strong>Laufzeit → Alle
         ausführen</strong>, bevor irgendetwas anderes versucht wird.
       </p>
     </div>
@@ -232,7 +230,7 @@
     <h2>Zugangsdaten</h2>
     <p>
       In Lab 05 verbinden Sie sich mit der Datenbank <code>hotel</code>. Das Kennwort der Leserolle <code>studi_hotel</code> ist für den Kurs bewusst öffentlich – eigene Datenbankpasswörter und Zugriffsschlüssel gehören trotzdem nie in eine
-        Code-Zelle. Der Grund ist nicht theoretisch: Ein Notebook, das Sie nach GitHub speichern, nimmt seinen
+        Code-Zelle. Ein Notebook, das Sie nach GitHub speichern, nimmt seinen
         Inhalt mit – und der Schlüssel steht dann dauerhaft in der Versionsgeschichte, wo ihn Suchmaschinen und
         automatische Prüfwerkzeuge finden.
       </p>
@@ -310,8 +308,7 @@
       </div>
       <div class="karte">
         <div class="kopfzeile">Arbeitsspeicher</div>
-        <p>„Sitzung abgestürzt nach Verwendung des gesamten RAM“ ist keine Fehlfunktion, sondern eine
-          Größenangabe. Gegenmittel in dieser Reihenfolge: nur benötigte Spalten lesen
+        <p>„Sitzung abgestürzt nach Verwendung des gesamten RAM“ ist eine Größenangabe: Der Arbeitsspeicher der Laufzeit war voll. Gegenmittel in dieser Reihenfolge: nur benötigte Spalten lesen
           (<code>usecols=</code>), Datentypen setzen (<code>dtype=</code>), in Abschnitten lesen
           (<code>chunksize=</code>). Erst danach lohnt der Gedanke an mehr Hardware.
         </p>
@@ -339,7 +336,7 @@
       <li>Notebook, Laufzeit und Kernel sind drei verschiedene Dinge. Die Datei bleibt, die Maschine wird eingezogen, der Prozess mit den Variablen endet.</li>
       <li>Sichtbare Ausgabe ist kein Beweis für eine lebende Variable. Der erste Handgriff nach dem Öffnen eines alten Notebooks ist <em>Alle ausführen</em>.</li>
       <li>Ein Notebook ist brauchbar, wenn es nach einem Neustart von oben nach unten fehlerfrei durchläuft. Diese Prüfung dauert eine Minute und gehört vor jede Abgabe.</li>
-      <li>Was überleben soll, gehört nicht nach <code>/content/</code>, sondern nach Drive – oder wird gar nicht erst hochgeladen, sondern über eine URL gelesen.</li>
+      <li>Was überleben soll, gehört nach Drive oder wird per URL gelesen; <code>/content/</code> verschwindet mit der Laufzeit.</li>
       <li>Zugangsdaten gehören ins Secrets-Panel, nie in eine Code-Zelle. Ein Speichern nach GitHub nimmt den Inhalt des Notebooks samt Ausgaben mit.</li>
       <li>Kostenlose Nutzung heißt: keine garantierte Hardware, keine garantierte Laufzeit. Für Rechnungen mit Termin ist das keine Grundlage.</li>
     </ul>

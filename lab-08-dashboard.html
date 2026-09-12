@@ -37,8 +37,7 @@
   <h1 class="lab-title">Das Dashboard</h1>
   <p class="lab-intro">Neben dem Power-BI-Bericht hat das Projekt ein zweites Fenster auf die Daten: ein Dashboard im
     Browser, geschrieben in Python und JavaScript, das bei jedem Filterwechsel live aus der Datenbank liest und als
-    Container bei Render läuft – öffentlich, ohne Anmeldung, ohne Lizenz. Dieses Lab zeigt, wie es aufgebaut ist,
-    nach welchen Regeln es gestaltet wurde und wie es auf den Server kam. Der Deploy-Simulator lässt Sie den letzten
+    Container bei Render läuft – öffentlich, ohne Anmeldung, ohne Lizenz. Backend und Frontend teilen sich die Arbeit, acht Gestaltungsregeln bestimmen das Aussehen, zwei Dateien bringen es auf den Server. Der Deploy-Simulator lässt Sie den letzten
     Schritt selbst machen – samt der Fehler, an denen echte Deploys scheitern.</p>
   <div class="lernziele">
     <span class="lernziel-chip">FastAPI</span>
@@ -170,8 +169,7 @@
     <h2>Container und Render</h2>
     <p>Damit das Dashboard öffentlich läuft, braucht es einen Server, auf dem Python, die Pakete und der Code liegen
       und der auf Anfragen antwortet. <strong>Docker</strong> packt das alles in ein Abbild (Image), das überall gleich
-      läuft; <strong>Render</strong> baut dieses Abbild aus dem Repository und betreibt es als <em>Web Service</em>. Drei
-      Dateien steuern das.</p>
+      läuft; <strong>Render</strong> baut dieses Abbild aus dem Repository und betreibt es als <em>Web Service</em>. Zwei Dateien steuern das: das Dockerfile und der Blueprint <code>render.yaml</code>.</p>
     <div data-befehl="B03"></div>
     <div data-befehl="B04"></div>
     <div class="concept-box">

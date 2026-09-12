@@ -33,11 +33,10 @@
 <div class="lab-header">
   <div class="lab-num-big">01</div>
   <h1 class="lab-title">Die Datenquelle</h1>
-  <p class="lab-intro">Bevor jemand rechnet, muss jemand lesen. Die Rohdatei des Projekts hat 119.390 Zeilen und 32
+  <p class="lab-intro">Die Rohdatei des Projekts hat 119.390 Zeilen und 32
     Spalten, und mindestens sechs davon haben eine Eigenheit, die eine Kennzahl still verfälscht, wenn man sie nicht
     kennt: ein Zimmerpreis von 5.400 €, ein Kautionstyp, der zu 99 % storniert wird, ein Wort „NULL“, das kein NULL
-    ist. Dieses Lab zeigt, woher die Daten stammen, was jede Spalte bedeutet und wo die Fallen liegen – die
-    Grundlage für alles, was das Notebook in Lab 03 daraus macht.</p>
+    ist. Herkunft, Bedeutung jeder Spalte und die Fallen sind die Grundlage für alles, was das Notebook in Lab 03 daraus macht.</p>
   <div class="lernziele">
     <span class="lernziel-chip">Antonio, de Almeida, Nunes (2019)</span>
     <span class="lernziel-chip">Kaggle · TidyTuesday</span>
@@ -115,8 +114,7 @@
   <section class="section-block" id="typen">
     <h2>Datentypen und Rollen</h2>
     <p>Beim Einlesen ordnet pandas jeder Spalte einen Typ zu: 16 Spalten sind ganze Zahlen, 4 sind Dezimalzahlen, 12
-      sind Text. Für die Auswertung zählt aber nicht der technische Typ, sondern die <strong>Rolle</strong> einer
-      Spalte – und die entscheidet später, ob sie in die Faktentabelle oder in eine Dimension wandert.</p>
+      sind Text. Für die Auswertung zählt die <strong>Rolle</strong> einer Spalte; sie entscheidet später, ob die Spalte in die Faktentabelle oder in eine Dimension wandert.</p>
     <div class="concept-box">
       <h3>Vier Rollen</h3>
       <ul>
@@ -141,7 +139,7 @@
 
   <section class="section-block" id="eigenheiten">
     <h2>Eigenheiten, die man kennen muss</h2>
-    <p>Jeder echte Datensatz hat sie. Diese hier sind dokumentiert – im Notebook, in den Aussagen des Dashboards und
+    <p>Diese sechs sind dokumentiert – im Notebook, in den Aussagen des Dashboards und
       in der Literatur zum Datensatz. Wer sie kennt, erkennt sie später in jeder Auswertung wieder.</p>
     <div class="karten">
       <div class="karte">
@@ -189,9 +187,7 @@
 
   <section class="section-block" id="zeile">
     <h2>Eine Buchung als Datensatz</h2>
-    <p>So sieht die erste Zeile der Datei aus – als Tabelle in pandas und als JSON, wie ein Buchungssystem sie über
-      eine Schnittstelle liefern würde. Beide Formen tragen dieselbe Information; die JSON-Form macht die Typen
-      sichtbar: Zahlen ohne Anführungszeichen, Text mit, Wahrheitswerte als <code>true</code>/<code>false</code>.</p>
+    <p>Ein Buchungssystem liefert eine Buchung über eine Schnittstelle als JSON; pandas zeigt dieselbe erste Zeile als Tabelle. Beide Formen tragen dieselbe Information, nur die JSON-Form macht die Typen sichtbar: Zahlen ohne Anführungszeichen, Text mit, Wahrheitswerte als <code>true</code>/<code>false</code>.</p>
     <div class="shot">
       <div class="shot-bar"><span class="ampel"><i></i><i></i><i></i></span><span class="titel">BI_Hotel_Booking_Demand.ipynb – Colab</span><span class="spacer"></span>Python 3</div>
       <div class="shot-body eins">

@@ -36,10 +36,7 @@
 <div class="lab-header">
   <div class="lab-num-big">03</div>
   <h1 class="lab-title">Das Notebook Schritt für Schritt</h1>
-  <p class="lab-intro">Das Notebook <code>BI_Hotel_Booking_Demand.ipynb</code> ist das Herz des Projekts: 30 Zellen,
-    die aus der Rohdatei Kennzahlen, vier Auswertungen und ein Sternschema machen. Dieses Lab geht die acht Abschnitte
-    in der Reihenfolge durch, in der sie laufen müssen, und erklärt zu jeder Zelle, was sie tut, warum sie an dieser
-    Stelle steht und woran man erkennt, dass sie geklappt hat. Öffnen Sie das Notebook daneben in Colab – die
+  <p class="lab-intro">Das Notebook <code>BI_Hotel_Booking_Demand.ipynb</code> hat 30 Zellen, die aus der Rohdatei Kennzahlen, vier Auswertungen und ein Sternschema machen. Die acht Abschnitte laufen in fester Reihenfolge; zu jeder Zelle steht hier, was sie tut, warum sie an dieser Stelle steht und woran man erkennt, dass sie geklappt hat. Öffnen Sie das Notebook daneben in Colab – die
     Checkliste in den Übungen führt einmal komplett hindurch.</p>
   <div class="lernziele">
     <span class="lernziel-chip">pandas</span>
@@ -107,8 +104,7 @@
   <section class="section-block" id="bereinigen">
     <h2>Abschnitt 3: Bereinigen und ableiten</h2>
     <p>Zwei Zellen. Die erste füllt Lücken, die zweite erzeugt die Spalten, die für Kennzahlen gebraucht werden.
-      Beide treffen <strong>Annahmen</strong>, und beide schreiben sie hin – das ist der didaktische Kern des
-      Abschnitts. Eine Bereinigung, die nur im Code steht, ist nach drei Monaten eine Zahl, die niemand mehr
+      Beide treffen <strong>Annahmen</strong>, und beide schreiben sie hin. Eine Bereinigung, die nur im Code steht, ist nach drei Monaten eine Zahl, die niemand mehr
       erklären kann.</p>
     <div data-befehl="B02"></div>
     <div data-befehl="B03"></div>
@@ -139,7 +135,7 @@
     <h2>Abschnitt 4: Kennzahlen</h2>
     <p>Eine Zelle rechnet den ganzen Katalog: zehn Kennzahlen über alle Buchungen, gesammelt in einer
       <code>pd.Series</code>. Die Definitionen sind dieselben wie später in der Datenbank, in Power BI und im
-      Dashboard – Lab 06 rechnet sie in SQL nach. Zwei Zeilen verdienen einen zweiten Blick.</p>
+      Dashboard – Lab 06 rechnet sie in SQL nach. Zwei Zeilen unterscheiden sich nur im Filter auf <code>is_canceled</code>: Die Summe von <code>revenue</code> ohne Filter ist der gebuchte Umsatz, mit Filter der stornobereinigte.</p>
     <div data-befehl="B04"></div>
     <div class="table-scroll">
       <table class="table">
@@ -189,10 +185,10 @@
 
   <section class="section-block" id="stern">
     <h2>Abschnitte 6 und 7: Sternschema und Export</h2>
-    <p>Hier wird aus der flachen Tabelle das Auswertungsmodell. Eine kleine Funktion <code>make_dim</code> erzeugt
+    <p>Eine kleine Funktion <code>make_dim</code> erzeugt
       aus jeder Merkmalsspalte eine Dimensionstabelle mit laufender Nummer; eine Datumsdimension entsteht aus allen
       Tagen zwischen dem frühesten und dem spätesten Datum; die Faktentabelle bekommt statt der Texte die Nummern.
-      Lab 04 erklärt das Modell im Detail – hier geht es um den Mechanismus.</p>
+      Das Modell selbst erklärt Lab 04.</p>
     <div data-befehl="B06"></div>
     <div class="concept-box">
       <h3>Woran man erkennt, dass es geklappt hat</h3>
@@ -213,7 +209,7 @@
 
   <section class="section-block" id="live">
     <h2>Abschnitt 7.1: Live aus der Datenbank</h2>
-    <p>Die letzte Codezelle schließt den Kreis: Sie verbindet sich mit der fertigen Datenbank und liest die
+    <p>Die letzte Codezelle verbindet sich mit der fertigen Datenbank und liest die
       Stornoquote je Hotel per SQL. Das Ergebnis muss mit Abschnitt 5.1 übereinstimmen – 41,7 % und 27,8 %. Tut es
       das, ist bewiesen, dass Notebook und Datenbank dieselben Daten tragen.</p>
     <div data-befehl="B07"></div>

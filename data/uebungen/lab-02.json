@@ -10,7 +10,7 @@
         {
           "was": "Strg+M",
           "bedeutet": {
-            "de": "Die Vorsilbe für alle Notebook-Befehle. Auf dem Mac ⌘+M. Danach folgt ein einzelner Buchstabe – die Kombination lässt sich nicht in einem Griff tippen, sondern in zwei."
+            "de": "Die Vorsilbe für alle Notebook-Befehle. Auf dem Mac ⌘+M. Danach folgt ein einzelner Buchstabe – die Kombination braucht zwei Griffe."
           }
         },
         {
@@ -292,7 +292,7 @@
         }
       ],
       "rueckmeldung": {
-        "de": "Der Schritt mit dem Neustart ist der wichtigste dieses Labs. Die Fehlermeldung heißt NameError, weil der Kernel neu ist und df nicht kennt — obwohl zwei Zellen weiter oben eine gefüllte Tabelle steht. Das ist der Unterschied zwischen gespeicherter Ausgabe und lebendem Zustand."
+        "de": "Der Schritt mit dem Neustart zeigt den Unterschied zwischen gespeicherter Ausgabe und lebendem Zustand: Die Fehlermeldung heißt NameError, weil der Kernel neu ist und df nicht kennt — obwohl zwei Zellen weiter oben eine gefüllte Tabelle steht."
       }
     },
     {
@@ -541,7 +541,7 @@
         "de": "Ein Notebook abgabefertig machen"
       },
       "aufgabe": {
-        "de": "<p>Diese Liste ist keine Übung für heute, sondern ein Verfahren für jede Abgabe in diesem Studiengang. Arbeiten Sie sie an dem Notebook aus Übung W04-01 einmal durch, damit die Reihenfolge sitzt.</p>"
+        "de": "<p>Diese Liste ist ein Verfahren für jede Abgabe in diesem Studiengang. Arbeiten Sie sie an dem Notebook aus Übung W02-01 einmal durch, damit die Reihenfolge sitzt.</p>"
       },
       "schritte": [
         {

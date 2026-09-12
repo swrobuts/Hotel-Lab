@@ -36,9 +36,7 @@
   <h1 class="lab-title">Das Sternschema</h1>
   <p class="lab-intro">Eine flache Tabelle mit 32 Spalten beantwortet jede Frage – aber nur, wenn jemand pandas
     bedient. Ein BI-Werkzeug braucht die Daten anders: als eine Faktentabelle, die zählt, und Dimensionen, die
-    beschreiben. Das Sternschema <code>hotel_bi</code> ist genau das. Dieses Lab erklärt, warum es so gebaut ist,
-    was Schlüssel dabei leisten, warum die Datumsdimension zweimal angebunden ist – und es lässt Sie das Modell in
-    PostgreSQL abfragen, mit allen 119.390 Buchungen in Ihrem Browser.</p>
+    beschreiben. Das Sternschema <code>hotel_bi</code> ist genau das: eine Faktentabelle mit 119.390 Buchungen, acht Dimensionen, die Datumsdimension zweimal angebunden – und in PostgreSQL in Ihrem Browser abfragbar.</p>
   <div class="lernziele">
     <span class="lernziel-chip">Fact Table</span>
     <span class="lernziel-chip">Dimension Table</span>
@@ -55,8 +53,7 @@
     <h2>Warum nicht eine flache Tabelle</h2>
     <p>In der Rohdatei steht in jeder der 119.390 Zeilen der Text „Online TA“ oder „Resort Hotel“ noch einmal. Das
       funktioniert – bis jemand fragt, wie „Online TA“ auf Deutsch heißt, welches Land zu „PRT“ gehört oder in
-      welchem Quartal der 14. März 2016 liegt. Solche Antworten gehören nicht in die Buchung, sondern zu dem Ding,
-      das die Buchung beschreibt. Ein <strong>Sternschema</strong> trennt beides: In der Mitte steht die
+      welchem Quartal der 14. März 2016 liegt. Solche Antworten gehören zu dem Ding, das die Buchung beschreibt: zum Segment, zum Land, zum Datum. Ein <strong>Sternschema</strong> trennt beides: In der Mitte steht die
       <strong>Faktentabelle</strong> (fact table) mit einer Zeile je Ereignis und den Kennzahlen; außen stehen die
       <strong>Dimensionstabellen</strong> (dimension tables) mit den Beschreibungen, nach denen man filtert und
       gruppiert.</p>
@@ -135,8 +132,7 @@
     <div data-befehl="B01"></div>
     <div class="concept-box">
       <h3>Was ein Fremdschlüssel garantiert</h3>
-      <p>Die Klausel <code>REFERENCES hotel_bi.dim_hotel (hotel_id)</code> im Schema ist nicht Dokumentation, sondern
-        Zwang: PostgreSQL weist jede Buchung ab, deren <code>hotel_id</code> in <code>dim_hotel</code> nicht existiert.
+      <p>Die Klausel <code>REFERENCES hotel_bi.dim_hotel (hotel_id)</code> im Schema ist ein Zwang: PostgreSQL weist jede Buchung ab, deren <code>hotel_id</code> in <code>dim_hotel</code> nicht existiert.
         Deshalb muss das Ladeskript die Dimensionen vor den Fakten laden – und deshalb kann es in diesem Modell keine
         Buchung geben, die zu keinem Hotel gehört.</p>
     </div>
@@ -171,8 +167,7 @@
   <section class="section-block" id="ddl">
     <h2>Das Schema in SQL</h2>
     <p>Die Datei <code>sql/01_schema.sql</code> legt das Schema <code>hotel_bi</code> und die neun Tabellen an. Sie ist
-      für Erstsemester kommentiert und läuft unverändert in PostgreSQL – auf dem Server wie in Ihrem Browser. Drei
-      Ausschnitte zeigen den Aufbau.</p>
+      für Erstsemester kommentiert und läuft unverändert in PostgreSQL – auf dem Server wie in Ihrem Browser. Der Ausschnitt unten lässt die Kommentare der Datei weg.</p>
     <div data-befehl="B03"></div>
     <div class="info-box">
       <p>Auf den Fremdschlüsseln der Faktentabelle liegen Indizes. Ohne sie müsste PostgreSQL bei „alle Buchungen aus

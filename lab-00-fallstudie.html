@@ -35,10 +35,7 @@
   <div class="lab-num-big">00</div>
   <h1 class="lab-title">Fallstudie und Vorgehen</h1>
   <p class="lab-intro">Ein Stadthotel und ein Resorthotel in Portugal, 119.390 Buchungen aus gut zwei Jahren – und
-    eine Hotelleitung, die wissen will, warum mehr als jede dritte Buchung storniert wird. Dieses Lab erklärt, welche
-    Fragen das Projekt beantwortet, in welchen Schritten es von der Rohdatei zum Dashboard gelaufen ist und welches
-    Werkzeug an welcher Stelle im Einsatz war. Alles Weitere baut darauf auf: Wer die Fragen kennt, weiß später,
-    warum eine Kennzahl so und nicht anders definiert ist.</p>
+    eine Hotelleitung, die wissen will, warum mehr als jede dritte Buchung storniert wird. Vier Fragen, sechs Schritte und vier Artefakte tragen das Projekt – von der Rohdatei bis zum Dashboard. Wer die Fragen kennt, weiß später, warum eine Kennzahl so und nicht anders definiert ist.</p>
   <div class="lernziele">
     <span class="lernziel-chip">Fragestellungen</span>
     <span class="lernziel-chip">BI-Prozess</span>
@@ -54,8 +51,7 @@
     <h2>Zwei Hotels, vier Fragen</h2>
     <p>Der Datensatz beschreibt die Buchungen zweier Hotels derselben Kette in Portugal: ein <strong>City Hotel</strong>
       in Lissabon und ein <strong>Resort Hotel</strong> an der Algarve. Jede Zeile ist eine Buchung mit Anreisedatum
-      zwischen Juli 2015 und August 2017 – ob sie angetreten wurde oder nicht. Das ist die Besonderheit dieser Daten:
-      Sie enthalten auch die stornierten Buchungen, und davon gibt es viele.</p>
+      zwischen Juli 2015 und August 2017 – ob sie angetreten wurde oder nicht. Die Daten enthalten auch die stornierten Buchungen – 44.224, mehr als jede dritte.</p>
     <div class="table-scroll">
       <table class="table">
         <thead><tr><th>Kennzahl</th><th>City Hotel</th><th>Resort Hotel</th><th>beide Hotels</th></tr></thead>
@@ -98,7 +94,7 @@
   <section class="section-block" id="bi">
     <h2>Was Business Intelligence beiträgt</h2>
     <p><strong>Business Intelligence</strong> (BI) heißt: aus den Daten des laufenden Betriebs Kennzahlen zu machen,
-      die Entscheidungen tragen. Das klingt nach Technik, ist aber zuerst eine Frage der Definition. „Umsatz“ ist
+      die Entscheidungen tragen. Zuerst ist das eine Frage der Definition. „Umsatz“ ist
       erst dann eine Kennzahl, wenn feststeht, ob stornierte Buchungen mitzählen (im Projekt: nein, das ist der
       <em>stornobereinigte Umsatz</em>), ob Frühstück und Parkplatz dazugehören (nein, nur die Übernachtung) und auf
       welchen Zeitraum sich die Zahl bezieht (Anreisemonat, nicht Buchungsmonat).</p>
@@ -121,8 +117,7 @@
     <h2>Das Vorgehen in sechs Schritten</h2>
     <p>Das Projekt folgt dem Ablauf, der sich in der Praxis für Datenprojekte durchgesetzt hat und den das Vorgehensmodell
       CRISP-DM seit den 1990er-Jahren beschreibt: erst die Frage, dann die Daten verstehen, dann aufbereiten, dann
-      auswerten, dann bereitstellen. Die Schritte sind keine Formalie – jeder beantwortet eine Frage, ohne die der
-      nächste nicht sinnvoll ist.</p>
+      auswerten, dann bereitstellen. Jeder Schritt beantwortet eine Frage, ohne die der nächste nicht sinnvoll ist.</p>
     <div class="kette">
       <div class="glied hell"><span class="titel">1 Fragen</span><span class="was">Was will die Hotelleitung wissen?</span></div>
       <span class="pfeil">→</span>
@@ -158,8 +153,7 @@
 
   <section class="section-block" id="artefakte">
     <h2>Was am Ende vorliegt</h2>
-    <p>Das Projekt hinterlässt vier Dinge, die zusammengehören und dieselben Zahlen zeigen. Sie sind in den
-      folgenden Labs die Anschauungsobjekte.</p>
+    <p>Das Projekt hinterlässt vier Artefakte, die dieselben Zahlen zeigen: 119.390 Buchungen, 37,0 % Stornoquote, 26,0 Mio. € stornobereinigter Umsatz.</p>
     <div class="karten">
       <div class="karte">
         <div class="kopfzeile">Das Notebook</div>
@@ -186,8 +180,7 @@
       </div>
     </div>
     <p>Alles außer der Datenbank liegt im öffentlichen Repository <a href="https://github.com/swrobuts/hotel">swrobuts/hotel</a>;
-      die Datenbank ist von dort aus in vier Befehlen neu aufbaubar. Das ist kein Nebeneffekt, sondern Absicht: Ein
-      BI-Projekt, das sich nicht reproduzieren lässt, ist eine Zahl ohne Beleg.</p>
+      die Datenbank ist von dort aus in vier Befehlen neu aufbaubar. Das ist Absicht: Ein BI-Projekt, das sich nicht reproduzieren lässt, ist eine Zahl ohne Beleg.</p>
   </section>
 
   <section class="section-block" id="werkzeuge">
@@ -216,8 +209,7 @@
 
   <section class="section-block" id="grenzen">
     <h2>Was die Daten nicht können</h2>
-    <p>Ein Projekt ist erst dann seriös, wenn es sagt, was es nicht beantwortet. Bei diesem Datensatz sind das vor
-      allem drei Dinge.</p>
+    <p>Drei Fragen beantwortet der Datensatz nicht; alle drei stehen im Notebook, im Power-BI-Bericht und in der Fußzeile des Dashboards dabei.</p>
     <div class="warn-box">
       <p><strong>Keine Kapazität.</strong> Der Datensatz enthält keine Zimmerzahl. Deshalb lassen sich weder eine
         Auslastung noch ein RevPAR (Umsatz je verfügbarem Zimmer) berechnen – zwei Kennzahlen, die in jedem echten

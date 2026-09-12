@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="de" data-lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Lab 06 · Kennzahlen · Hotel-Lab</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/hotel.css" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%232E3238'/><text x='16' y='23' font-family='sans-serif' font-size='18' font-weight='bold' text-anchor='middle' fill='%23C0662B'>H</text></svg>" />
+</head>
+<body class="lab-page" data-lab="lab-06">
+
+<header class="header">
+  <div class="header-left">
+    <a class="header-logo" href="index.html" data-lab-link><span class="mark">Hotel</span>-Lab</a>
+    <a class="header-back" href="index.html" data-lab-link>← Zur Übersicht</a>
+  </div>
+</header>
+
+<nav class="sidebar" aria-label="Lab-Navigation">
+  <div class="sidebar-title">Abschnitte</div>
+  <a class="sidebar-link" href="#katalog">Der Katalog</a>
+  <a class="sidebar-link" href="#umsatz">Drei Umsatzbegriffe</a>
+  <a class="sidebar-link" href="#quoten">Quoten, Mittelwerte, Summen</a>
+  <a class="sidebar-link" href="#zeit">Zeitbezug: Anreisemonat, Vormonat, Vorjahresmonat</a>
+  <a class="sidebar-link" href="#farbe">Farbe als Werturteil</a>
+  <a class="sidebar-link" href="#sql">Kennzahlen in SQL</a>
+  <a class="sidebar-link" href="#uebungen">Übungen</a>
+  <a class="sidebar-link" href="#zusammenfassung">Zusammenfassung</a>
+</nav>
+
+<div class="lab-header">
+  <div class="lab-num-big">06</div>
+  <h1 class="lab-title">Kennzahlen</h1>
+  <p class="lab-intro">Eine Kennzahl ist eine Zahl mit einer Definition. Ohne Definition ist „Umsatz 26 Millionen“ ein
+    Wort mit einer Zahl dahinter – mit Definition ist es der stornobereinigte Logisumsatz der Buchungen mit Anreise
+    zwischen Juli 2015 und August 2017. Dieses Lab geht die zehn Kennzahlen des Katalogs durch, rechnet sie in SQL
+    nach, erklärt die drei Umsatzbegriffe und den Zeitbezug – und die Farblogik, die im Dashboard sagt, ob ein Anstieg
+    gut oder schlecht für das Ergebnis ist.</p>
+  <div class="lernziele">
+    <span class="lernziel-chip">KPI-Katalog</span>
+    <span class="lernziel-chip">Umsatz · gebucht · entgangen</span>
+    <span class="lernziel-chip">Quote = Mittelwert eines Flags</span>
+    <span class="lernziel-chip">Vorjahresmonat</span>
+    <span class="lernziel-chip">DeltaMaster-Farblogik</span>
+  </div>
+  <div data-einordnung></div>
+</div>
+
+<main class="main-content">
+
+  <section class="section-block" id="katalog">
+    <h2>Der Katalog</h2>
+    <p>Zehn Kennzahlen, definiert im Grundgerüst des Projekts, berechnet im Notebook (Abschnitt 4), als Measures in
+      Power BI und als Kacheln und Tabelle im Dashboard. Jede hat genau eine Definition – und alle vier Orte zeigen
+      denselben Wert. Die Spalte „Wirkung“ ist die Farblogik aus dem letzten Abschnitt.</p>
+    <div class="table-scroll">
+      <table class="table">
+        <thead><tr><th>Kennzahl</th><th>Definition</th><th>Wert (alle Buchungen)</th><th>Wirkung</th></tr></thead>
+        <tbody>
+          <tr><td>Stornobereinigter Umsatz</td><td>Summe <code>revenue</code> der nicht stornierten Buchungen</td><td>25.996.260 €</td><td>blau: mehr ist gut</td></tr>
+          <tr><td>Gebuchter Umsatz</td><td>Summe <code>revenue</code> aller Buchungen</td><td>42.723.498 €</td><td>blau</td></tr>
+          <tr><td>Durch Stornierung entgangener Umsatz</td><td>Summe <code>revenue</code> der stornierten Buchungen (Differenz der beiden)</td><td>16.727.237 €</td><td>rot: geht zu Lasten des Ergebnisses</td></tr>
+          <tr><td>Anzahl Buchungen</td><td>Zeilen der Faktentabelle</td><td>119.390</td><td>blau</td></tr>
+          <tr><td>Stornoquote</td><td>Anteil der Buchungen mit <code>is_canceled</code></td><td>37,0 %</td><td>rot: mehr ist schlecht</td></tr>
+          <tr><td>Ø Zimmerpreis (ADR)</td><td>Mittelwert <code>adr</code></td><td>101,83 €</td><td>blau</td></tr>
+          <tr><td>Ø Aufenthaltsdauer</td><td>Mittelwert <code>total_nights</code></td><td>3,43 Nächte</td><td>blau</td></tr>
+          <tr><td>Ø Vorlaufzeit</td><td>Mittelwert <code>lead_time</code></td><td>104,0 Tage</td><td>grau: ohne Wertung</td></tr>
+          <tr><td>Gebuchte Zimmernächte</td><td>Summe <code>total_nights</code></td><td>409.257</td><td>blau</td></tr>
+          <tr><td>Wiederholungsgast-Anteil</td><td>Anteil der Buchungen mit <code>is_repeated_guest</code></td><td>3,2 %</td><td>blau</td></tr>
+          <tr><td>Anteil mit Sonderwünschen</td><td>Anteil der Buchungen mit <code>total_of_special_requests &gt; 0</code></td><td>41,1 %</td><td>grau</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="info-box">
+      <p>Elf Zeilen für zehn Kennzahlen: Der entgangene Umsatz ist keine eigene Kennzahl des Katalogs, sondern die
+        Differenz der beiden Umsätze – er steht hier, weil das Dashboard ihn als Kennzahl zeigt und das Stornorisiko
+        ohne ihn eine Quote ohne Geldbetrag wäre.</p>
+    </div>
+  </section>
+
+  <section class="section-block" id="umsatz">
+    <h2>Drei Umsatzbegriffe</h2>
+    <p>Die Spalte <code>revenue</code> (Zimmerpreis mal Nächte, Lab 03) ist der Zimmerumsatz <em>einer</em>
+      Buchung – ob sie storniert wurde oder nicht. Erst die Summe entscheidet, was gemeint ist. Das Projekt hat sich
+      für drei Begriffe entschieden, und die Wahl der Wörter ist Teil der Definition.</p>
+    <div class="karten">
+      <div class="karte">
+        <div class="kopfzeile">Stornobereinigter Umsatz</div>
+        <p>Nur nicht stornierte Buchungen. Das Geld, das das Hotel für Übernachtungen bekommen hat. In Texten kurz
+          „Umsatz“. Im Dashboard die erste Kachel; in Power BI das Measure <code>Umsatz</code>.</p>
+      </div>
+      <div class="karte">
+        <div class="kopfzeile">Gebuchter Umsatz</div>
+        <p>Alle Buchungen, vor Stornierung. Was das Hotel gehabt hätte, wenn niemand storniert hätte. Wichtig als
+          Bezugsgröße: Ein Prozentpunkt weniger Stornierungen entspricht etwa 427.000 € gebuchtem Umsatz.</p>
+      </div>
+      <div class="karte">
+        <div class="kopfzeile">Durch Stornierung entgangener Umsatz</div>
+        <p>Die Differenz: 16,7 Mio. €, 39,2 % des gebuchten Umsatzes. Der Geldbetrag hinter der Stornoquote – und
+          die Kennzahl, die das Stornorisiko für die Hotelleitung greifbar macht.</p>
+      </div>
+    </div>
+    <div class="warn-box">
+      <p><strong>Was „Umsatz“ hier nicht ist:</strong> kein Restaurant, kein Parkplatz, kein Spa – der Datensatz
+        kennt nur den Zimmerpreis. In der Hotellerie heißt diese Größe <em>Logisumsatz</em>; das Projekt verwendet
+        den allgemeineren Begriff Umsatz und erklärt ihn in der Fußzeile des Dashboards. Und „Erlös“ wurde bewusst
+        vermieden: Das Wort meint in der Betriebswirtschaft oft denselben Betrag, wird aber uneinheitlich
+        gebraucht.</p>
+    </div>
+  </section>
+
+  <section class="section-block" id="quoten">
+    <h2>Quoten, Mittelwerte, Summen</h2>
+    <p>Die zehn Kennzahlen entstehen aus drei Rechenarten – und jede hat eine Falle, wenn man filtert oder
+      gruppiert.</p>
+    <div class="concept-box">
+      <h3>Drei Rechenarten</h3>
+      <ul>
+        <li><strong>Summe</strong> – Umsatz, Zimmernächte, Buchungen (Summe von 1). Summen lassen sich zerlegen: Der
+          Umsatz beider Hotels ist die Summe der beiden Umsätze.</li>
+        <li><strong>Mittelwert</strong> – ADR, Aufenthaltsdauer, Vorlaufzeit. Mittelwerte lassen sich <em>nicht</em>
+          addieren: Der ADR beider Hotels (101,83) ist nicht der Mittelwert aus 105,30 und 94,95, sondern der
+          Mittelwert über alle 119.390 Buchungen – das City Hotel wiegt schwerer, weil es doppelt so viele
+          Buchungen hat.</li>
+        <li><strong>Quote</strong> – Stornoquote, Wiederholungsgäste, Sonderwünsche: der Mittelwert eines 0/1-Flags.
+          Auch Quoten lassen sich nicht addieren; sie werden immer aus Zähler und Nenner der jeweiligen Gruppe neu
+          gerechnet.</li>
+      </ul>
+    </div>
+    <div class="tip-box">
+      <p>Die Kachel „Ø Zimmerpreis 101,83“ im Dashboard ist deshalb kein Bestand und keine Summe, sondern ein Mittel
+        über alle gefilterten Buchungen. Das Dashboard schreibt bewusst „beide Hotels“ und nicht „gesamt“ – gesamt
+        klänge nach Summe.</p>
+    </div>
+  </section>
+
+  <section class="section-block" id="zeit">
+    <h2>Zeitbezug: Anreisemonat, Vormonat, Vorjahresmonat</h2>
+    <p>Jede Kennzahl hat einen Zeitbezug, und im Projekt ist es der <strong>Anreisemonat</strong>: Eine Buchung zählt
+      in dem Monat, in dem der Gast ankommt – nicht im Monat der Buchung, nicht im Monat der Stornierung. Das
+      Dashboard nennt den Zeitraum in jeder Kachel („Juli 2015 bis August 2017“) und in jeder Beschreibung.</p>
+    <div class="concept-box">
+      <h3>Zwei Vergleiche, ein Bezugsmonat</h3>
+      <ul>
+        <li><strong>Vormonat</strong> – August 2017 gegen Juli 2017. Zeigt die kurzfristige Bewegung, ist aber von der
+          Saison überlagert: Dass der September unter dem August liegt, sagt nichts über das Geschäft.</li>
+        <li><strong>Vorjahresmonat</strong> – August 2017 gegen August 2016. Vergleicht Gleiches mit Gleichem, weil
+          beide Monate in derselben Saison liegen. Das ist der Vergleich, den IBCS und das Dashboard als
+          Versatzsäule zeigen.</li>
+        <li><strong>Bezugsmonat</strong> – der letzte Monat im Zeitfilter, im Vollbild August 2017. Beide
+          Abweichungen in den Kacheln beziehen sich auf ihn; der Leitsatz über den Kacheln nennt ihn.</li>
+      </ul>
+    </div>
+    <div class="warn-box">
+      <p>Ein Jahresvergleich 2016 gegen 2017 wäre falsch: 2017 endet im August. Deshalb gibt es im Projekt keine
+        Jahreswerte als Kennzahl, nur Monate und ihre Vorjahresmonate. Wer 2016 als Ganzes betrachtet, hat das
+        einzige vollständige Jahr – und genau dafür eignet es sich als Basis für Prognosen.</p>
+    </div>
+  </section>
+
+  <section class="section-block" id="farbe">
+    <h2>Farbe als Werturteil</h2>
+    <p>Das Dashboard färbt nach einer Regel, die die Software DeltaMaster von Bissantz geprägt hat: <strong>Blau ist
+      gut für das Geschäftsziel, Rot ist schlecht</strong> – unabhängig vom mathematischen Vorzeichen. Ob ein
+      Anstieg blau oder rot ist, entscheidet die Kennzahl: Mehr Umsatz ist gut (blau), mehr Stornierungen sind
+      schlecht (rot), eine längere Vorlaufzeit ist weder noch (grau).</p>
+    <div class="table-scroll">
+      <table class="table">
+        <thead><tr><th>Wirkung</th><th>Kennzahlen</th><th>Säulen und Werte</th><th>Anstieg gegenüber Vorjahresmonat</th></tr></thead>
+        <tbody>
+          <tr><td>mehr ist gut</td><td>Umsatz, gebuchter Umsatz, Buchungen, ADR, Aufenthalt, Zimmernächte, Wiederholungsgäste</td><td>blau (aufgehellt)</td><td>blau; Rückgang rot</td></tr>
+          <tr><td>mehr ist schlecht</td><td>Stornoquote, entgangener Umsatz</td><td>rot (aufgehellt)</td><td>rot; Rückgang blau</td></tr>
+          <tr><td>ohne Wertung</td><td>Vorlaufzeit, Sonderwünsche</td><td>grau</td><td>grau</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="concept-box">
+      <h3>Was die Regel ausschließt</h3>
+      <p>Farbe für Vergleiche ohne Ergebniswirkung. „Das City Hotel hat den höheren Zimmerpreis“ ist eine
+        Beobachtung, kein Urteil – deshalb markiert das Dashboard das bessere Hotel nicht farbig. Blau und Rot sind
+        Werturteile und bleiben Werturteilen vorbehalten; wer sie für Beliebiges nutzt, verbraucht ihre Bedeutung.</p>
+    </div>
+  </section>
+
+  <section class="section-block" id="sql">
+    <h2>Kennzahlen in SQL</h2>
+    <p>Jede Kennzahl des Katalogs ist eine Zeile SQL. Die Muster sind dieselben wie in pandas und in DAX – nur die
+      Schreibweise unterscheidet sich. Die Datenbank läuft in Ihrem Browser mit allen Buchungen; die Ergebnisse müssen
+      mit der Tabelle oben übereinstimmen.</p>
+    <div data-datenbank="postgres"></div>
+    <div data-befehl="B01"></div>
+    <div data-befehl="B02"></div>
+    <div data-sql-konsole data-start="SELECT round(sum(revenue) FILTER (WHERE NOT is_canceled)) AS umsatz,&#10;       round(sum(revenue))                             AS gebucht,&#10;       round(avg(is_canceled::int) * 100, 1)           AS stornoquote,&#10;       round(avg(adr), 2)                              AS adr&#10;FROM fact_bookings;"></div>
+    <div class="tip-box">
+      <p><code>FILTER (WHERE …)</code> ist die PostgreSQL-Schreibweise für eine bedingte Aggregation; in anderen
+        Datenbanken schreibt man <code>sum(CASE WHEN NOT is_canceled THEN revenue ELSE 0 END)</code>. In DAX heißt
+        dasselbe <code>CALCULATE(SUM(…), is_canceled = 0)</code> – Lab 07.</p>
+    </div>
+  </section>
+
+  <section class="section-block" id="uebungen">
+    <h2>Übungen</h2>
+    <p>Fünf Übungen: drei Kennzahlen in SQL nachrechnen – die Umsätze, die Stornoquote je Kautionstyp, der
+      Umsatz je Anreisemonat 2016 –, dazu die Zuordnung der Kennzahlen zur Farblogik und Verständnisfragen zu
+      Rechenart und Zeitbezug.</p>
+    <div data-uebung="W06-01"></div>
+    <div data-uebung="W06-02"></div>
+    <div data-uebung="W06-03"></div>
+    <div data-uebung="W06-04"></div>
+    <div data-uebung="W06-05"></div>
+    <div data-fortschritt></div>
+  </section>
+
+  <section class="section-block" id="zusammenfassung">
+    <h2>Zusammenfassung</h2>
+    <ul>
+      <li>Zehn Kennzahlen, eine Definition je Kennzahl, vier Orte mit demselben Wert.</li>
+      <li>Drei Umsatzbegriffe aus einer Spalte: stornobereinigt (nicht storniert), gebucht (alle), entgangen (Differenz). Nur Übernachtung.</li>
+      <li>Summen lassen sich zerlegen, Mittelwerte und Quoten nicht – sie werden je Gruppe neu gerechnet.</li>
+      <li>Zeitbezug ist der Anreisemonat; der Vorjahresmonat vergleicht Gleiches mit Gleichem, der Vormonat ist von der Saison überlagert.</li>
+      <li>Farbe ist ein Werturteil: blau = gut für das Ergebnis, rot = schlecht, grau = ohne Wertung. Nicht für Vergleiche ohne Ergebniswirkung.</li>
+      <li>In SQL sind Kennzahlen Aggregationen mit FILTER; in DAX CALCULATE – dasselbe Muster.</li>
+    </ul>
+    <div data-lab-nav></div>
+  </section>
+
+</main>
+
+<footer class="footer">
+  <p>Hotel-Lab · Lab 06 · THWS Business School · Stand 09/2026</p>
+</footer>
+
+<script type="module" src="assets/hotel.js"></script>
+</body>
+</html>

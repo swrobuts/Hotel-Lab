@@ -1,0 +1,164 @@
+{
+  "befehle": {
+    "B01": {
+      "titel": { "de": "Die Rolle in vier Rechten und vier Einstellungen" },
+      "prompt": "📄",
+      "befehl": "CREATE ROLE studi_hotel LOGIN PASSWORD 'thws';\n\nALTER ROLE studi_hotel SET default_transaction_read_only = on;\nALTER ROLE studi_hotel SET search_path = hotel_bi;\nALTER ROLE studi_hotel SET statement_timeout = '10min';\nALTER ROLE studi_hotel SET idle_in_transaction_session_timeout = '5min';\n\nREVOKE CONNECT ON DATABASE hotel FROM PUBLIC;\nGRANT  CONNECT ON DATABASE hotel TO postgres, studi_hotel;\nGRANT  USAGE  ON SCHEMA hotel_bi TO studi_hotel;\nGRANT  SELECT ON ALL TABLES IN SCHEMA hotel_bi TO studi_hotel;",
+      "teile": [
+        { "was": "LOGIN PASSWORD 'thws'", "bedeutet": { "de": "Eine Rolle mit Anmelderecht. Ohne LOGIN wäre sie nur eine Gruppe, der man Rechte gibt." } },
+        { "was": "default_transaction_read_only = on", "bedeutet": { "de": "Jede Sitzung beginnt nur lesend. INSERT, UPDATE, DELETE und CREATE scheitern mit „cannot execute … in a read-only transaction“." } },
+        { "was": "search_path = hotel_bi", "bedeutet": { "de": "Tabellennamen ohne Präfix werden in hotel_bi gesucht. Deshalb genügt SELECT * FROM fact_bookings." } },
+        { "was": "statement_timeout = '10min'", "bedeutet": { "de": "Eine einzelne Abfrage darf zehn Minuten laufen, dann bricht der Server sie ab – damit niemand den Server für alle blockiert." } },
+        { "was": "REVOKE CONNECT … FROM PUBLIC", "bedeutet": { "de": "Standardmäßig darf jede Rolle jede Datenbank öffnen. Hier wird das für hotel zurückgenommen und nur zwei Rollen wieder gegeben." } },
+        { "was": "GRANT SELECT ON ALL TABLES IN SCHEMA hotel_bi", "bedeutet": { "de": "Lesen auf allen neun Tabellen. Kein INSERT, kein UPDATE, kein CREATE – was nicht gewährt ist, ist verboten." } }
+      ]
+    },
+    "B02": {
+      "titel": { "de": "psql – die Kommandozeile" },
+      "prompt": "$",
+      "befehl": "psql \"host=supabase.butscher.cloud port=5433 dbname=hotel user=studi_hotel password=thws\"\n\nhotel=> SELECT count(*) FROM fact_bookings;\n count\n--------\n 119390\n\nhotel=> \\q",
+      "teile": [
+        { "was": "psql \"host=… port=… dbname=… user=… password=…\"", "bedeutet": { "de": "Die sechs Angaben als Schlüssel-Wert-Paare in einer Zeichenkette. psql gehört zu jeder PostgreSQL-Installation; auf dem Mac auch über Homebrew (libpq)." } },
+        { "was": "hotel=>", "bedeutet": { "de": "Der Prompt nennt die Datenbank. Das Zeichen > statt # zeigt: kein Superuser." } },
+        { "was": "\\q", "bedeutet": { "de": "Beendet psql. Befehle mit Backslash gehören zu psql selbst, nicht zu SQL – wie \\copy und \\dt (Tabellen anzeigen)." } }
+      ]
+    },
+    "B03": {
+      "titel": { "de": "Python – die Verbindungs-URL" },
+      "prompt": "[1]",
+      "befehl": "import pandas as pd\nfrom sqlalchemy import create_engine\n\nengine = create_engine(\"postgresql://studi_hotel:thws@supabase.butscher.cloud:5433/hotel\")\npd.read_sql(\"SELECT hotel, count(*) FROM fact_bookings JOIN dim_hotel USING (hotel_id) GROUP BY hotel\", engine)",
+      "teile": [
+        { "was": "postgresql://benutzer:kennwort@host:port/datenbank", "bedeutet": { "de": "Dieselben sechs Angaben in einer Adresse. Das Muster ist in allen Sprachen und Werkzeugen gleich – Render setzt genau so eine URL als Umgebungsvariable DATABASE_URL (Lab 08)." } },
+        { "was": "create_engine(…)", "bedeutet": { "de": "SQLAlchemy verwaltet die Verbindung; psycopg2 ist der Treiber darunter. Beide stehen in requirements.txt des Projekts." } },
+        { "was": "pd.read_sql(sql, engine)", "bedeutet": { "de": "Führt die Abfrage aus und liefert einen DataFrame – die Brücke zwischen Datenbank und Notebook." } }
+      ]
+    },
+    "B04": {
+      "titel": { "de": "Was die Rolle antwortet, wenn man schreibt" },
+      "prompt": "$",
+      "befehl": "hotel=> INSERT INTO dim_hotel VALUES (3, 'Strandhotel');\nERROR:  cannot execute INSERT in a read-only transaction\n\nhotel=> SET default_transaction_read_only = off;\nhotel=> INSERT INTO dim_hotel VALUES (3, 'Strandhotel');\nERROR:  permission denied for table dim_hotel",
+      "teile": [
+        { "was": "cannot execute INSERT in a read-only transaction", "bedeutet": { "de": "Das erste Schloss: Die Sitzung ist nur lesend, weil die Rolle so eingestellt ist." } },
+        { "was": "SET default_transaction_read_only = off", "bedeutet": { "de": "Jede Rolle darf ihre eigene Sitzung umstellen – das ist kein Sicherheitsproblem, weil das zweite Schloss folgt." } },
+        { "was": "permission denied for table dim_hotel", "bedeutet": { "de": "Das zweite Schloss: kein INSERT-Recht. Die Rolle hat nur SELECT bekommen." } }
+      ]
+    },
+    "B05": {
+      "titel": { "de": "Eine Tabelle auf den eigenen Rechner holen" },
+      "prompt": "$",
+      "befehl": "hotel=> \\copy (SELECT * FROM fact_bookings) TO 'fact_bookings.csv' CSV HEADER\nCOPY 119390\n\nhotel=> COPY fact_bookings TO '/tmp/fact_bookings.csv' CSV HEADER;\nERROR:  permission denied to COPY to a file",
+      "teile": [
+        { "was": "\\copy … TO 'fact_bookings.csv'", "bedeutet": { "de": "Der psql-Befehl mit Backslash: Der Server schickt die Zeilen, psql schreibt die Datei auf Ihrem Rechner, im aktuellen Ordner." } },
+        { "was": "CSV HEADER", "bedeutet": { "de": "Kommagetrennt mit Spaltennamen in der ersten Zeile – so, wie pandas und Power BI es lesen." } },
+        { "was": "COPY … TO '/tmp/…'", "bedeutet": { "de": "Ohne Backslash würde der Server selbst eine Datei schreiben – auf seiner Festplatte, nicht auf Ihrer. Das darf nur ein Superuser; für den Download braucht man es nicht." } }
+      ]
+    }
+  },
+  "uebungen": [
+    {
+      "id": "W05-01",
+      "typ": "checkliste",
+      "titel": { "de": "Die echte Verbindung" },
+      "aufgabe": { "de": "<p>Verbinden Sie sich mit DBeaver (oder psql) mit der Datenbank <code>hotel</code> auf dem Server und arbeiten Sie die Schritte ab. Jeder Schritt endet mit einer Prüffrage.</p>" },
+      "schritte": [
+        { "text": { "de": "DBeaver Community installieren oder öffnen; <em>Database → New Database Connection → PostgreSQL</em>. Erscheint das Formular mit den Feldern Host, Port, Database?" } },
+        { "text": { "de": "Host <code>supabase.butscher.cloud</code>, Port <code>5433</code>, Database <code>hotel</code>, Username <code>studi_hotel</code>, Password <code>thws</code> eintragen. Steht im Port-Feld 5433 und nicht 5432?" } },
+        { "text": { "de": "<em>Test Connection</em>. Meldet DBeaver „Connected“ mit „PostgreSQL 17.6“? (Beim ersten Mal lädt es den Treiber nach.)" } },
+        { "text": { "de": "Verbindung mit <em>Finish</em> anlegen, im Baum <code>hotel → Schemas → hotel_bi → Tables</code> aufklappen. Sehen Sie neun Tabellen, darunter <code>fact_bookings</code>?" } },
+        { "text": { "de": "Einen SQL-Editor öffnen (<em>SQL Editor → New SQL script</em>) und <code>SELECT count(*) FROM fact_bookings;</code> ausführen. Erscheint 119390?" } },
+        { "text": { "de": "<code>INSERT INTO dim_hotel VALUES (3, 'Test');</code> ausführen. Erscheint die Meldung „cannot execute INSERT in a read-only transaction“?" } }
+      ],
+      "rueckmeldung": { "de": "Sie haben die Verbindung aufgebaut, das Schema gesehen, die Kontrollzahl gelesen und die Leserolle an ihrer Grenze erlebt. Mehr braucht es für Power BI in Lab 07 nicht." }
+    },
+    {
+      "id": "W05-02",
+      "typ": "quiz",
+      "titel": { "de": "Rechte und Sicherheit" },
+      "aufgabe": { "de": "<p>Drei Fragen dazu, was die Rolle darf und warum das Kennwort öffentlich sein darf.</p>" },
+      "fragen": [
+        {
+          "frage": { "de": "Jemand kennt das Kennwort thws. Was kann er mit der Datenbank hotel anrichten?" },
+          "optionen": [
+            { "de": "Zeilen löschen oder Kennzahlen verfälschen" },
+            { "de": "Nichts, was andere betrifft: Er kann lesen, was ohnehin öffentlich ist" },
+            { "de": "Andere Datenbanken auf demselben Server öffnen" },
+            { "de": "Den Server mit einer Endlosabfrage blockieren" }
+          ],
+          "richtig": [1],
+          "erklaerung": { "de": "Nur SELECT, nur hotel, zehn Minuten je Abfrage. Löschen scheitert an zwei Schlössern, andere Datenbanken am fehlenden CONNECT, Dauerabfragen am Zeitlimit." }
+        },
+        {
+          "frage": { "de": "Welche der drei Bedingungen macht das öffentliche Kennwort NICHT vertretbar, wenn sie wegfällt?" },
+          "optionen": [
+            { "de": "Die Daten sind öffentlich" },
+            { "de": "Die Rolle kann nichts verändern" },
+            { "de": "Das Kennwort gilt nur hier" },
+            { "de": "Jede der drei – fehlt eine, gilt die Abwägung nicht mehr" }
+          ],
+          "richtig": [3],
+          "erklaerung": { "de": "Öffentliche Daten, lesende Rolle, Kennwort ohne Zweitverwendung: Die Abwägung braucht alle drei. Private Daten, eine Schreibrolle oder ein wiederverwendetes Kennwort – jedes davon reicht, um es anders zu machen." }
+        },
+        {
+          "frage": { "de": "Warum genügt in der Abfrage SELECT * FROM fact_bookings ohne das Präfix hotel_bi?" },
+          "optionen": [
+            { "de": "Weil PostgreSQL alle Schemata automatisch durchsucht" },
+            { "de": "Weil der Suchpfad der Rolle auf hotel_bi gesetzt ist" },
+            { "de": "Weil die Tabelle im Schema public liegt" },
+            { "de": "Weil DBeaver das Präfix ergänzt" }
+          ],
+          "richtig": [1],
+          "erklaerung": { "de": "ALTER ROLE studi_hotel SET search_path = hotel_bi. Ein anderer Benutzer ohne diese Einstellung bekäme „relation fact_bookings does not exist“ – und schreibt dann hotel_bi.fact_bookings." }
+        }
+      ],
+      "rueckmeldung": { "de": "Rechte sind in PostgreSQL ausdrücklich: Was nicht gewährt ist, geht nicht. Das macht die Rolle für den Kurs sicher und die Abwägung nachvollziehbar." }
+    },
+    {
+      "id": "W05-03",
+      "typ": "zuordnen",
+      "titel": { "de": "Fehlermeldung und Ursache" },
+      "aufgabe": { "de": "<p>Ordnen Sie jede Meldung ihrer Ursache zu.</p>" },
+      "ziele": [
+        { "id": "port", "text": { "de": "falscher Port" } },
+        { "id": "kennwort", "text": { "de": "Benutzer oder Kennwort falsch" } },
+        { "id": "db", "text": { "de": "falsche Datenbank gewählt" } },
+        { "id": "schema", "text": { "de": "Suchpfad zeigt nicht auf hotel_bi" } },
+        { "id": "schreiben", "text": { "de": "Schreibversuch mit der Leserolle" } },
+        { "id": "zeit", "text": { "de": "Abfrage zu lang" } }
+      ],
+      "paare": [
+        { "begriff": { "de": "connection to server … port 5432 failed: Connection refused" }, "ziel": "port" },
+        { "begriff": { "de": "password authentication failed for user \"studi_hotel\"" }, "ziel": "kennwort" },
+        { "begriff": { "de": "permission denied for database \"postgres\"" }, "ziel": "db" },
+        { "begriff": { "de": "relation \"fact_bookings\" does not exist" }, "ziel": "schema" },
+        { "begriff": { "de": "cannot execute INSERT in a read-only transaction" }, "ziel": "schreiben" },
+        { "begriff": { "de": "canceling statement due to statement timeout" }, "ziel": "zeit" },
+        { "begriff": { "de": "permission denied for table dim_hotel" }, "ziel": "schreiben" }
+      ],
+      "rueckmeldung": { "de": "Jede Meldung nennt die Schicht, in der es hakt: Netz, Anmeldung, Datenbank, Schema, Rechte, Zeit. Wer das liest, sucht an der richtigen Stelle." }
+    },
+    {
+      "id": "W05-04",
+      "typ": "sql",
+      "titel": { "de": "Den Katalog befragen" },
+      "aufgabe": { "de": "<p>Welche Tabellen enthält das Schema <code>hotel_bi</code>? Fragen Sie den Systemkatalog <code>information_schema.tables</code>: eine Spalte <code>table_name</code>, nur Tabellen mit <code>table_schema = 'hotel_bi'</code>, alphabetisch sortiert.</p>" },
+      "start": "SELECT table_name\nFROM information_schema.tables\nWHERE \nORDER BY table_name;",
+      "hinweis": { "de": "Die Bedingung lautet table_schema = 'hotel_bi' – Textwerte in einfachen Anführungszeichen. Erwartet werden neun Zeilen, von dim_country bis fact_bookings." },
+      "loesung": "SELECT table_name\nFROM information_schema.tables\nWHERE table_schema = 'hotel_bi'\nORDER BY table_name;",
+      "sortiert": true,
+      "spalten": 1,
+      "rueckmeldung": { "de": "information_schema ist in jeder PostgreSQL-Datenbank vorhanden und beschreibt die Datenbank selbst. DBeaver zeigt im Baum nichts anderes als das Ergebnis solcher Abfragen." }
+    },
+    {
+      "id": "W05-05",
+      "typ": "sql",
+      "titel": { "de": "Die Kontrollrechnung aus dem Notebook" },
+      "aufgabe": { "de": "<p>Rechnen Sie die Abfrage aus Abschnitt 7.1 des Notebooks nach: je Hotel die Anzahl der Buchungen und die Stornoquote in Prozent, auf eine Nachkommastelle gerundet. Drei Spalten: <code>hotel</code>, <code>buchungen</code>, <code>stornoquote</code>; nach Hotelname sortiert.</p>" },
+      "start": "SELECT h.hotel,\n       count(*) AS buchungen,\n       round(avg(f.is_canceled::int) * 100, 1) AS stornoquote\nFROM fact_bookings f\nJOIN dim_hotel h USING (hotel_id)\n",
+      "hinweis": { "de": "Es fehlen GROUP BY h.hotel und ORDER BY h.hotel. Erwartet: City Hotel 79.330 und 41,7; Resort Hotel 40.060 und 27,8." },
+      "loesung": "SELECT h.hotel,\n       count(*) AS buchungen,\n       round(avg(f.is_canceled::int) * 100, 1) AS stornoquote\nFROM fact_bookings f\nJOIN dim_hotel h USING (hotel_id)\nGROUP BY h.hotel\nORDER BY h.hotel;",
+      "sortiert": true,
+      "spalten": 3,
+      "rueckmeldung": { "de": "Dieselben Zahlen wie in pandas (Abschnitt 5.1), wie im Notebook aus der Datenbank (7.1) und wie im Dashboard. Vier Wege, ein Ergebnis – das ist der Beweis, dass die Artefakte zusammengehören." }
+    }
+  ]
+}

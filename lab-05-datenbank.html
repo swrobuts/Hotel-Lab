@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="de" data-lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Lab 05 · Datenbank und Zugang · Hotel-Lab</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/hotel.css" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%232E3238'/><text x='16' y='23' font-family='sans-serif' font-size='18' font-weight='bold' text-anchor='middle' fill='%23C0662B'>H</text></svg>" />
+</head>
+<body class="lab-page" data-lab="lab-05">
+
+<header class="header">
+  <div class="header-left">
+    <a class="header-logo" href="index.html" data-lab-link><span class="mark">Hotel</span>-Lab</a>
+    <a class="header-back" href="index.html" data-lab-link>← Zur Übersicht</a>
+  </div>
+</header>
+
+<nav class="sidebar" aria-label="Lab-Navigation">
+  <div class="sidebar-title">Abschnitte</div>
+  <a class="sidebar-link" href="#wo">Wo die Datenbank läuft</a>
+  <a class="sidebar-link" href="#rolle">Die Rolle studi_hotel</a>
+  <a class="sidebar-link" href="#verbinden">Verbinden – vier Wege</a>
+  <a class="sidebar-link" href="#fehler">Fehlermeldungen lesen</a>
+  <a class="sidebar-link" href="#download">Daten herunterladen</a>
+  <a class="sidebar-link" href="#sicherheit">Sicherheit: was hier gilt und was nicht</a>
+  <a class="sidebar-link" href="#abfragen">Abfragen im Browser</a>
+  <a class="sidebar-link" href="#uebungen">Übungen</a>
+  <a class="sidebar-link" href="#zusammenfassung">Zusammenfassung</a>
+</nav>
+
+<div class="lab-header">
+  <div class="lab-num-big">05</div>
+  <h1 class="lab-title">Datenbank und Zugang</h1>
+  <p class="lab-intro">Das Sternschema aus Lab 04 liegt nicht in Colab, sondern in einer PostgreSQL-Datenbank auf einem
+    Server der Hochschule – damit Power BI, DBeaver, Python und das Dashboard dieselben Zahlen lesen, ohne dass
+    jemand CSV-Dateien herumschickt. Dieses Lab zeigt, wo die Datenbank läuft, was die Rolle <code>studi_hotel</code>
+    darf und was nicht, wie sich vier Werkzeuge verbinden und wie man die typischen Fehlermeldungen liest. Und es
+    erklärt, warum ein Kennwort öffentlich im Repository stehen darf – und wann auf keinen Fall.</p>
+  <div class="lernziele">
+    <span class="lernziel-chip">PostgreSQL 17</span>
+    <span class="lernziel-chip">Supabase, selbst gehostet</span>
+    <span class="lernziel-chip">Rolle und Rechte</span>
+    <span class="lernziel-chip">Verbindungs-URL</span>
+    <span class="lernziel-chip">psql · DBeaver · Python</span>
+  </div>
+  <div data-einordnung></div>
+</div>
+
+<main class="main-content">
+
+  <section class="section-block" id="wo">
+    <h2>Wo die Datenbank läuft</h2>
+    <p>Die Datenbank <code>hotel</code> liegt auf einer <strong>selbst gehosteten Supabase-Instanz</strong>: Supabase
+      bündelt PostgreSQL mit Verwaltungswerkzeugen und läuft hier als Container auf einem Server der Hochschule
+      (PostgreSQL 17.6). Für dieses Projekt zählt nur der Datenbankteil – die Verbindung geht direkt an PostgreSQL,
+      Port 5433, ohne die REST-Schnittstelle, die Supabase sonst anbietet.</p>
+    <div class="table-scroll">
+      <table class="table">
+        <thead><tr><th>Angabe</th><th>Wert</th><th>Was es ist</th></tr></thead>
+        <tbody>
+          <tr><td>Host</td><td><code>supabase.butscher.cloud</code></td><td>der Server, öffentlich erreichbar</td></tr>
+          <tr><td>Port</td><td><code>5433</code></td><td>nicht der PostgreSQL-Standard 5432 – der ist auf dem Server anders belegt</td></tr>
+          <tr><td>Datenbank</td><td><code>hotel</code></td><td>eine eigene Datenbank nur für dieses Projekt</td></tr>
+          <tr><td>Schema</td><td><code>hotel_bi</code></td><td>der Namensraum mit den neun Tabellen</td></tr>
+          <tr><td>Benutzer</td><td><code>studi_hotel</code></td><td>die Leserolle für Studierende</td></tr>
+          <tr><td>Kennwort</td><td><code>thws</code></td><td>bewusst öffentlich, siehe Abschnitt Sicherheit</td></tr>
+          <tr><td>SSL</td><td>aus</td><td>die Instanz hat kein Zertifikat für den Datenbankport</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="concept-box">
+      <h3>Drei Schichten, die man auseinanderhalten muss</h3>
+      <ul>
+        <li><strong>Server</strong> – die Maschine mit Docker darauf. Betreibt mehrere Fallstudien.</li>
+        <li><strong>Datenbank</strong> – <code>hotel</code> ist eine von mehreren Datenbanken in derselben
+          PostgreSQL-Instanz. Die Rolle darf nur diese eine öffnen.</li>
+        <li><strong>Schema</strong> – <code>hotel_bi</code> ist der Ordner innerhalb der Datenbank, in dem die
+          Tabellen liegen. Der Suchpfad der Rolle zeigt darauf; deshalb genügt <code>fact_bookings</code> statt
+          <code>hotel_bi.fact_bookings</code>.</li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="section-block" id="rolle">
+    <h2>Die Rolle studi_hotel</h2>
+    <p>In PostgreSQL ist ein Benutzer eine <strong>Rolle</strong> mit Anmelderecht. Rechte werden je Datenbank, Schema
+      und Tabelle vergeben; was nicht ausdrücklich erlaubt ist, ist verboten. Die Rolle <code>studi_hotel</code> hat
+      genau vier Rechte und vier Einstellungen – sie stehen in <code>sql/03_rolle_studi_hotel.sql</code>.</p>
+    <div data-befehl="B01"></div>
+    <div class="table-scroll">
+      <table class="table">
+        <thead><tr><th>Darf</th><th>Darf nicht</th></tr></thead>
+        <tbody>
+          <tr><td>sich an <code>hotel</code> anmelden (CONNECT)</td><td>eine andere Datenbank der Instanz öffnen</td></tr>
+          <tr><td>alle Tabellen in <code>hotel_bi</code> lesen (SELECT)</td><td>Zeilen einfügen, ändern, löschen</td></tr>
+          <tr><td>Abfragen bis zehn Minuten Laufzeit</td><td>Tabellen, Sichten oder Indizes anlegen</td></tr>
+          <tr><td>Ergebnisse auf den eigenen Rechner ziehen (<code>\copy</code>)</td><td>Dateien auf dem Server schreiben (<code>COPY … TO '/pfad'</code>)</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="tip-box">
+      <p>Schreibversuche scheitern doppelt: Erst sagt <code>default_transaction_read_only</code>, dass die Sitzung nur
+        liest; wer das in seiner Sitzung abschaltet, scheitert an den fehlenden Rechten. Zwei Schlösser, ein Schlüssel
+        fehlt. So kann niemand die Daten für alle anderen verändern – auch nicht aus Versehen.</p>
+    </div>
+  </section>
+
+  <section class="section-block" id="verbinden">
+    <h2>Verbinden – vier Wege</h2>
+    <p>Alle Werkzeuge brauchen dieselben sechs Angaben, nur die Form unterscheidet sich: eine Kommandozeile, eine
+      Verbindungs-URL, ein Formular. Wer eine Form kennt, kann alle.</p>
+    <div data-befehl="B02"></div>
+    <div data-befehl="B03"></div>
+    <div class="shot">
+      <div class="shot-bar"><span class="ampel"><i></i><i></i><i></i></span><span class="titel">DBeaver – Connect to a database</span><span class="spacer"></span>Community 25</div>
+      <div class="shot-body eins">
+        <div class="shot-main">
+          <div class="tab aktiv">Main</div><div class="tab">Driver properties</div><div class="tab">SSH</div><div class="tab">SSL</div>
+          <div class="zeile"><span class="beschriftung">Connect by</span><span class="feld">● Host &nbsp; ○ URL</span></div>
+          <div class="zeile"><span class="beschriftung">Host</span><span class="feld">supabase.butscher.cloud</span> <span class="callout">1</span></div>
+          <div class="zeile"><span class="beschriftung">Port</span><span class="feld">5433</span> <span class="callout">2</span></div>
+          <div class="zeile"><span class="beschriftung">Database</span><span class="feld">hotel</span></div>
+          <div class="zeile"><span class="beschriftung">Authentication</span><span class="feld">Database Native</span></div>
+          <div class="zeile"><span class="beschriftung">Username</span><span class="feld">studi_hotel</span></div>
+          <div class="zeile"><span class="beschriftung">Password</span><span class="feld">••••</span> <span class="callout">3</span></div>
+          <div class="zeile"><span class="knopf">Test Connection …</span> <span class="knopf primaer">Finish</span> <span class="callout">4</span></div>
+          <div class="okzeile">Connected · PostgreSQL 17.6 · Driver PostgreSQL JDBC</div>
+        </div>
+      </div>
+    </div>
+    <p class="shot-hinweis">Nachbildung der Oberfläche, Stand 09/2026 – Beschriftungen wie im Original.</p>
+    <ol class="shot-legende">
+      <li><span class="callout">1</span><span>Host ohne <code>https://</code> und ohne Port – nur der Name.</span></li>
+      <li><span class="callout">2</span><span>Der Port 5433. DBeaver trägt 5432 vor; wer das übersieht, bekommt „Connection refused“.</span></li>
+      <li><span class="callout">3</span><span>Das Kennwort <code>thws</code>. „Save password“ ist hier unbedenklich – die Rolle kann nichts verändern.</span></li>
+      <li><span class="callout">4</span><span><em>Test Connection</em> zuerst. Beim ersten Mal lädt DBeaver den PostgreSQL-Treiber nach – das ist normal und dauert einige Sekunden.</span></li>
+    </ol>
+    <div data-befehl="B04"></div>
+    <p>Der vierte Weg – Power BI Desktop – bekommt in Lab 07 einen eigenen Abschnitt; die Angaben sind dieselben, dazu
+      kommt die Wahl <em>Import</em> und die Bestätigung, dass unverschlüsselt verbunden wird.</p>
+  </section>
+
+  <section class="section-block" id="fehler">
+    <h2>Fehlermeldungen lesen</h2>
+    <p>PostgreSQL sagt genau, was fehlt – wenn man die Meldung liest, statt sie wegzuklicken. Die sechs häufigsten im
+      Kurs, wörtlich:</p>
+    <div class="table-scroll">
+      <table class="table">
+        <thead><tr><th>Meldung</th><th>Ursache</th><th>Abhilfe</th></tr></thead>
+        <tbody>
+          <tr><td><code>connection to server at "supabase.butscher.cloud", port 5432 failed: Connection refused</code></td><td>falscher Port – 5432 statt 5433</td><td>Port auf 5433 setzen</td></tr>
+          <tr><td><code>FATAL: password authentication failed for user "studi_hotel"</code></td><td>Kennwort oder Benutzername falsch geschrieben</td><td><code>studi_hotel</code> / <code>thws</code>, keine Leerzeichen</td></tr>
+          <tr><td><code>FATAL: permission denied for database "postgres"</code></td><td>eine andere Datenbank gewählt als <code>hotel</code></td><td>Datenbank auf <code>hotel</code> setzen</td></tr>
+          <tr><td><code>ERROR: relation "fact_bookings" does not exist</code></td><td>Suchpfad zeigt nicht auf <code>hotel_bi</code> (anderes Werkzeug, anderer Benutzer)</td><td><code>hotel_bi.fact_bookings</code> schreiben oder <code>SET search_path TO hotel_bi</code></td></tr>
+          <tr><td><code>ERROR: cannot execute INSERT in a read-only transaction</code></td><td>Schreibversuch mit der Leserolle</td><td>keine – das ist Absicht; eigene Tabellen gehören in eine eigene Datenbank</td></tr>
+          <tr><td><code>ERROR: canceling statement due to statement timeout</code></td><td>Abfrage lief länger als zehn Minuten</td><td>Abfrage eingrenzen (WHERE, LIMIT) oder mit Aggregation statt Einzelzeilen</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="warn-box">
+      <p>Power BI und Tableau zeigen bei SSL-Zwang eine eigene Meldung: „The server does not support SSL“ oder
+        ähnlich. Ursache ist nicht die Datenbank, sondern das Häkchen <em>Verbindung verschlüsseln</em> bzw.
+        <em>SSL erforderlich</em> – abwählen, dann fragt Power BI, ob es unverschlüsselt verbinden soll: ja.</p>
+    </div>
+  </section>
+
+  <section class="section-block" id="download">
+    <h2>Daten herunterladen</h2>
+    <p>Das Leserecht genügt, um jede Tabelle vollständig auf den eigenen Rechner zu holen; die Faktentabelle mit
+      119.390 Zeilen dauert wenige Sekunden. Der Unterschied, den man kennen muss: <code>\copy</code> (mit
+      Backslash) läuft in psql auf dem eigenen Rechner und schreibt die Datei dort – <code>COPY … TO '/pfad'</code>
+      (ohne Backslash) würde auf dem Server schreiben und ist der Rolle verwehrt.</p>
+    <div data-befehl="B05"></div>
+    <div class="table-scroll">
+      <table class="table">
+        <thead><tr><th>Werkzeug</th><th>Vorgehen</th></tr></thead>
+        <tbody>
+          <tr><td>psql</td><td><code>\copy (SELECT * FROM fact_bookings) TO 'fact_bookings.csv' CSV HEADER</code></td></tr>
+          <tr><td>DBeaver</td><td>Rechtsklick auf die Tabelle → <em>Export Data</em> → CSV oder Excel</td></tr>
+          <tr><td>Python</td><td><code>pd.read_sql("SELECT * FROM fact_bookings", engine).to_csv("fact_bookings.csv", index=False)</code></td></tr>
+          <tr><td>Power BI, Tableau</td><td>der Import-Modus holt ohnehin alle Zeilen in die eigene Datei</td></tr>
+          <tr><td>ohne Datenbank</td><td>dieselben neun CSV-Dateien liegen im Repository unter <code>data/</code></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="section-block" id="sicherheit">
+    <h2>Sicherheit: was hier gilt und was nicht</h2>
+    <p>Ein Kennwort im Repository, eine unverschlüsselte Verbindung, ein öffentlich erreichbarer Port – jedes davon
+      wäre in einem Unternehmen ein Vorfall. Hier ist es vertretbar, und der Grund ist die Kombination aus drei
+      Umständen. Fehlt einer, gilt die Abwägung nicht mehr.</p>
+    <div class="karten">
+      <div class="karte">
+        <div class="kopfzeile">Die Daten sind öffentlich</div>
+        <p>Der Datensatz liegt unter CC BY 4.0 auf Kaggle und GitHub. Wer die Datenbank liest, erfährt nichts, was
+          er nicht auch ohne sie erfahren könnte. Personenbezug gibt es nicht.</p>
+      </div>
+      <div class="karte">
+        <div class="kopfzeile">Die Rolle kann nichts verändern</div>
+        <p>Nur lesen, nur diese Datenbank, nur zehn Minuten je Abfrage. Wer das Kennwort kennt, kann Zahlen
+          nachschlagen – sonst nichts. Das Betreiberkonto mit Schreibrecht hat ein anderes Kennwort, das nirgends
+          steht.</p>
+      </div>
+      <div class="karte">
+        <div class="kopfzeile">Das Kennwort gilt nur hier</div>
+        <p>Unverschlüsselt heißt: Das Kennwort geht im Klartext durchs Netz. Deshalb ist es eines, das nirgendwo
+          sonst gilt. Die Regel für alles andere: Ein Kennwort, das man auch anderswo verwendet, geht nie über eine
+          unverschlüsselte Verbindung – und nie in ein Repository.</p>
+      </div>
+    </div>
+    <div class="warn-box">
+      <p><strong>Übertragbar ist die Methode, nicht die Entscheidung.</strong> Für Daten aus einem Praxisprojekt heißt
+        dieselbe Methode: Kennwort ins Secrets-Panel oder in eine <code>.env</code>-Datei, SSL an, Rolle mit
+        Ablaufdatum, Zugang nur für Beteiligte. Das Projekt zeigt in <code>.env.example</code>, wie die
+        Betreiberverbindung aussieht – ohne Kennwort.</p>
+    </div>
+  </section>
+
+  <section class="section-block" id="abfragen">
+    <h2>Abfragen im Browser</h2>
+    <p>Dieselbe Datenbank, dieselben Tabellen, derselbe Suchpfad – nur läuft PostgreSQL hier in Ihrem Browser. Was
+      hier funktioniert, funktioniert genauso in psql, DBeaver oder Python gegen den Server. Nur eines ist anders:
+      Hier dürfen Sie schreiben, weil es nur Ihre Kopie trifft; auf dem Server kommt die Meldung aus der Tabelle
+      oben.</p>
+    <div data-datenbank="postgres"></div>
+    <div data-sql-konsole data-start="SELECT table_name&#10;FROM information_schema.tables&#10;WHERE table_schema = 'hotel_bi'&#10;ORDER BY table_name;"></div>
+  </section>
+
+  <section class="section-block" id="uebungen">
+    <h2>Übungen</h2>
+    <p>Fünf Übungen: eine Checkliste für die echte Verbindung mit DBeaver oder psql, Verständnisfragen zu Rechten
+      und Sicherheit, eine Zuordnung von Fehlermeldungen zu Ursachen und zwei Abfragen – eine an den Katalog der
+      Datenbank, eine als Kontrollrechnung aus dem Notebook.</p>
+    <div data-uebung="W05-01"></div>
+    <div data-uebung="W05-02"></div>
+    <div data-uebung="W05-03"></div>
+    <div data-uebung="W05-04"></div>
+    <div data-uebung="W05-05"></div>
+    <div data-fortschritt></div>
+  </section>
+
+  <section class="section-block" id="zusammenfassung">
+    <h2>Zusammenfassung</h2>
+    <ul>
+      <li>PostgreSQL 17 in einer selbst gehosteten Supabase-Instanz; Host, Port 5433, Datenbank <code>hotel</code>, Schema <code>hotel_bi</code>.</li>
+      <li>Die Rolle <code>studi_hotel</code> darf lesen, sonst nichts – zwei Schlösser: Nur-Lese-Transaktion und fehlende Rechte.</li>
+      <li>Vier Wege, sechs Angaben: psql, Verbindungs-URL in Python, Formular in DBeaver, Dialog in Power BI.</li>
+      <li>Fehlermeldungen benennen die Ursache: Port, Kennwort, Datenbank, Suchpfad, Schreibversuch, Zeitlimit.</li>
+      <li><code>\copy</code> holt Daten auf den eigenen Rechner; <code>COPY TO</code> auf dem Server ist gesperrt.</li>
+      <li>Öffentliche Daten, lesende Rolle, Kennwort nur hier – so ist ein Kennwort im Repository vertretbar; für eigene Daten nie.</li>
+    </ul>
+    <div data-lab-nav></div>
+  </section>
+
+</main>
+
+<footer class="footer">
+  <p>Hotel-Lab · Lab 05 · THWS Business School · Stand 09/2026</p>
+</footer>
+
+<script type="module" src="assets/hotel.js"></script>
+</body>
+</html>

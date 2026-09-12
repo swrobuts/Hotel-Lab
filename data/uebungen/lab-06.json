@@ -1,0 +1,126 @@
+{
+  "befehle": {
+    "B01": {
+      "titel": { "de": "Summen und Mittelwerte – der halbe Katalog in einer Abfrage" },
+      "prompt": "$",
+      "befehl": "SELECT count(*)                                    AS buchungen,\n       round(sum(revenue) FILTER (WHERE NOT is_canceled)) AS umsatz,\n       round(sum(revenue))                          AS gebuchter_umsatz,\n       round(sum(revenue) FILTER (WHERE is_canceled))     AS entgangener_umsatz,\n       sum(total_nights)                            AS zimmernaechte,\n       round(avg(adr), 2)                           AS adr,\n       round(avg(total_nights), 2)                  AS aufenthalt,\n       round(avg(lead_time), 1)                     AS vorlaufzeit\nFROM fact_bookings;",
+      "teile": [
+        { "was": "count(*)", "bedeutet": { "de": "Zeilen zählen – Anzahl Buchungen. Ohne WHERE alle 119.390." } },
+        { "was": "sum(revenue) FILTER (WHERE NOT is_canceled)", "bedeutet": { "de": "Die Summe nur über Zeilen, die die Bedingung erfüllen: der stornobereinigte Umsatz. is_canceled ist BOOLEAN, deshalb NOT statt = 0." } },
+        { "was": "round(…)", "bedeutet": { "de": "Auf ganze Euro gerundet. Ohne round stehen zwei Nachkommastellen da, die niemand liest." } },
+        { "was": "avg(adr)", "bedeutet": { "de": "Mittelwert über alle Buchungen – nicht der Mittelwert der Hotelmittelwerte. 101,83 €." } }
+      ]
+    },
+    "B02": {
+      "titel": { "de": "Quoten – der Mittelwert eines Flags" },
+      "prompt": "$",
+      "befehl": "SELECT round(avg(is_canceled::int) * 100, 1)                    AS stornoquote,\n       round(avg(is_repeated_guest::int) * 100, 1)              AS wiederholungsgaeste,\n       round(avg((total_of_special_requests > 0)::int) * 100, 1) AS sonderwuensche\nFROM fact_bookings;",
+      "teile": [
+        { "was": "is_canceled::int", "bedeutet": { "de": "Aus true/false wird 1/0. Erst dann kann avg rechnen." } },
+        { "was": "avg(…) * 100", "bedeutet": { "de": "Der Mittelwert von Nullen und Einsen ist der Anteil der Einsen – mal 100 die Quote in Prozent: 37,0." } },
+        { "was": "(total_of_special_requests > 0)::int", "bedeutet": { "de": "Ein Vergleich liefert einen Wahrheitswert; ::int macht daraus das Flag, dessen Mittelwert der Anteil mit Sonderwünschen ist: 41,1 %." } }
+      ]
+    }
+  },
+  "uebungen": [
+    {
+      "id": "W06-01",
+      "typ": "sql",
+      "titel": { "de": "Die drei Umsätze" },
+      "aufgabe": { "de": "<p>Berechnen Sie über alle Buchungen den stornobereinigten Umsatz, den gebuchten Umsatz und den durch Stornierung entgangenen Umsatz – drei Spalten <code>umsatz</code>, <code>gebucht</code>, <code>entgangen</code>, jeweils auf ganze Euro gerundet, eine Zeile.</p>" },
+      "start": "SELECT round(sum(revenue) FILTER (WHERE NOT is_canceled)) AS umsatz,\n       \nFROM fact_bookings;",
+      "hinweis": { "de": "Gebucht ist die Summe ohne Filter, entgangen die Summe mit FILTER (WHERE is_canceled). Erwartet: 25.996.260, 42.723.498, 16.727.237." },
+      "loesung": "SELECT round(sum(revenue) FILTER (WHERE NOT is_canceled)) AS umsatz,\n       round(sum(revenue)) AS gebucht,\n       round(sum(revenue) FILTER (WHERE is_canceled)) AS entgangen\nFROM fact_bookings;",
+      "spalten": 3,
+      "rueckmeldung": { "de": "Umsatz plus entgangener Umsatz ergibt den gebuchten Umsatz – bis auf die Rundung. 39,2 % des gebuchten Umsatzes sind durch Stornierung verloren gegangen." }
+    },
+    {
+      "id": "W06-02",
+      "typ": "sql",
+      "titel": { "de": "Stornoquote je Kautionstyp" },
+      "aufgabe": { "de": "<p>Wie hoch ist die Stornoquote je Kautionstyp? Drei Spalten: <code>deposit_type</code> aus <code>dim_deposit_type</code>, <code>buchungen</code> (Anzahl) und <code>stornoquote</code> in Prozent mit einer Nachkommastelle; eine Zeile je Kautionstyp, nach Kautionstyp sortiert.</p>" },
+      "start": "SELECT k.deposit_type,\n       count(*) AS buchungen,\n       \nFROM fact_bookings f\nJOIN dim_deposit_type k USING (deposit_type_id)\nGROUP BY k.deposit_type\nORDER BY k.deposit_type;",
+      "hinweis": { "de": "round(avg(f.is_canceled::int) * 100, 1) AS stornoquote. Erwartet: No Deposit 28,4 %, Non Refund 99,4 %, Refundable 22,2 %." },
+      "loesung": "SELECT k.deposit_type,\n       count(*) AS buchungen,\n       round(avg(f.is_canceled::int) * 100, 1) AS stornoquote\nFROM fact_bookings f\nJOIN dim_deposit_type k USING (deposit_type_id)\nGROUP BY k.deposit_type\nORDER BY k.deposit_type;",
+      "sortiert": true,
+      "spalten": 3,
+      "rueckmeldung": { "de": "99,4 % bei „nicht erstattbar“ ist das bekannte Artefakt aus Lab 01 – fachlich unplausibel, in den Daten aber so. Eine Stornoanalyse, die das nicht erwähnt, wird an dieser Zeile falsch gelesen." }
+    },
+    {
+      "id": "W06-03",
+      "typ": "sql",
+      "titel": { "de": "Umsatz je Anreisemonat 2016" },
+      "aufgabe": { "de": "<p>Der stornobereinigte Umsatz je Anreisemonat im Jahr 2016: zwei Spalten <code>month</code> (aus <code>dim_date</code>) und <code>umsatz</code> (auf ganze Euro gerundet), zwölf Zeilen, nach Monat sortiert. Denken Sie an die richtige Rolle der Datumsdimension.</p>" },
+      "start": "SELECT d.month,\n       round(sum(f.revenue) FILTER (WHERE NOT f.is_canceled)) AS umsatz\nFROM fact_bookings f\nJOIN dim_date d ON d.date_key = f.arrival_date_key\nWHERE \nGROUP BY d.month\nORDER BY d.month;",
+      "hinweis": { "de": "Die Bedingung lautet d.year = 2016. Erwartet: Januar 264.521 bis August 1.809.325 – die Saisonkurve." },
+      "loesung": "SELECT d.month,\n       round(sum(f.revenue) FILTER (WHERE NOT f.is_canceled)) AS umsatz\nFROM fact_bookings f\nJOIN dim_date d ON d.date_key = f.arrival_date_key\nWHERE d.year = 2016\nGROUP BY d.month\nORDER BY d.month;",
+      "sortiert": true,
+      "spalten": 2,
+      "rueckmeldung": { "de": "Vom Januar zum August fast das Siebenfache: Das ist die Saisonkurve, die das Dashboard als Säulen zeigt – und der Grund, warum nur der Vorjahresmonat ein fairer Vergleich ist." }
+    },
+    {
+      "id": "W06-04",
+      "typ": "zuordnen",
+      "titel": { "de": "Kennzahl und Farbe" },
+      "aufgabe": { "de": "<p>Ordnen Sie jede Kennzahl ihrer Wirkung auf das Ergebnis zu – so, wie das Dashboard sie färbt.</p>" },
+      "ziele": [
+        { "id": "blau", "text": { "de": "blau: mehr ist gut für das Ergebnis" } },
+        { "id": "rot", "text": { "de": "rot: mehr geht zu Lasten des Ergebnisses" } },
+        { "id": "grau", "text": { "de": "grau: ohne Wertung" } }
+      ],
+      "paare": [
+        { "begriff": { "de": "Stornobereinigter Umsatz" }, "ziel": "blau" },
+        { "begriff": { "de": "Stornoquote" }, "ziel": "rot" },
+        { "begriff": { "de": "Ø Vorlaufzeit" }, "ziel": "grau" },
+        { "begriff": { "de": "Durch Stornierung entgangener Umsatz" }, "ziel": "rot" },
+        { "begriff": { "de": "Ø Zimmerpreis (ADR)" }, "ziel": "blau" },
+        { "begriff": { "de": "Anteil mit Sonderwünschen" }, "ziel": "grau" },
+        { "begriff": { "de": "Wiederholungsgast-Anteil" }, "ziel": "blau" },
+        { "begriff": { "de": "Gebuchte Zimmernächte" }, "ziel": "blau" }
+      ],
+      "rueckmeldung": { "de": "Die Farbe hängt an der Kennzahl, nicht am Vorzeichen: Eine sinkende Stornoquote ist blau, ein sinkender Umsatz rot. Vorlaufzeit und Sonderwünsche haben keine Richtung – deshalb grau." }
+    },
+    {
+      "id": "W06-05",
+      "typ": "quiz",
+      "titel": { "de": "Rechenart und Zeitbezug" },
+      "aufgabe": { "de": "<p>Drei Fragen dazu, wie Kennzahlen zusammengesetzt werden und worauf sie sich beziehen.</p>" },
+      "fragen": [
+        {
+          "frage": { "de": "City Hotel ADR 105,30 €, Resort Hotel 94,95 €. Warum ist der ADR beider Hotels 101,83 € und nicht 100,13 €?" },
+          "optionen": [
+            { "de": "Rundungsfehler im Dashboard" },
+            { "de": "Weil das City Hotel doppelt so viele Buchungen hat und im Mittel über alle Buchungen schwerer wiegt" },
+            { "de": "Weil stornierte Buchungen herausgerechnet wurden" },
+            { "de": "Weil der ADR eine Summe ist" }
+          ],
+          "richtig": [1],
+          "erklaerung": { "de": "Ein Mittelwert über alle 119.390 Buchungen gewichtet jedes Hotel mit seiner Buchungszahl. 79.330 mal 105,30 plus 40.060 mal 94,95, geteilt durch 119.390, ergibt 101,83. Mittelwerte von Mittelwerten sind fast immer falsch." }
+        },
+        {
+          "frage": { "de": "In welchem Monat zählt eine Buchung vom 3. März 2017 mit Anreise am 20. Juli 2017, die am 1. Juli storniert wurde, für die Kennzahlen des Projekts?" },
+          "optionen": [
+            { "de": "März 2017 (Buchungsmonat)" },
+            { "de": "Juli 2017 (Anreisemonat) – als stornierte Buchung" },
+            { "de": "Gar nicht, weil storniert" },
+            { "de": "Juli 2017 als Umsatz, weil die Anreise geplant war" }
+          ],
+          "richtig": [1],
+          "erklaerung": { "de": "Zeitbezug ist der Anreisemonat, und stornierte Buchungen bleiben in den Daten: Sie zählt im Juli 2017 in Buchungen, Stornoquote und gebuchtem Umsatz – aber nicht im stornobereinigten Umsatz." }
+        },
+        {
+          "frage": { "de": "Warum vergleicht das Dashboard August 2017 mit August 2016 und nicht das Jahr 2017 mit 2016?" },
+          "optionen": [
+            { "de": "Weil Power BI keine Jahresvergleiche kann" },
+            { "de": "Weil 2017 im August endet und ein Jahresvergleich acht Monate mit zwölf vergleichen würde" },
+            { "de": "Weil Monate immer genauer sind als Jahre" },
+            { "de": "Weil die Hotelleitung es so wollte" }
+          ],
+          "richtig": [1],
+          "erklaerung": { "de": "Nur 2016 ist vollständig. Der Vorjahresmonat vergleicht Gleiches mit Gleichem – dieselbe Saison, gleich lange Zeiträume. Das ist eine Eigenschaft der Daten, keine des Werkzeugs." }
+        }
+      ],
+      "rueckmeldung": { "de": "Gewichtete Mittel, Anreisemonat als Zeitbezug, Vorjahresmonat als Vergleich – drei Regeln, die jede Zahl des Dashboards erklärbar machen." }
+    }
+  ]
+}

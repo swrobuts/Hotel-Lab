@@ -1,0 +1,479 @@
+{
+  "befehle": {
+    "B01": {
+      "titel": {
+        "de": "Eine Route aufrufen"
+      },
+      "prompt": "$",
+      "befehl": "curl \"https://hotel-dashboard-cuoi.onrender.com/api/hotels?jahr=2016\"\n\n{\"daten\": [{\"hotel\": \"City Hotel\", \"anzahl\": 38140, \"stornierungen\": 15407, \"erloes\": 11789581.13, \"erloes_nicht_storniert\": 6862128.0, …},\n           {\"hotel\": \"Resort Hotel\", \"anzahl\": 18567, \"stornierungen\": 4930, …}],\n \"sql\": \"SELECT h.hotel AS hotel, COUNT(*) … WHERE d.year = :jahr GROUP BY h.hotel\",\n \"parameter\": {\"jahr\": 2016}}",
+      "teile": [
+        {
+          "was": "/api/hotels?jahr=2016",
+          "bedeutet": {
+            "de": "Route plus Filterparameter. Dieselben Parameter gelten für alle Routen: hotel, jahr, von, bis, segment, kanal, kundentyp, kaution, land, vorlaufzeit."
+          }
+        },
+        {
+          "was": "\"daten\": [ … ]",
+          "bedeutet": {
+            "de": "Eine Zeile je Hotel mit Rohwerten: Anzahl, Stornierungen, Umsätze. Quoten rechnet das Frontend."
+          }
+        },
+        {
+          "was": "\"sql\": \"… WHERE d.year = :jahr …\"",
+          "bedeutet": {
+            "de": "Die Abfrage, die gelaufen ist, mit Platzhalter :jahr. Der Wert wird als Parameter übergeben, nie in den Text eingesetzt – so kann kein Filterwert die Abfrage verändern."
+          }
+        },
+        {
+          "was": "\"parameter\": {\"jahr\": 2016}",
+          "bedeutet": {
+            "de": "Die Werte zu den Platzhaltern. Zusammen mit sql ist die Antwort vollständig nachvollziehbar – genau das zeigt „SQL anzeigen“ im Dashboard."
+          }
+        }
+      ]
+    },
+    "B02": {
+      "titel": {
+        "de": "So entsteht die Route im Backend"
+      },
+      "prompt": "📄",
+      "befehl": "# backend/app/main.py (Ausschnitt)\n@app.get(\"/api/hotels\")\ndef hotels(filter: Filter = Depends(filter_parameter)) -> dict:\n    return abfragen.nach_dimension(\"hotels\", filter)\n\n# backend/app/filter.py (Ausschnitt): aus dem Filter wird eine WHERE-Klausel mit Platzhaltern\ndef where_klausel(filter):\n    bedingungen, werte = [], {}\n    if filter.hotel:\n        bedingungen.append(\"h.hotel = :hotel\")\n        werte[\"hotel\"] = filter.hotel\n    if filter.jahr:\n        bedingungen.append(\"d.year = :jahr\")\n        werte[\"jahr\"] = filter.jahr\n    return \" AND \".join(bedingungen) or \"TRUE\", werte",
+      "teile": [
+        {
+          "was": "@app.get(\"/api/hotels\")",
+          "bedeutet": {
+            "de": "FastAPI: Diese Funktion antwortet auf GET-Anfragen an /api/hotels. Der Rückgabewert (ein dict) wird automatisch zu JSON."
+          }
+        },
+        {
+          "was": "Depends(filter_parameter)",
+          "bedeutet": {
+            "de": "Liest die Filterparameter aus der Adresse und baut daraus ein Filter-Objekt – einmal geschrieben, in allen Routen gleich."
+          }
+        },
+        {
+          "was": "\"h.hotel = :hotel\"",
+          "bedeutet": {
+            "de": "Ein Platzhalter statt des Werts. SQLAlchemy übergibt den Wert getrennt an PostgreSQL; ein Filterwert wie ' OR 1=1 bleibt ein harmloser Text."
+          }
+        }
+      ]
+    },
+    "B03": {
+      "titel": {
+        "de": "Das Dockerfile des Dashboards"
+      },
+      "prompt": "📄",
+      "befehl": "# Hotel Booking Demand – Dashboard: ein Container für Backend und Frontend\nFROM python:3.12-slim\nWORKDIR /app\nCOPY requirements.txt .\nRUN pip install --no-cache-dir -r requirements.txt\nCOPY backend/ ./backend/\nCOPY frontend/ ./frontend/\nEXPOSE 8000\nCMD [\"sh\", \"-c\", \"uvicorn backend.app.main:app --host 0.0.0.0 --port ${PORT:-8000}\"]",
+      "teile": [
+        {
+          "was": "FROM python:3.12-slim",
+          "bedeutet": {
+            "de": "Das Grundabbild: ein schlankes Linux mit Python 3.12. Alles Weitere kommt in Schichten darauf."
+          }
+        },
+        {
+          "was": "COPY requirements.txt . / RUN pip install",
+          "bedeutet": {
+            "de": "Erst die Abhängigkeiten, dann der Code – die Schicht mit den Paketen wird nur neu gebaut, wenn sich requirements.txt ändert."
+          }
+        },
+        {
+          "was": "CMD [\"sh\", \"-c\", \"uvicorn … --host 0.0.0.0 --port ${PORT:-8000}\"]",
+          "bedeutet": {
+            "de": "Der Startbefehl: uvicorn als Server, an alle Adressen gebunden, Port aus der Umgebungsvariablen PORT – lokal 8000, bei Render der vorgegebene Port."
+          }
+        }
+      ]
+    },
+    "B04": {
+      "titel": {
+        "de": "render.yaml – der Blueprint"
+      },
+      "prompt": "📄",
+      "befehl": "services:\n  - type: web\n    name: hotel-dashboard\n    runtime: docker            # Render baut dashboard/Dockerfile\n    rootDir: dashboard         # das Dashboard liegt in einem Unterordner des Repos\n    plan: free\n    healthCheckPath: /health\n    autoDeploy: true",
+      "teile": [
+        {
+          "was": "runtime: docker",
+          "bedeutet": {
+            "de": "Render baut ein Docker-Abbild aus dem Dockerfile statt selbst pip auszuführen. Build und Start stehen dann im Dockerfile, nicht im Formular."
+          }
+        },
+        {
+          "was": "rootDir: dashboard",
+          "bedeutet": {
+            "de": "Das Dashboard liegt im Unterordner dashboard/ des Repositories. Ohne diese Zeile sucht Render das Dockerfile im Wurzelverzeichnis und findet keines."
+          }
+        },
+        {
+          "was": "healthCheckPath: /health",
+          "bedeutet": {
+            "de": "Render fragt diesen Pfad regelmäßig ab; antwortet er nicht mit 200, gilt der Dienst als gestört."
+          }
+        },
+        {
+          "was": "autoDeploy: true",
+          "bedeutet": {
+            "de": "Jeder Push auf main löst einen neuen Build und Deploy aus – etwa zwei bis vier Minuten."
+          }
+        }
+      ]
+    }
+  },
+  "repo": {
+    "name": "hotel-dashboard",
+    "url": "https://github.com/swrobuts/hotel",
+    "liest": [],
+    "dateien": {
+      "README.md": "# Hotel Booking Demand – BI-Einstiegsprojekt\n\nNotebook, Sternschema, Datenbank, Power BI, Dashboard.\n",
+      "render.yaml": "services:\n  - type: web\n    name: hotel-dashboard\n    runtime: docker            # Render baut dashboard/Dockerfile\n    rootDir: dashboard         # das Dashboard liegt in einem Unterordner des Repos\n    plan: free\n    healthCheckPath: /health\n    autoDeploy: true\n",
+      "requirements.txt": "pandas>=2.2\nnumpy>=2.0\nmatplotlib>=3.9\nsqlalchemy>=2.0\npsycopg2-binary>=2.9\n",
+      "dashboard/Dockerfile": "# Hotel Booking Demand – Dashboard: ein Container für Backend und Frontend\nFROM python:3.12-slim\nWORKDIR /app\nCOPY requirements.txt .\nRUN pip install --no-cache-dir -r requirements.txt\nCOPY backend/ ./backend/\nCOPY frontend/ ./frontend/\nEXPOSE 8000\nCMD [\"sh\", \"-c\", \"uvicorn backend.app.main:app --host 0.0.0.0 --port ${PORT:-8000}\"]\n",
+      "dashboard/requirements.txt": "fastapi>=0.115\nuvicorn[standard]>=0.30\nsqlalchemy>=2.0\npsycopg2-binary>=2.9\n",
+      "dashboard/backend/app/main.py": "from fastapi import FastAPI, Depends\nfrom fastapi.staticfiles import StaticFiles\nfrom . import abfragen\nfrom .filter import Filter\n\napp = FastAPI(title=\"Hotel Booking Demand – Dashboard\")\n\n@app.get(\"/health\")\ndef health() -> dict:\n    return {\"status\": \"ok\"}\n\n@app.get(\"/api/kennzahlen\")\ndef kennzahlen(filter: Filter = Depends(filter_parameter)) -> dict:\n    return abfragen.kennzahlen(filter)\n\napp.mount(\"/\", StaticFiles(directory=\"frontend\", html=True), name=\"frontend\")\n",
+      "dashboard/backend/app/datenbank.py": "import os\nfrom sqlalchemy import create_engine\n\nSTANDARD_URL = \"postgresql://studi_hotel:thws@supabase.butscher.cloud:5433/hotel\"\n\ndef engine():\n    url = os.environ.get(\"DATABASE_URL\", STANDARD_URL)   # Rückfall auf die Leserolle\n    return create_engine(url, pool_size=4, pool_pre_ping=True)\n",
+      "dashboard/kennzahlen_rechnen.py": "# Rechnet die Kennzahlen einmal durch und endet - ein Skript, kein Server.\nimport pandas as pd\nfrom backend.app.datenbank import engine\ndf = pd.read_sql(\"SELECT * FROM fact_bookings\", engine())\nprint(\"Buchungen geladen:\", len(df))\nprint(\"Fertig.\")\n",
+      "dashboard/frontend/index.html": "<!DOCTYPE html>\n<html lang=\"de\"> … </html>\n"
+    }
+  },
+  "spielplaetze": {
+    "frei": {
+      "startEingaben": {
+        "runtime": "docker",
+        "rootDir": "",
+        "build": "",
+        "start": "",
+        "env": []
+      }
+    }
+  },
+  "uebungen": [
+    {
+      "id": "W08-01",
+      "typ": "zuordnen",
+      "titel": {
+        "de": "Regel und Umsetzung"
+      },
+      "aufgabe": {
+        "de": "<p>Ordnen Sie jede Umsetzung im Dashboard der Gestaltungsregel zu, aus der sie folgt.</p>"
+      },
+      "ziele": [
+        {
+          "id": "aussage",
+          "text": {
+            "de": "Aussage zuerst (IBCS)"
+          }
+        },
+        {
+          "id": "skalen",
+          "text": {
+            "de": "Gleiche Skalen, wo verglichen wird (Bissantz)"
+          }
+        },
+        {
+          "id": "tinte",
+          "text": {
+            "de": "Wenig Tinte ohne Daten (Tufte)"
+          }
+        },
+        {
+          "id": "farbe",
+          "text": {
+            "de": "Farbe als Werturteil (DeltaMaster)"
+          }
+        },
+        {
+          "id": "klarnamen",
+          "text": {
+            "de": "Klarnamen statt Kürzel (Few)"
+          }
+        }
+      ],
+      "paare": [
+        {
+          "begriff": {
+            "de": "Titel „Mai 2017 war der stärkste Anreisemonat: 6.313 Buchungen“"
+          },
+          "ziel": "aussage"
+        },
+        {
+          "begriff": {
+            "de": "Vier Stornoquoten-Diagramme mit derselben Achse von 0 bis 100 %"
+          },
+          "ziel": "skalen"
+        },
+        {
+          "begriff": {
+            "de": "Werte direkt am Balken, keine Legende, keine Rahmen"
+          },
+          "ziel": "tinte"
+        },
+        {
+          "begriff": {
+            "de": "Stornoquote rot, Umsatz blau, Vorlaufzeit grau"
+          },
+          "ziel": "farbe"
+        },
+        {
+          "begriff": {
+            "de": "„Reisebüro online“ statt „Online TA“"
+          },
+          "ziel": "klarnamen"
+        },
+        {
+          "begriff": {
+            "de": "Buchungen, Umsatz und Stornoquote untereinander auf einer Zeitachse"
+          },
+          "ziel": "skalen"
+        },
+        {
+          "begriff": {
+            "de": "Das bessere Hotel wird nicht farbig markiert"
+          },
+          "ziel": "farbe"
+        }
+      ],
+      "rueckmeldung": {
+        "de": "Jede Regel hat eine sichtbare Folge – und jede Folge lässt sich auf eine Regel zurückführen. Genau das macht ein Dashboard begründbar."
+      }
+    },
+    {
+      "id": "W08-02",
+      "typ": "quiz",
+      "titel": {
+        "de": "Aufbau und Ablauf"
+      },
+      "aufgabe": {
+        "de": "<p>Drei Fragen zur Arbeitsteilung zwischen Backend, Frontend und Datenbank.</p>"
+      },
+      "fragen": [
+        {
+          "frage": {
+            "de": "Wo wird die Stornoquote für „beide Hotels“ berechnet, wenn das Frontend zwei Zeilen mit Zähler und Nenner bekommt?"
+          },
+          "optionen": [
+            {
+              "de": "In der Datenbank, die eine dritte Zeile liefert"
+            },
+            {
+              "de": "Im Frontend aus der Summe der Stornierungen und der Summe der Buchungen"
+            },
+            {
+              "de": "Als Mittelwert der beiden Quoten im Frontend"
+            },
+            {
+              "de": "Gar nicht – beide Hotels werden nie zusammen gezeigt"
+            }
+          ],
+          "richtig": [
+            1
+          ],
+          "erklaerung": {
+            "de": "Quoten lassen sich nicht mitteln, Zähler und Nenner lassen sich addieren. Deshalb liefert das Backend Rohwerte, und das Frontend rechnet 44.224 von 119.390 – 37,0 %, nicht das Mittel aus 41,7 und 27,8."
+          }
+        },
+        {
+          "frage": {
+            "de": "Warum steht der Filterzustand in der Adresse (?hotel=City%20Hotel) und nicht nur im Speicher der Seite?"
+          },
+          "optionen": [
+            {
+              "de": "Weil FastAPI das verlangt"
+            },
+            {
+              "de": "Damit jede Ansicht als Link teilbar ist und nach dem Neuladen erhalten bleibt"
+            },
+            {
+              "de": "Weil der Browser sonst die Daten nicht laden kann"
+            },
+            {
+              "de": "Damit Render den Dienst nicht einschläfert"
+            }
+          ],
+          "richtig": [
+            1
+          ],
+          "erklaerung": {
+            "de": "Ein Link mit Filterzustand zeigt bei jedem dieselbe Ansicht – „Link mit Filterzustand kopieren“. Das ist eine Entwurfsentscheidung des Frontends, keine technische Notwendigkeit."
+          }
+        },
+        {
+          "frage": {
+            "de": "Was verhindert, dass ein Filterwert wie ' OR 1=1 die SQL-Abfrage verändert?"
+          },
+          "optionen": [
+            {
+              "de": "Die Leserolle studi_hotel"
+            },
+            {
+              "de": "Platzhalter (:hotel) mit getrennt übergebenen Werten statt Text in der Abfrage"
+            },
+            {
+              "de": "Der Health-Check von Render"
+            },
+            {
+              "de": "Das Frontend prüft alle Eingaben"
+            }
+          ],
+          "richtig": [
+            1
+          ],
+          "erklaerung": {
+            "de": "Parametrisierte Abfragen: Der Wert wird als Wert übergeben, nicht als Teil des SQL-Texts. Die Leserolle begrenzt den Schaden zusätzlich, verhindert aber nicht die Verfälschung einer Leseabfrage."
+          }
+        }
+      ],
+      "rueckmeldung": {
+        "de": "Rohwerte im Backend, Quoten im Frontend, Zustand in der Adresse, Werte als Parameter – vier Entscheidungen, die das Dashboard robust machen."
+      }
+    },
+    {
+      "id": "W08-03",
+      "typ": "deploy",
+      "titel": {
+        "de": "Deploy wie im Projekt: Docker mit Root Directory"
+      },
+      "aufgabe": {
+        "de": "<p>Bringen Sie das Dashboard so online, wie es <code>render.yaml</code> beschreibt: Laufzeit Docker, Root Directory <code>dashboard</code>, keine Umgebungsvariable nötig. Der Dienst muss ohne Warnung online gehen.</p>"
+      },
+      "startEingaben": {
+        "runtime": "docker",
+        "rootDir": "",
+        "build": "",
+        "start": "",
+        "env": []
+      },
+      "soll": {
+        "runtime": "docker",
+        "rootDir": "dashboard",
+        "ohneWarnung": true
+      },
+      "loesungEingaben": {
+        "runtime": "docker",
+        "rootDir": "dashboard",
+        "build": "",
+        "start": "",
+        "env": []
+      },
+      "rueckmeldung": {
+        "de": "Mit Root Directory dashboard findet Render das Dockerfile, baut das Abbild und startet den Befehl aus CMD – an 0.0.0.0, Port aus $PORT. Genau so läuft das echte Dashboard."
+      }
+    },
+    {
+      "id": "W08-04",
+      "typ": "deploy",
+      "titel": {
+        "de": "Derselbe Dienst ohne Docker"
+      },
+      "aufgabe": {
+        "de": "<p>Angenommen, Sie wollen das Dashboard als Python-Dienst ohne Dockerfile betreiben. Laufzeit Python, Root Directory <code>dashboard</code>, Build Command <code>pip install -r requirements.txt</code>, Start Command mit uvicorn, gebunden an <code>0.0.0.0</code> und Port <code>$PORT</code>. Der Dienst muss ohne Warnung online gehen.</p>"
+      },
+      "startEingaben": {
+        "runtime": "python",
+        "rootDir": "dashboard",
+        "build": "pip install -r requirements.txt",
+        "start": "python kennzahlen_rechnen.py",
+        "env": []
+      },
+      "soll": {
+        "runtime": "python",
+        "rootDir": "dashboard",
+        "build": "pip install -r requirements\\.txt",
+        "start": "uvicorn backend\\.app\\.main:app.*--host 0\\.0\\.0\\.0.*--port \\$PORT",
+        "ohneWarnung": true
+      },
+      "loesungEingaben": {
+        "runtime": "python",
+        "rootDir": "dashboard",
+        "build": "pip install -r requirements.txt",
+        "start": "uvicorn backend.app.main:app --host 0.0.0.0 --port $PORT",
+        "env": []
+      },
+      "rueckmeldung": {
+        "de": "Der vorgegebene Start Command war ein Skript, das rechnet und endet – Exited with status 0, kein Server. uvicorn mit 0.0.0.0 und $PORT ist das, was das Dockerfile im Projekt tut; hier steht es im Formular."
+      }
+    },
+    {
+      "id": "W08-05",
+      "typ": "json",
+      "titel": {
+        "de": "Eine Routenantwort schreiben"
+      },
+      "aufgabe": {
+        "de": "<p>Schreiben Sie die Antwort der Route <code>/api/hotels</code> ohne Filter als JSON: ein Objekt mit <code>daten</code> (eine Liste mit zwei Objekten – je Hotel <code>hotel</code> als Text, <code>anzahl</code> und <code>stornierungen</code> als Zahlen: City Hotel 79330 und 33102, Resort Hotel 40060 und 11122) und <code>parameter</code> als leeres Objekt.</p>"
+      },
+      "start": "{\n  \"daten\": [\n    { \"hotel\": \"City Hotel\", \"anzahl\": \"79330\", \"stornierungen\": 33102 }\n  ],\n  \"parameter\": []\n}",
+      "hinweis": {
+        "de": "Zahlen ohne Anführungszeichen; die Liste braucht zwei Objekte; parameter ist ein Objekt {}, keine Liste []."
+      },
+      "loesung": "{\n  \"daten\": [\n    { \"hotel\": \"City Hotel\", \"anzahl\": 79330, \"stornierungen\": 33102 },\n    { \"hotel\": \"Resort Hotel\", \"anzahl\": 40060, \"stornierungen\": 11122 }\n  ],\n  \"parameter\": {}\n}",
+      "regeln": [
+        {
+          "pfad": "",
+          "typ": "object",
+          "schluessel": [
+            "daten",
+            "parameter"
+          ],
+          "text": {
+            "de": "Das Dokument ist ein Objekt mit daten und parameter."
+          }
+        },
+        {
+          "pfad": "/daten",
+          "typ": "array",
+          "laenge": 2,
+          "text": {
+            "de": "daten ist eine Liste mit genau zwei Objekten – eines je Hotel."
+          }
+        },
+        {
+          "pfad": "/daten",
+          "jedes": [
+            {
+              "pfad": "/hotel",
+              "typ": "string"
+            },
+            {
+              "pfad": "/anzahl",
+              "typ": "number",
+              "text": {
+                "de": "anzahl ist eine Zahl ohne Anführungszeichen."
+              }
+            },
+            {
+              "pfad": "/stornierungen",
+              "typ": "number",
+              "text": {
+                "de": "stornierungen ist eine Zahl."
+              }
+            }
+          ]
+        },
+        {
+          "pfad": "/daten/0/anzahl",
+          "wert": 79330
+        },
+        {
+          "pfad": "/daten/1/anzahl",
+          "wert": 40060
+        },
+        {
+          "pfad": "/daten/1/stornierungen",
+          "wert": 11122
+        },
+        {
+          "pfad": "/parameter",
+          "typ": "object",
+          "text": {
+            "de": "parameter ist ein Objekt (geschweifte Klammern), auch wenn es leer ist."
+          }
+        }
+      ],
+      "rueckmeldung": {
+        "de": "33.102 von 79.330 und 11.122 von 40.060: Das Frontend rechnet daraus 41,7 %, 27,8 % und für beide Hotels 37,0 %. Typen zählen – „79330“ als Text ließe sich nicht addieren."
+      }
+    }
+  ]
+}

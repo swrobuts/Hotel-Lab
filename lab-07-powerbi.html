@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="de" data-lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Lab 07 · Power BI · Hotel-Lab</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/hotel.css" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%232E3238'/><text x='16' y='23' font-family='sans-serif' font-size='18' font-weight='bold' text-anchor='middle' fill='%23C0662B'>H</text></svg>" />
+</head>
+<body class="lab-page" data-lab="lab-07">
+
+<header class="header">
+  <div class="header-left">
+    <a class="header-logo" href="index.html" data-lab-link><span class="mark">Hotel</span>-Lab</a>
+    <a class="header-back" href="index.html" data-lab-link>← Zur Übersicht</a>
+  </div>
+</header>
+
+<nav class="sidebar" aria-label="Lab-Navigation">
+  <div class="sidebar-title">Abschnitte</div>
+  <a class="sidebar-link" href="#was">Was Power BI ist</a>
+  <a class="sidebar-link" href="#anbinden">Die Datenbank anbinden</a>
+  <a class="sidebar-link" href="#modell">Das Modell: neun Beziehungen</a>
+  <a class="sidebar-link" href="#dax">Measures in DAX</a>
+  <a class="sidebar-link" href="#bericht">Der Bericht: Felder und Regale</a>
+  <a class="sidebar-link" href="#stolpersteine">Stolpersteine</a>
+  <a class="sidebar-link" href="#spielplatz">Spielplatz</a>
+  <a class="sidebar-link" href="#uebungen">Übungen</a>
+  <a class="sidebar-link" href="#zusammenfassung">Zusammenfassung</a>
+</nav>
+
+<div class="lab-header">
+  <div class="lab-num-big">07</div>
+  <h1 class="lab-title">Power BI</h1>
+  <p class="lab-intro">Power BI ist das Werkzeug, mit dem im Projekt aus dem Sternschema ein Bericht wird: neun
+    Tabellen anbinden, Beziehungen prüfen, Kennzahlen als Measures in DAX schreiben, vier Seiten aus Feldern und
+    Regalen bauen. Dieses Lab zeigt jeden dieser Schritte an der Referenzlösung <code>Hotel.pbix</code> – mit
+    Nachbildungen der Oberfläche und einem Feldfenster, in dem Sie selbst Felder auf Regale legen. Was hier klappt,
+    klappt in Power BI Desktop aus demselben Grund.</p>
+  <div class="lernziele">
+    <span class="lernziel-chip">Import · DirectQuery</span>
+    <span class="lernziel-chip">Beziehungen</span>
+    <span class="lernziel-chip">Measure · DAX</span>
+    <span class="lernziel-chip">CALCULATE</span>
+    <span class="lernziel-chip">Felder und Regale</span>
+  </div>
+  <div data-einordnung></div>
+</div>
+
+<main class="main-content">
+
+  <section class="section-block" id="was">
+    <h2>Was Power BI ist</h2>
+    <p><strong>Power BI Desktop</strong> ist ein Programm für Windows, das Daten lädt, zu einem Modell verbindet und
+      daraus interaktive Berichte baut. Es besteht aus drei Teilen, die man auseinanderhalten sollte: <em>Power
+      Query</em> holt und formt die Daten, das <em>Modell</em> hält Tabellen, Beziehungen und Measures, der
+      <em>Bericht</em> zeigt Visuals auf Seiten. Desktop ist kostenfrei; wer einen Bericht im Power-BI-Dienst
+      veröffentlichen will, braucht ein Konto der Organisation.</p>
+    <div class="table-scroll">
+      <table class="table">
+        <thead><tr><th>Teil</th><th>Was er tut</th><th>Im Projekt</th></tr></thead>
+        <tbody>
+          <tr><td>Power Query</td><td>Verbindung, Spalten formen, Typen setzen</td><td>neun Tabellen aus <code>hotel_bi</code>; <code>is_canceled</code> und <code>is_repeated_guest</code> von true/false zu 1/0 gewandelt</td></tr>
+          <tr><td>Modell</td><td>Beziehungen, Measures, Sortierung</td><td>neun Beziehungen, 13 Measures in DAX</td></tr>
+          <tr><td>Bericht</td><td>Seiten, Visuals, Filter (Slicer)</td><td>vier Seiten: Management-Übersicht, Saisonalität und Herkunft, Vertrieb und Kundensegmente, Stornoanalyse</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="auswahl-hinweis">
+      <p><strong>Hinweis.</strong> Bei den in dieser Lernumgebung gezeigten Tools handelt es sich um eine Auswahl –
+        diese ist weder als Empfehlung noch als Werbung zu verstehen. Power BI steht hier, weil Desktop kostenfrei ist
+        und das Sternschema ohne Umwege anbindet. Alternativen auf derselben Ebene: Tableau (Lizenz, für Studierende
+        über das Academic-Programm), Apache Superset und Metabase (Open Source). Angaben zu Lizenzen Stand 09/2026.</p>
+    </div>
+  </section>
+
+  <section class="section-block" id="anbinden">
+    <h2>Die Datenbank anbinden</h2>
+    <p>Dieselben sechs Angaben wie in Lab 05, verteilt auf drei Dialoge. Eine Entscheidung kommt dazu: <strong>Import</strong>
+      oder <strong>DirectQuery</strong>. Import kopiert alle Zeilen in die PBIX-Datei – schnell, unabhängig von der
+      Datenbank, aber ein Abbild vom Ladezeitpunkt. DirectQuery lässt jede Interaktion als SQL an die Datenbank gehen –
+      immer aktuell, aber langsamer und mit Einschränkungen in DAX. Das Projekt nimmt Import: 119.390 Zeilen sind
+      klein, und die Daten ändern sich nicht.</p>
+    <div data-befehl="B01"></div>
+    <div class="shot">
+      <div class="shot-bar"><span class="ampel"><i></i><i></i><i></i></span><span class="titel">Power BI Desktop – PostgreSQL-Datenbank</span><span class="spacer"></span>2.152</div>
+      <div class="shot-body eins">
+        <div class="shot-main">
+          <div class="zeile"><span class="beschriftung">Server</span><span class="feld">supabase.butscher.cloud:5433</span> <span class="callout">1</span></div>
+          <div class="zeile"><span class="beschriftung">Datenbank</span><span class="feld">hotel</span></div>
+          <div class="zeile"><span class="beschriftung">Datenkonnektivitätsmodus</span><span class="feld">● Import &nbsp; ○ DirectQuery</span> <span class="callout">2</span></div>
+          <div class="zeile"><span class="knopf primaer">OK</span> <span class="knopf">Abbrechen</span></div>
+          <div class="code">— nächster Dialog —</div>
+          <div class="tab">Windows</div><div class="tab aktiv">Datenbank</div><div class="tab">Microsoft-Konto</div>
+          <div class="zeile"><span class="beschriftung">Benutzername</span><span class="feld">studi_hotel</span></div>
+          <div class="zeile"><span class="beschriftung">Kennwort</span><span class="feld">••••</span></div>
+          <div class="zeile"><span class="beschriftung"></span><span class="feld">☐ Verbindung verschlüsseln</span> <span class="callout">3</span></div>
+          <div class="warnzeile">Verschlüsselungsunterstützung: Es konnte keine verschlüsselte Verbindung hergestellt werden. Unverschlüsselt verbinden? &nbsp; <b>OK</b> <span class="callout">4</span></div>
+        </div>
+      </div>
+    </div>
+    <p class="shot-hinweis">Nachbildung der Oberfläche, Stand 09/2026 – Beschriftungen wie im Original (deutsche Oberfläche).</p>
+    <ol class="shot-legende">
+      <li><span class="callout">1</span><span>Server und Port in einem Feld, mit Doppelpunkt. Ohne <code>:5433</code> versucht Power BI den Standardport und scheitert.</span></li>
+      <li><span class="callout">2</span><span>Import. Die Daten werden beim Laden kopiert; <em>Aktualisieren</em> holt sie neu.</span></li>
+      <li><span class="callout">3</span><span>Links <em>Datenbank</em> wählen, nicht <em>Windows</em>. Das Häkchen <em>Verbindung verschlüsseln</em> abwählen – die Instanz hat kein Zertifikat.</span></li>
+      <li><span class="callout">4</span><span>Beim ersten Verbinden fragt Power BI, ob es unverschlüsselt verbinden soll. Für diese öffentliche Leserolle: OK (Lab 05, Abschnitt Sicherheit).</span></li>
+    </ol>
+    <p>Im Navigator dann das Schema <code>hotel_bi</code> aufklappen, alle neun Tabellen ankreuzen, <em>Laden</em>.
+      Power Query lädt die Tabellen und übernimmt die Spaltentypen aus PostgreSQL; die beiden Wahrheitswerte werden im
+      Projekt zusätzlich in 0/1 gewandelt, damit sich ihr Mittelwert bilden lässt.</p>
+  </section>
+
+  <section class="section-block" id="modell">
+    <h2>Das Modell: neun Beziehungen</h2>
+    <p>Nach dem Laden zeigt die <em>Modellansicht</em> das Sternschema aus Lab 04 als Bild: <code>FACT_BOOKINGS</code>
+      in der Mitte, die Dimensionen außen, jede Beziehung als Linie mit 1 auf der Dimensions- und * auf der
+      Faktenseite. Power BI hat die Beziehungen aus den Fremdschlüsseln erkannt; prüfen muss man sie trotzdem –
+      vor allem die zwei zu <code>DIM_DATE</code>.</p>
+    <div class="table-scroll">
+      <table class="table">
+        <thead><tr><th>Beziehung</th><th>Kardinalität</th><th>Status</th><th>Wozu</th></tr></thead>
+        <tbody>
+          <tr><td>FACT_BOOKINGS[hotel_id] → DIM_HOTEL[hotel_id]</td><td>* : 1</td><td>aktiv</td><td>Filter und Gruppierung nach Hotel</td></tr>
+          <tr><td>FACT_BOOKINGS[arrival_date_key] → DIM_DATE[date_key]</td><td>* : 1</td><td><strong>aktiv</strong></td><td>alle Kennzahlen nach Anreisemonat</td></tr>
+          <tr><td>FACT_BOOKINGS[reservation_status_date_key] → DIM_DATE[date_key]</td><td>* : 1</td><td><strong>inaktiv</strong> (gestrichelt)</td><td>gebuchter Umsatz nach Stornodatum, per <code>USERELATIONSHIP</code></td></tr>
+          <tr><td>sechs weitere → DIM_MARKET_SEGMENT, DIM_DISTRIBUTION_CHANNEL, DIM_CUSTOMER_TYPE, DIM_MEAL, DIM_DEPOSIT_TYPE, DIM_COUNTRY</td><td>* : 1</td><td>aktiv</td><td>Filter und Gruppierung</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="concept-box">
+      <h3>Warum eine Beziehung inaktiv sein muss</h3>
+      <p>Zwischen zwei Tabellen darf in Power BI nur ein Pfad aktiv sein – sonst wüsste ein Visual nicht, ob „August
+        2016“ die Anreise oder das Stornodatum meint. Die zweite Beziehung bleibt deshalb inaktiv und wird nur in dem
+        einen Measure eingeschaltet, das sie braucht. Das ist die Role-Playing Dimension aus Lab 04, in der Sprache
+        von Power BI.</p>
+    </div>
+  </section>
+
+  <section class="section-block" id="dax">
+    <h2>Measures in DAX</h2>
+    <p>Ein <strong>Measure</strong> ist eine Kennzahl, die Power BI im Kontext des Visuals berechnet: dasselbe Measure
+      liefert im Kachel-Visual den Gesamtwert, im Säulendiagramm den Wert je Monat, in der Matrix den Wert je Segment
+      und Kundentyp. Geschrieben wird es in <strong>DAX</strong>. Die 13 Measures des Projekts liegen in der Tabelle
+      <code>FACT_BOOKINGS</code>; hier die wichtigsten, mit ihrem SQL-Gegenstück aus Lab 06.</p>
+    <div data-befehl="B02"></div>
+    <div data-befehl="B03"></div>
+    <div class="table-scroll">
+      <table class="table">
+        <thead><tr><th>Measure</th><th>DAX</th><th>In SQL (Lab 06)</th></tr></thead>
+        <tbody>
+          <tr><td>Anzahl Buchungen</td><td><code>COUNTROWS(FACT_BOOKINGS)</code></td><td><code>count(*)</code></td></tr>
+          <tr><td>Gebuchter Umsatz</td><td><code>SUM(FACT_BOOKINGS[revenue])</code></td><td><code>sum(revenue)</code></td></tr>
+          <tr><td>Umsatz</td><td><code>CALCULATE(SUM(FACT_BOOKINGS[revenue]), FACT_BOOKINGS[is_canceled] = 0)</code></td><td><code>sum(revenue) FILTER (WHERE NOT is_canceled)</code></td></tr>
+          <tr><td>Stornoquote %</td><td><code>DIVIDE(CALCULATE(COUNTROWS(FACT_BOOKINGS), FACT_BOOKINGS[is_canceled] = 1), COUNTROWS(FACT_BOOKINGS))</code></td><td><code>avg(is_canceled::int)</code></td></tr>
+          <tr><td>Ø ADR</td><td><code>AVERAGE(FACT_BOOKINGS[adr])</code></td><td><code>avg(adr)</code></td></tr>
+          <tr><td>Ø gebuchter Umsatz je Buchung</td><td><code>DIVIDE([Gebuchter Umsatz], [Anzahl Buchungen])</code></td><td><code>sum(revenue) / count(*)</code></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="tip-box">
+      <p><code>DIVIDE</code> statt <code>/</code>: Bei einem Nenner von null liefert DIVIDE ein leeres Ergebnis statt
+        eines Fehlers – etwa in einem Monat ohne Buchungen im gewählten Filter. Und Measures dürfen andere Measures
+        verwenden: <code>[Gebuchter Umsatz]</code> in eckigen Klammern ist ein Verweis, keine Kopie der Formel.</p>
+    </div>
+  </section>
+
+  <section class="section-block" id="bericht">
+    <h2>Der Bericht: Felder und Regale</h2>
+    <p>Ein Visual entsteht, indem man Felder aus dem <em>Datenbereich</em> auf die Regale des Visuals zieht: bei einem
+      Säulendiagramm <em>X-Achse</em>, <em>Y-Achse</em> und <em>Legende</em>. Eine Dimension auf der X-Achse und ein
+      Measure auf der Y-Achse ergeben Säulen; eine geordnete Dimension wie der Monat ergibt eine Linie; zwei
+      Dimensionen und ein Measure eine Matrix. Was auf welchem Regal liegt, ist das ganze Handwerk.</p>
+    <div class="shot">
+      <div class="shot-bar"><span class="ampel"><i></i><i></i><i></i></span><span class="titel">Power BI Desktop – Hotel.pbix</span><span class="spacer"></span>Berichtsansicht</div>
+      <div class="shot-body drei">
+        <div class="shot-main">
+          <div class="tab aktiv">Management-Übersicht</div><div class="tab">Saisonalität &amp; Herkunftsländer</div><div class="tab">Vertrieb &amp; Kundensegmente</div><div class="tab">Stornoanalyse</div>
+          <div class="leinwand">Anzahl Buchungen je Anreisemonat <span class="callout">1</span><br>▁▂▃▅▆▇▆▅▃▂▁▂▃▅▆█▇▆▅▃</div>
+          <div class="zeile"><span class="beschriftung">Filter</span><span class="feld">Hotel: alle · Anreisejahr: alle</span> <span class="callout">2</span></div>
+        </div>
+        <div class="shot-side rechts">
+          <h5>Visualisierungen</h5>
+          <div class="regalzeile"><span class="name">X-Achse</span><span class="ablage">DIM_DATE · full_date (Monat)</span></div>
+          <div class="regalzeile"><span class="name">Y-Achse</span><span class="ablage">Anzahl Buchungen</span> <span class="callout">3</span></div>
+          <div class="regalzeile"><span class="name">Legende</span><span class="ablage"></span></div>
+        </div>
+        <div class="shot-side rechts">
+          <h5>Daten</h5>
+          <ul class="baum">
+            <li>▾ FACT_BOOKINGS</li>
+            <li class="ein">Σ adr <span class="callout">4</span></li>
+            <li class="ein">Σ booking_id</li>
+            <li class="ein">▦ Anzahl Buchungen</li>
+            <li class="ein">▦ Umsatz</li>
+            <li class="ein">▦ Stornoquote %</li>
+            <li>▸ DIM_DATE</li>
+            <li>▸ DIM_HOTEL</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <p class="shot-hinweis">Nachbildung der Oberfläche, Stand 09/2026 – Beschriftungen wie im Original.</p>
+    <ol class="shot-legende">
+      <li><span class="callout">1</span><span>Das Visual trägt einen Titel, der sagt, was gezeigt wird – Kennzahl, Einheit, Zeitbezug.</span></li>
+      <li><span class="callout">2</span><span>Zwei Slicer (Hotel, Anreisejahr) filtern alle Visuals der Seite – Kreuzfilterung über die Beziehungen des Modells.</span></li>
+      <li><span class="callout">3</span><span>Auf der Y-Achse liegt ein Measure (Symbol ▦), keine Spalte. Measures rechnen im Kontext; Spalten werden nur summiert.</span></li>
+      <li><span class="callout">4</span><span>Das Σ vor <code>adr</code> und <code>booking_id</code> heißt: Power BI würde diese Spalten summieren. Σ von <code>booking_id</code> ist die klassische Falle – die Summe von Kennnummern.</span></li>
+    </ol>
+    <div class="table-scroll">
+      <table class="table">
+        <thead><tr><th>Seite</th><th>Visuals</th><th>Frage aus Lab 00</th></tr></thead>
+        <tbody>
+          <tr><td>Management-Übersicht</td><td>vier Kacheln, Buchungen und gebuchter Umsatz je Anreisemonat als Linien, zwei Slicer</td><td>alle vier, auf einen Blick</td></tr>
+          <tr><td>Saisonalität und Herkunftsländer</td><td>Buchungen nach Anreisemonat und Jahr, Top-10-Länder als Balken, Treemap der Länderanteile, Ländertabelle</td><td>Saisonalität, Herkunft</td></tr>
+          <tr><td>Vertrieb und Kundensegmente</td><td>Umsatz nach Kanal, Buchungen nach Segment, Segment × Kundentyp, drei Kacheln</td><td>Vertrieb</td></tr>
+          <tr><td>Stornoanalyse</td><td>Stornoquote nach Hotel, Kautionstyp, Marktsegment und Vorlaufzeit; gebuchter Umsatz nach Anreise- und nach Stornodatum</td><td>Stornorisiko</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="section-block" id="stolpersteine">
+    <h2>Stolpersteine</h2>
+    <div class="karten">
+      <div class="karte">
+        <div class="kopfzeile">Σ von booking_id</div>
+        <p>Zieht man eine Zahlenspalte auf ein Regal, summiert Power BI sie. „Summe von booking_id“ ist eine
+          sinnlose Zahl mit elf Stellen. Zählen heißt: Measure <code>Anzahl Buchungen</code> verwenden oder die
+          Aggregation der Spalte auf <em>Anzahl</em> stellen.</p>
+      </div>
+      <div class="karte">
+        <div class="kopfzeile">Monate alphabetisch</div>
+        <p>Der Monatsname sortiert sich als Text: April, August, Dezember. Abhilfe: <em>Nach Spalte sortieren</em> –
+          <code>month_name</code> nach <code>month</code>. Die Datumsdimension hat die Zahl genau dafür.</p>
+      </div>
+      <div class="karte">
+        <div class="kopfzeile">Die Beziehung ist inaktiv</div>
+        <p>Ein Visual nach Stornodatum zeigt dieselben Werte wie nach Anreisedatum? Dann läuft es über die aktive
+          Beziehung. Nur das Measure mit <code>USERELATIONSHIP</code> nutzt die zweite.</p>
+      </div>
+      <div class="karte">
+        <div class="kopfzeile">Verbindung verschlüsseln</div>
+        <p>Bleibt das Häkchen gesetzt, meldet Power BI, dass der Server SSL nicht unterstützt. Abwählen und die
+          Rückfrage bestätigen – für diese Leserolle vertretbar, für eigene Daten nicht.</p>
+      </div>
+      <div class="karte">
+        <div class="kopfzeile">Spalte statt Measure</div>
+        <p>Eine <em>berechnete Spalte</em> rechnet je Zeile und speichert das Ergebnis; ein Measure rechnet im
+          Kontext des Visuals. Eine Quote als Spalte (0 oder 1 je Buchung) kann man nicht mitteln, ohne dass Power BI
+          sie summiert. Quoten sind Measures.</p>
+      </div>
+      <div class="karte">
+        <div class="kopfzeile">Veröffentlichen</div>
+        <p><em>Veröffentlichen</em> lädt den Bericht in den Power-BI-Dienst und braucht ein Konto der Organisation.
+          Die Datei <code>Hotel.pbix</code> lässt sich ohne Konto öffnen und ansehen – sie enthält die importierten
+          Daten.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section-block" id="spielplatz">
+    <h2>Spielplatz</h2>
+    <p>Ein nachgebildetes Feldfenster mit den Feldern des Projekts und einer Stichprobe von 5.000 Buchungen. Legen Sie
+      Felder auf X-Achse, Y-Achse und Legende; das Diagramm folgt aus der Belegung wie in Power BI. Die Stichprobe
+      liefert andere absolute Zahlen als das Dashboard, aber dieselben Muster – und die Σ-Falle ist eingebaut.</p>
+    <div data-regal="frei" data-variante="powerbi"></div>
+  </section>
+
+  <section class="section-block" id="uebungen">
+    <h2>Übungen</h2>
+    <p>Fünf Übungen: zwei am Feldfenster, eine Zuordnung von Measures zu DAX, die Reihenfolge der Anbindung und
+      Verständnisfragen zu Import, Beziehungen und Measures.</p>
+    <div data-uebung="W07-01"></div>
+    <div data-uebung="W07-02"></div>
+    <div data-uebung="W07-03"></div>
+    <div data-uebung="W07-04"></div>
+    <div data-uebung="W07-05"></div>
+    <div data-fortschritt></div>
+  </section>
+
+  <section class="section-block" id="zusammenfassung">
+    <h2>Zusammenfassung</h2>
+    <ul>
+      <li>Drei Teile: Power Query holt, das Modell verbindet und rechnet, der Bericht zeigt.</li>
+      <li>Anbinden mit sechs Angaben, Server und Port in einem Feld, Import statt DirectQuery, Verschlüsselung abwählen.</li>
+      <li>Neun Beziehungen; die zweite zu DIM_DATE ist inaktiv und wird per USERELATIONSHIP eingeschaltet.</li>
+      <li>Measures rechnen im Kontext des Visuals; CALCULATE mit Filter ist das DAX-Gegenstück zu FILTER (WHERE) in SQL.</li>
+      <li>Dimension auf die X-Achse, Measure auf die Y-Achse – geordnete Dimensionen werden Linien, zwei Dimensionen eine Matrix.</li>
+      <li>Σ von einer Kennnummer ist die Falle; Monatsnamen brauchen eine Sortierspalte; Quoten sind Measures, keine Spalten.</li>
+    </ul>
+    <div data-lab-nav></div>
+  </section>
+
+</main>
+
+<footer class="footer">
+  <p>Hotel-Lab · Lab 07 · THWS Business School · Stand 09/2026</p>
+</footer>
+
+<script type="module" src="assets/hotel.js"></script>
+</body>
+</html>

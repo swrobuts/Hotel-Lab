@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="de" data-lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Lab 08 · Das Dashboard · Hotel-Lab</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/hotel.css" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%232E3238'/><text x='16' y='23' font-family='sans-serif' font-size='18' font-weight='bold' text-anchor='middle' fill='%23C0662B'>H</text></svg>" />
+</head>
+<body class="lab-page" data-lab="lab-08">
+
+<header class="header">
+  <div class="header-left">
+    <a class="header-logo" href="index.html" data-lab-link><span class="mark">Hotel</span>-Lab</a>
+    <a class="header-back" href="index.html" data-lab-link>← Zur Übersicht</a>
+  </div>
+</header>
+
+<nav class="sidebar" aria-label="Lab-Navigation">
+  <div class="sidebar-title">Abschnitte</div>
+  <a class="sidebar-link" href="#warum">Warum ein eigenes Dashboard</a>
+  <a class="sidebar-link" href="#aufbau">Aufbau: Backend und Frontend</a>
+  <a class="sidebar-link" href="#routen">Die Routen</a>
+  <a class="sidebar-link" href="#gestaltung">Gestaltungsregeln</a>
+  <a class="sidebar-link" href="#container">Container und Render</a>
+  <a class="sidebar-link" href="#stolpersteine">Stolpersteine beim Deploy</a>
+  <a class="sidebar-link" href="#spielplatz">Spielplatz</a>
+  <a class="sidebar-link" href="#uebungen">Übungen</a>
+  <a class="sidebar-link" href="#zusammenfassung">Zusammenfassung</a>
+</nav>
+
+<div class="lab-header">
+  <div class="lab-num-big">08</div>
+  <h1 class="lab-title">Das Dashboard</h1>
+  <p class="lab-intro">Neben dem Power-BI-Bericht hat das Projekt ein zweites Fenster auf die Daten: ein Dashboard im
+    Browser, geschrieben in Python und JavaScript, das bei jedem Filterwechsel live aus der Datenbank liest und als
+    Container bei Render läuft – öffentlich, ohne Anmeldung, ohne Lizenz. Dieses Lab zeigt, wie es aufgebaut ist,
+    nach welchen Regeln es gestaltet wurde und wie es auf den Server kam. Der Deploy-Simulator lässt Sie den letzten
+    Schritt selbst machen – samt der Fehler, an denen echte Deploys scheitern.</p>
+  <div class="lernziele">
+    <span class="lernziel-chip">FastAPI</span>
+    <span class="lernziel-chip">Observable Plot</span>
+    <span class="lernziel-chip">Routen und JSON</span>
+    <span class="lernziel-chip">Tufte · Few · IBCS · Bissantz</span>
+    <span class="lernziel-chip">Docker · Render</span>
+  </div>
+  <div data-einordnung></div>
+</div>
+
+<main class="main-content">
+
+  <section class="section-block" id="warum">
+    <h2>Warum ein eigenes Dashboard</h2>
+    <p>Der Power-BI-Bericht braucht Power BI Desktop zum Öffnen oder ein Konto zum Teilen. Ein Dashboard im Browser
+      braucht nur eine Adresse: <a href="https://hotel-dashboard-cuoi.onrender.com">hotel-dashboard-cuoi.onrender.com</a>.
+      Dafür muss jemand programmieren – und genau das macht es zum Lehrstück: Jede Kennzahl ist eine SQL-Abfrage, die
+      man sich im Dashboard anzeigen lassen kann („SQL anzeigen“ unter jedem Diagramm), jedes Diagramm eine Funktion,
+      jede Gestaltungsentscheidung nachlesbar.</p>
+    <div class="vergleich">
+      <div>
+        <h3>Power-BI-Bericht</h3>
+        <ul>
+          <li>klicken statt programmieren</li>
+          <li>Daten importiert, Stand vom Laden</li>
+          <li>öffnen mit Desktop, teilen mit Konto</li>
+          <li>Measures in DAX</li>
+        </ul>
+      </div>
+      <div>
+        <h3>Dashboard</h3>
+        <ul>
+          <li>programmiert in Python und JavaScript</li>
+          <li>liest bei jedem Filterwechsel live aus der Datenbank</li>
+          <li>öffentliche Adresse, kein Konto, kein Programm</li>
+          <li>Kennzahlen in SQL, sichtbar unter jedem Diagramm</li>
+        </ul>
+      </div>
+    </div>
+    <p>Beide zeigen dieselben Zahlen aus derselben Datenbank. Wer beides gebaut hat, weiß, was ein BI-Werkzeug
+      abnimmt – und was es verbirgt.</p>
+  </section>
+
+  <section class="section-block" id="aufbau">
+    <h2>Aufbau: Backend und Frontend</h2>
+    <p>Das Dashboard folgt einer Arbeitsteilung, die für Webanwendungen üblich ist: <strong>Python liefert Zahlen als
+      JSON, JavaScript zeichnet.</strong> Das Backend kennt die Datenbank und die Kennzahlen; das Frontend kennt den
+      Filterzustand und die Diagramme. Beide sprechen über Routen miteinander.</p>
+    <div class="kette">
+      <div class="glied hell"><span class="titel">Browser</span><span class="was">Frontend: app.js, diagramme.js, texte.js</span></div>
+      <span class="pfeil">→ /api/… →</span>
+      <div class="glied betont"><span class="titel">Backend</span><span class="was">FastAPI: main.py, abfragen.py, filter.py</span></div>
+      <span class="pfeil">→ SQL →</span>
+      <div class="glied hell"><span class="titel">Datenbank</span><span class="was">hotel_bi als studi_hotel</span></div>
+    </div>
+    <div class="table-scroll">
+      <table class="table">
+        <thead><tr><th>Datei</th><th>Aufgabe</th></tr></thead>
+        <tbody>
+          <tr><td><code>backend/app/main.py</code></td><td>FastAPI-Anwendung: eine Route je Diagramm, alle mit denselben Filterparametern; liefert das Frontend als statische Dateien aus</td></tr>
+          <tr><td><code>backend/app/abfragen.py</code></td><td>eine SQL-Abfrage je Route, aus einem gemeinsamen Sternschema-Block und Kennzahlen-Block zusammengesetzt</td></tr>
+          <tr><td><code>backend/app/filter.py</code></td><td>macht aus den Filterparametern eine parametrisierte WHERE-Klausel – nie Text in SQL einsetzen</td></tr>
+          <tr><td><code>backend/app/datenbank.py</code></td><td>Verbindung über <code>DATABASE_URL</code>; fehlt sie, gilt die Leserolle der Vorlesung</td></tr>
+          <tr><td><code>frontend/app.js</code></td><td>Filterzustand in der Adresse, lädt die Routen parallel, bereitet die Daten auf, zeichnet alle Abschnitte</td></tr>
+          <tr><td><code>frontend/diagramme.js</code></td><td>ein Diagramm je Funktion mit Observable Plot: Balken, Balkenpaar, Säulen mit Vorjahresversatz, Mini-Säulen</td></tr>
+          <tr><td><code>frontend/texte.js</code></td><td>Aussagen, Interpretationen und Handlungsempfehlungen, aus den Daten formuliert</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="concept-box">
+      <h3>Was bei einem Filterwechsel passiert</h3>
+      <ol>
+        <li>Klick auf „City Hotel“ – das Frontend schreibt <code>?hotel=City%20Hotel</code> in die Adresse.</li>
+        <li>Es ruft alle Routen mit diesem Parameter auf, parallel: <code>/api/kennzahlen?hotel=…</code>, <code>/api/monate?…</code> …</li>
+        <li>Das Backend baut je Route eine SQL-Abfrage mit WHERE-Klausel und schickt sie an die Datenbank.</li>
+        <li>PostgreSQL rechnet über die gefilterten Buchungen; das Backend liefert das Ergebnis als JSON.</li>
+        <li>Das Frontend zeichnet alle Abschnitte neu – Kacheln, Tabellen, Diagramme, Texte.</li>
+      </ol>
+      <p>Weil der Filterzustand in der Adresse steht, lässt sich jede Ansicht als Link teilen: „Link mit
+        Filterzustand kopieren“.</p>
+    </div>
+  </section>
+
+  <section class="section-block" id="routen">
+    <h2>Die Routen</h2>
+    <p>Eine <strong>Route</strong> ist eine Adresse, unter der das Backend antwortet. Jede Route des Dashboards
+      liefert ein JSON-Objekt mit drei Teilen: <code>daten</code> (die Zeilen), <code>sql</code> (die Abfrage, die
+      gelaufen ist) und <code>parameter</code> (die Filter). Genau das zeigt „SQL anzeigen“ unter jedem Diagramm.</p>
+    <div data-befehl="B01"></div>
+    <div data-befehl="B02"></div>
+    <div class="tip-box">
+      <p>Die Zahlen aus <code>/api/hotels</code> sind Rohwerte: Summen und Zähler. Quoten und Mittelwerte rechnet das
+        Frontend aus Zähler und Nenner – deshalb kann es „beide Hotels“ korrekt bilden (Lab 06: Mittelwerte lassen
+        sich nicht addieren, Zähler und Nenner schon).</p>
+    </div>
+    <div data-json-konsole data-start='{ "daten": [ { "hotel": "City Hotel", "anzahl": 79330, "stornierungen": 33102 } ], "parameter": {} }'></div>
+  </section>
+
+  <section class="section-block" id="gestaltung">
+    <h2>Gestaltungsregeln</h2>
+    <p>Das Dashboard folgt Regeln, die vier Autoren geprägt haben: Edward Tufte (wenig Tinte ohne Daten), Stephen Few
+      (Dashboards, die man auf einen Blick liest), Rolf Hichert (IBCS: einheitliche Notation, Aussage im Titel) und
+      Nicolas Bissantz (Kennzahlen untereinander, Farbe als Werturteil). Jede Regel hat im Dashboard eine sichtbare
+      Umsetzung – und jede wurde in einer Überarbeitungsrunde erkämpft.</p>
+    <div class="table-scroll">
+      <table class="table">
+        <thead><tr><th>Regel</th><th>Quelle</th><th>Umsetzung im Dashboard</th></tr></thead>
+        <tbody>
+          <tr><td>Aussage zuerst</td><td>IBCS, Datawrapper</td><td>Jeder Titel nennt den Befund mit Zeitbezug („Mai 2017 war der stärkste Anreisemonat: 6.313 Buchungen“); darunter eine Zeile mit Messgröße, Einheit, Zeitraum, Filter. Nur zwei Textebenen.</td></tr>
+          <tr><td>Gleiche Skalen, wo verglichen wird</td><td>Bissantz</td><td>Die vier Stornoquoten-Diagramme teilen eine Skala von 0 bis 100 %; Kennzahlen mit verschiedenen Einheiten stehen untereinander auf einer Zeitachse, nie nebeneinander.</td></tr>
+          <tr><td>Wenig Tinte ohne Daten</td><td>Tufte</td><td>Keine Rahmen, keine Legenden, Werte direkt am Balken, Gitterlinien nur bei Zeitreihen.</td></tr>
+          <tr><td>Fluchten</td><td>Few, Bissantz</td><td>Alle Balkendiagramme haben dieselbe Beschriftungsbreite, sodass Balken und Werte über die Seite hinweg in einer Linie stehen.</td></tr>
+          <tr><td>Vorjahresvergleich als Versatz</td><td>IBCS</td><td>Der Vorjahresmonat steht als graue Säule versetzt hinter der Ist-Säule; die Differenz trägt den Signalton. Hohle Säulen bleiben Plan- und Prognosewerten vorbehalten.</td></tr>
+          <tr><td>Farbe als Werturteil</td><td>Bissantz (DeltaMaster)</td><td>Blau = gut für das Ergebnis, Rot = zu seinen Lasten, Grau = ohne Wertung; keine Farbe für Vergleiche ohne Ergebniswirkung.</td></tr>
+          <tr><td>Klarnamen statt Kürzel</td><td>Few</td><td>„Reisebüro online“ statt „Online TA“, Ländernamen statt ISO-Codes; die Datenbank behält die Originalwerte.</td></tr>
+          <tr><td>Grafische Tabellen</td><td>Bissantz</td><td>Zahlen rechtsbündig, Datenbalken relativ zum Spaltenmaximum, Mini-Säulen mit gleicher Zeitachse, sortierbare Spaltenköpfe.</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="warn-box">
+      <p>Was das Dashboard bewusst nicht hat: Tortendiagramme, eine Landkarte, Liniendiagramme mit verschiedenen
+        Skalen nebeneinander, Prozentwerte mit Nachkommastellen in Diagrammen, eine Farbe je Kategorie. Jedes davon
+        war einmal drin und wurde aus einem benennbaren Grund wieder entfernt.</p>
+    </div>
+  </section>
+
+  <section class="section-block" id="container">
+    <h2>Container und Render</h2>
+    <p>Damit das Dashboard öffentlich läuft, braucht es einen Server, auf dem Python, die Pakete und der Code liegen
+      und der auf Anfragen antwortet. <strong>Docker</strong> packt das alles in ein Abbild (Image), das überall gleich
+      läuft; <strong>Render</strong> baut dieses Abbild aus dem Repository und betreibt es als <em>Web Service</em>. Drei
+      Dateien steuern das.</p>
+    <div data-befehl="B03"></div>
+    <div data-befehl="B04"></div>
+    <div class="concept-box">
+      <h3>Drei Dinge, die ein Web Service bei Render braucht</h3>
+      <ul>
+        <li><strong>Etwas, das läuft:</strong> ein Server, der auf Anfragen wartet – hier uvicorn mit der
+          FastAPI-Anwendung. Ein Skript, das durchläuft und endet, ist kein Web Service.</li>
+        <li><strong>Einen Port, den Render sieht:</strong> Der Server muss an <code>0.0.0.0</code> lauschen, nicht an
+          <code>127.0.0.1</code>, und den Port aus der Umgebungsvariablen <code>PORT</code> nehmen. Sonst: „No open
+          ports detected“.</li>
+        <li><strong>Die Konfiguration im Repository:</strong> <code>render.yaml</code> als Blueprint nennt Laufzeit
+          (Docker), Root Directory (<code>dashboard</code>), Plan (Free) und Health-Check-Pfad (<code>/health</code>).
+          Jeder Push auf <code>main</code> löst einen neuen Deploy aus.</li>
+        </ul>
+    </div>
+    <div class="info-box">
+      <p>Free-Plan heißt: Der Dienst schläft nach 15 Minuten ohne Zugriff ein; der erste Aufruf danach dauert bis zu
+        einer Minute. Für ein Lehrprojekt ist das in Ordnung, für einen Bericht, den die Geschäftsführung morgens um
+        acht öffnet, nicht. Stand 09/2026.</p>
+    </div>
+  </section>
+
+  <section class="section-block" id="stolpersteine">
+    <h2>Stolpersteine beim Deploy</h2>
+    <div class="karten">
+      <div class="karte">
+        <div class="kopfzeile">No open ports detected</div>
+        <p>Der Server lauscht auf <code>127.0.0.1</code> – erreichbar nur aus dem Container selbst. Render findet
+          keinen Port und bricht ab. Abhilfe: <code>--host 0.0.0.0</code>.</p>
+      </div>
+      <div class="karte">
+        <div class="kopfzeile">Fester Port</div>
+        <p><code>--port 8000</code> statt <code>--port $PORT</code>: Render findet den Port trotzdem, warnt aber – der Weg
+          ist zerbrechlich, weil Render den Port vorgibt. Im Dockerfile des Projekts: <code>${PORT:-8000}</code>, also
+          Render-Port, sonst 8000.</p>
+      </div>
+      <div class="karte">
+        <div class="kopfzeile">Exited with status 0</div>
+        <p>Der Start Command ruft ein Skript auf, das rechnet und endet. Kein Fehler, aber kein Server. Web Services
+          müssen laufen bleiben; für Skripte gibt es Background Worker und Cron Jobs.</p>
+      </div>
+      <div class="karte">
+        <div class="kopfzeile">KeyError: 'DATABASE_URL'</div>
+        <p>Der Code liest eine Umgebungsvariable, die niemand gesetzt hat. Das Dashboard hat dafür einen Rückfall
+          auf die Leserolle; ein Projekt ohne Rückfall braucht die Variable im Render-Formular.</p>
+      </div>
+      <div class="karte">
+        <div class="kopfzeile">Dockerfile nicht gefunden</div>
+        <p>Laufzeit Docker, aber das Dockerfile liegt in <code>dashboard/</code>, nicht im Wurzelverzeichnis. Abhilfe:
+          Root Directory auf <code>dashboard</code> setzen – so steht es in <code>render.yaml</code>.</p>
+      </div>
+      <div class="karte">
+        <div class="kopfzeile">Alte Dateien im Browser</div>
+        <p>Nach einem Deploy zeigt der Browser das alte JavaScript aus seinem Zwischenspeicher. Das Dashboard schickt
+          deshalb <code>Cache-Control: no-cache</code> und hängt an jede Skriptadresse eine Versionsnummer, die bei
+          jeder Änderung hochgezählt wird.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section-block" id="spielplatz">
+    <h2>Spielplatz</h2>
+    <p>Das Formular „New Web Service“ von Render, nachgebildet, daneben das Repository <code>swrobuts/hotel</code> mit
+      den Dateien, auf die es ankommt. Probieren Sie aus, was passiert, wenn das Root Directory fehlt, der Host falsch
+      ist oder ein Skript statt eines Servers startet – das Protokoll ist dem echten nachempfunden.</p>
+    <div data-deploy="frei"></div>
+  </section>
+
+  <section class="section-block" id="uebungen">
+    <h2>Übungen</h2>
+    <p>Fünf Übungen: die Gestaltungsregeln ihren Umsetzungen zuordnen, Verständnisfragen zum Aufbau, zwei Deploys
+      im Simulator – einmal als Docker-Dienst wie im Projekt, einmal als Python-Dienst mit Start Command – und eine
+      Routenantwort als JSON.</p>
+    <div data-uebung="W08-01"></div>
+    <div data-uebung="W08-02"></div>
+    <div data-uebung="W08-03"></div>
+    <div data-uebung="W08-04"></div>
+    <div data-uebung="W08-05"></div>
+    <div data-fortschritt></div>
+  </section>
+
+  <section class="section-block" id="zusammenfassung">
+    <h2>Zusammenfassung</h2>
+    <ul>
+      <li>Das Dashboard zeigt dieselben Zahlen wie Power BI, aber programmiert, öffentlich und mit sichtbarem SQL.</li>
+      <li>Arbeitsteilung: Python liefert JSON über Routen, JavaScript zeichnet; der Filterzustand steht in der Adresse.</li>
+      <li>Jede Route antwortet mit daten, sql und parameter – das Backend rechnet Rohwerte, das Frontend Quoten.</li>
+      <li>Gestaltung nach Tufte, Few, IBCS und Bissantz: Aussage im Titel, gleiche Skalen, wenig Tinte, Fluchten, Vorjahresversatz, Farbe als Werturteil.</li>
+      <li>Docker packt, Render betreibt; render.yaml nennt Laufzeit, Root Directory, Plan und Health-Check.</li>
+      <li>Ein Web Service muss laufen bleiben, an 0.0.0.0 lauschen und den Port aus $PORT nehmen.</li>
+    </ul>
+    <div data-lab-nav></div>
+  </section>
+
+</main>
+
+<footer class="footer">
+  <p>Hotel-Lab · Lab 08 · THWS Business School · Stand 09/2026</p>
+</footer>
+
+<script type="module" src="assets/hotel.js"></script>
+</body>
+</html>

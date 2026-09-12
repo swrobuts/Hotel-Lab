@@ -1,5 +1,5 @@
 /**
- * WInf-SP-Lab · Deploy-Simulator (Render)
+ * Hotel-Lab · Deploy-Simulator (Render)
  *
  * Reine Logik ohne DOM. Aus den Eingaben des Formulars "New Web Service"
  * und dem Inhalt eines nachgebildeten Repositories entsteht das Protokoll,
@@ -37,8 +37,8 @@ export function simuliereDeploy (eingaben, repo) {
   const dateien = repo.dateien || {}
   const root = (eingaben.rootDir || '').replace(/^\/|\/$/g, '')
   const datei = (n) => dateien[root ? `${root}/${n}` : n]
-  const url = repo.url || 'https://github.com/studi/velocity-api'
-  const name = repo.name || 'velocity-api'
+  const url = repo.url || 'https://github.com/swrobuts/hotel'
+  const name = repo.name || 'hotel-dashboard'
 
   z.push(zeile('info', `==> Cloning from ${url}`))
   z.push(zeile('info', `==> Checking out commit 3f9a1c2 in branch main`))
@@ -94,7 +94,7 @@ export function simuliereDeploy (eingaben, repo) {
     }
     z.push(zeile('info', `==> Running '${start}'`))
   } else {
-    z.push(zeile('info', `==> Running 'uvicorn main:app --host 0.0.0.0 --port $PORT' (CMD from Dockerfile)`))
+    z.push(zeile('info', `==> Running 'uvicorn backend.app.main:app --host 0.0.0.0 --port $PORT' (CMD from Dockerfile)`))
   }
 
   // Umgebungsvariablen, die der Code liest.
@@ -102,7 +102,7 @@ export function simuliereDeploy (eingaben, repo) {
   for (const v of repo.liest || []) {
     if (!gesetzt.has(v)) {
       z.push(zeile('aus', 'Traceback (most recent call last):'))
-      z.push(zeile('aus', `  File "/opt/render/project/src/main.py", line 7, in <module>`))
+      z.push(zeile('aus', `  File "/opt/render/project/src/backend/app/datenbank.py", line 20, in engine`))
       z.push(zeile('aus', `    DATENBANK = os.environ["${v}"]`))
       z.push(zeile('aus', `  File "<frozen os>", line 716, in __getitem__`))
       z.push(zeile('fehler', `KeyError: '${v}'`))
@@ -112,7 +112,7 @@ export function simuliereDeploy (eingaben, repo) {
     }
   }
 
-  const befehl = eingaben.runtime === 'docker' ? 'uvicorn main:app --host 0.0.0.0 --port $PORT' : start
+  const befehl = eingaben.runtime === 'docker' ? 'uvicorn backend.app.main:app --host 0.0.0.0 --port $PORT' : start
   const istServer = /\b(uvicorn|gunicorn|flask\s+run|node\b|npm\s+(start|run)|streamlit\s+run|waitress-serve|hypercorn|fastapi\s+run)\b/.test(befehl)
   const hostLokal = /--host\s+(127\.0\.0\.1|localhost)\b|-h\s+127\.0\.0\.1|--bind\s+127\.0\.0\.1|localhost:\d+/.test(befehl)
   const hostAlle = /--host\s+0\.0\.0\.0\b|--bind\s+0\.0\.0\.0|\b0\.0\.0\.0:|--server\.address\s+0\.0\.0\.0/.test(befehl)
@@ -120,14 +120,14 @@ export function simuliereDeploy (eingaben, repo) {
   const portFest = /--port\s+(\d+)|-p\s+(\d+)|:(\d{4,5})\b/.exec(befehl)
 
   if (!istServer && eingaben.dienst !== 'worker') {
-    z.push(zeile('aus', 'Fahrten geladen: 1500'))
+    z.push(zeile('aus', 'Buchungen geladen: 119390'))
     z.push(zeile('aus', 'Fertig.'))
     z.push(zeile('fehler', '==> Exited with status 0'))
     z.push(zeile('fehler', '==> Web services must bind to a port and stay running. This process finished without opening a port; create a Background Worker or a Cron Job for scripts that just run through.'))
     return { zeilen: z, erfolg: false, grund: 'keinServer' }
   }
   if (eingaben.dienst === 'worker') {
-    z.push(zeile('aus', 'Fahrten geladen: 1500'))
+    z.push(zeile('aus', 'Buchungen geladen: 119390'))
     z.push(zeile('gut', '==> Your service is live 🎉'))
     return { zeilen: z, erfolg: true, grund: null }
   }

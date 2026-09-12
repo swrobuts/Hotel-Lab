@@ -1,0 +1,568 @@
+{
+  "befehle": {
+    "B01": {
+      "titel": {
+        "de": "Der Klickweg zur Datenbank"
+      },
+      "prompt": "🖱",
+      "befehl": "Start → Daten abrufen → Weitere… → Datenbank → PostgreSQL-Datenbank → Verbinden\n  Server:  supabase.butscher.cloud:5433     Datenbank: hotel     Modus: Import → OK\n  Anmeldung: Datenbank → Benutzername studi_hotel, Kennwort thws, „Verbindung verschlüsseln“ abwählen → Verbinden\n  Rückfrage „unverschlüsselt verbinden?“ → OK\n  Navigator: hotel_bi aufklappen → alle neun Tabellen ankreuzen → Laden\n  Modellansicht: neun Beziehungen prüfen, die zweite zu DIM_DATE ist gestrichelt (inaktiv)",
+      "teile": [
+        {
+          "was": "PostgreSQL-Datenbank",
+          "bedeutet": {
+            "de": "Der Konnektor gehört zu Power BI Desktop; ein eigener Treiber ist seit einigen Versionen nicht mehr nötig."
+          }
+        },
+        {
+          "was": "supabase.butscher.cloud:5433",
+          "bedeutet": {
+            "de": "Host und Port mit Doppelpunkt in einem Feld. Ohne Port versucht Power BI 5432 und scheitert."
+          }
+        },
+        {
+          "was": "Import",
+          "bedeutet": {
+            "de": "Alle Zeilen werden in die PBIX kopiert. Aktualisieren holt sie neu; ohne Aktualisieren bleibt der Stand vom Laden."
+          }
+        },
+        {
+          "was": "Navigator",
+          "bedeutet": {
+            "de": "Zeigt Schemata und Tabellen der Datenbank. Alle neun Tabellen ankreuzen – fehlt eine Dimension, fehlt später die Beziehung."
+          }
+        }
+      ]
+    },
+    "B02": {
+      "titel": {
+        "de": "Ein Measure mit Filter: CALCULATE"
+      },
+      "prompt": "📄",
+      "befehl": "Umsatz =\nCALCULATE(\n    SUM(FACT_BOOKINGS[revenue]),\n    FACT_BOOKINGS[is_canceled] = 0\n)",
+      "teile": [
+        {
+          "was": "CALCULATE(ausdruck, filter)",
+          "bedeutet": {
+            "de": "Rechnet den Ausdruck unter einem zusätzlichen Filter – hier: nur nicht stornierte Buchungen. Das DAX-Gegenstück zu FILTER (WHERE NOT is_canceled) in SQL."
+          }
+        },
+        {
+          "was": "SUM(FACT_BOOKINGS[revenue])",
+          "bedeutet": {
+            "de": "Tabelle und Spalte in eckigen Klammern. Die Summe läuft über die Zeilen, die das Visual gerade sieht – je Monat, je Hotel, je Segment."
+          }
+        },
+        {
+          "was": "is_canceled = 0",
+          "bedeutet": {
+            "de": "In Power Query wurde der Wahrheitswert zu 0/1 gewandelt; deshalb der Vergleich mit 0 statt mit FALSE."
+          }
+        }
+      ]
+    },
+    "B03": {
+      "titel": {
+        "de": "Die zweite Rolle der Datumsdimension einschalten"
+      },
+      "prompt": "📄",
+      "befehl": "Gebuchter Umsatz nach Stornodatum =\nCALCULATE(\n    SUM(FACT_BOOKINGS[revenue]),\n    USERELATIONSHIP(FACT_BOOKINGS[reservation_status_date_key], DIM_DATE[date_key])\n)",
+      "teile": [
+        {
+          "was": "USERELATIONSHIP(…)",
+          "bedeutet": {
+            "de": "Schaltet für dieses eine Measure die inaktive Beziehung ein und die aktive aus. Ein Liniendiagramm nach Monat zeigt damit den gebuchten Umsatz nach dem Datum des letzten Status."
+          }
+        },
+        {
+          "was": "reservation_status_date_key",
+          "bedeutet": {
+            "de": "Der zweite Fremdschlüssel auf DIM_DATE – die Rolle Status aus Lab 04."
+          }
+        }
+      ]
+    }
+  },
+  "regal": {
+    "daten": "data/regal-buchungen.json",
+    "felder": [
+      {
+        "id": "monat",
+        "typ": "dimension",
+        "geordnet": true,
+        "titel": {
+          "de": "Anreisemonat"
+        },
+        "reihenfolge": [
+          "2015-07",
+          "2015-08",
+          "2015-09",
+          "2015-10",
+          "2015-11",
+          "2015-12",
+          "2016-01",
+          "2016-02",
+          "2016-03",
+          "2016-04",
+          "2016-05",
+          "2016-06",
+          "2016-07",
+          "2016-08",
+          "2016-09",
+          "2016-10",
+          "2016-11",
+          "2016-12",
+          "2017-01",
+          "2017-02",
+          "2017-03",
+          "2017-04",
+          "2017-05",
+          "2017-06",
+          "2017-07",
+          "2017-08"
+        ]
+      },
+      {
+        "id": "jahr",
+        "typ": "dimension",
+        "geordnet": true,
+        "titel": {
+          "de": "Anreisejahr"
+        },
+        "reihenfolge": [
+          2015,
+          2016,
+          2017
+        ]
+      },
+      {
+        "id": "hotel",
+        "typ": "dimension",
+        "titel": {
+          "de": "Hotel"
+        }
+      },
+      {
+        "id": "segment",
+        "typ": "dimension",
+        "titel": {
+          "de": "Marktsegment"
+        }
+      },
+      {
+        "id": "kanal",
+        "typ": "dimension",
+        "titel": {
+          "de": "Vertriebskanal"
+        }
+      },
+      {
+        "id": "kundentyp",
+        "typ": "dimension",
+        "titel": {
+          "de": "Kundentyp"
+        }
+      },
+      {
+        "id": "kaution",
+        "typ": "dimension",
+        "titel": {
+          "de": "Kautionstyp"
+        }
+      },
+      {
+        "id": "land",
+        "typ": "dimension",
+        "titel": {
+          "de": "Herkunftsland (ISO-3)"
+        }
+      },
+      {
+        "id": "storniert",
+        "typ": "dimension",
+        "titel": {
+          "de": "Stornostatus"
+        },
+        "reihenfolge": [
+          "nicht storniert",
+          "storniert"
+        ]
+      },
+      {
+        "id": "buchung",
+        "typ": "kennzahl",
+        "titel": {
+          "de": "Buchungsnummer"
+        },
+        "erklaerung": {
+          "de": "Eine Kennung – Σ darüber ist die klassische Falle. COUNT zählt Buchungen."
+        }
+      },
+      {
+        "id": "naechte",
+        "typ": "kennzahl",
+        "titel": {
+          "de": "Nächte"
+        }
+      },
+      {
+        "id": "vorlaufzeit",
+        "typ": "kennzahl",
+        "titel": {
+          "de": "Vorlaufzeit (Tage)"
+        }
+      },
+      {
+        "id": "adr",
+        "typ": "kennzahl",
+        "titel": {
+          "de": "Zimmerpreis ADR (€)"
+        }
+      },
+      {
+        "id": "umsatz",
+        "typ": "kennzahl",
+        "titel": {
+          "de": "revenue (€, vor Storno)"
+        }
+      }
+    ]
+  },
+  "spielplaetze": {
+    "frei": {
+      "variante": "powerbi",
+      "startBelegung": {
+        "spalten": [],
+        "zeilen": [],
+        "farbe": null,
+        "filter": {}
+      }
+    }
+  },
+  "uebungen": [
+    {
+      "id": "W07-01",
+      "typ": "regal",
+      "variante": "powerbi",
+      "titel": {
+        "de": "Buchungen je Hotel"
+      },
+      "aufgabe": {
+        "de": "<p>Bauen Sie ein Säulendiagramm mit der Anzahl der Buchungen je Hotel: das Hotel auf die X-Achse, die Anzahl der Buchungen auf die Y-Achse. Achtung: Zählen heißt COUNT, nicht Σ.</p>"
+      },
+      "ziel": {
+        "spalten": [
+          "hotel"
+        ],
+        "zeilen": [
+          "COUNT:buchung"
+        ]
+      },
+      "loesungBelegung": {
+        "spalten": [
+          "hotel"
+        ],
+        "zeilen": [
+          {
+            "feld": "buchung",
+            "agg": "COUNT"
+          }
+        ],
+        "farbe": null,
+        "filter": {}
+      },
+      "rueckmeldung": {
+        "de": "Zwei Säulen, das City Hotel etwa doppelt so hoch. Mit Σ statt COUNT hätten Sie die Summe der Buchungsnummern – eine Zahl ohne Bedeutung."
+      }
+    },
+    {
+      "id": "W07-02",
+      "typ": "regal",
+      "variante": "powerbi",
+      "titel": {
+        "de": "Stornobereinigter Umsatz je Anreisemonat"
+      },
+      "aufgabe": {
+        "de": "<p>Zeigen Sie den Umsatz je Anreisemonat – aber nur den stornobereinigten: Anreisemonat auf die X-Achse, die Summe von revenue auf die Y-Achse, und ein Filter auf den Stornostatus „nicht storniert“.</p>"
+      },
+      "ziel": {
+        "spalten": [
+          "monat"
+        ],
+        "zeilen": [
+          "SUM:umsatz"
+        ],
+        "filter": {
+          "storniert": [
+            "nicht storniert"
+          ]
+        }
+      },
+      "loesungBelegung": {
+        "spalten": [
+          "monat"
+        ],
+        "zeilen": [
+          {
+            "feld": "umsatz",
+            "agg": "SUM"
+          }
+        ],
+        "farbe": null,
+        "filter": {
+          "storniert": [
+            "nicht storniert"
+          ]
+        }
+      },
+      "rueckmeldung": {
+        "de": "Eine Linie mit der Saisonkurve – geordnete Dimensionen werden Linien. Der Filter ist hier das, was in DAX CALCULATE mit is_canceled = 0 und in SQL FILTER (WHERE NOT is_canceled) leistet."
+      }
+    },
+    {
+      "id": "W07-03",
+      "typ": "zuordnen",
+      "titel": {
+        "de": "Measure und DAX"
+      },
+      "aufgabe": {
+        "de": "<p>Ordnen Sie jede DAX-Formel dem Measure zu, das sie berechnet.</p>"
+      },
+      "ziele": [
+        {
+          "id": "anzahl",
+          "text": {
+            "de": "Anzahl Buchungen"
+          }
+        },
+        {
+          "id": "umsatz",
+          "text": {
+            "de": "Umsatz (stornobereinigt)"
+          }
+        },
+        {
+          "id": "gebucht",
+          "text": {
+            "de": "Gebuchter Umsatz"
+          }
+        },
+        {
+          "id": "quote",
+          "text": {
+            "de": "Stornoquote %"
+          }
+        },
+        {
+          "id": "storno",
+          "text": {
+            "de": "Gebuchter Umsatz nach Stornodatum"
+          }
+        },
+        {
+          "id": "je",
+          "text": {
+            "de": "Ø gebuchter Umsatz je Buchung"
+          }
+        }
+      ],
+      "paare": [
+        {
+          "begriff": {
+            "de": "COUNTROWS(FACT_BOOKINGS)"
+          },
+          "ziel": "anzahl"
+        },
+        {
+          "begriff": {
+            "de": "CALCULATE(SUM(FACT_BOOKINGS[revenue]), FACT_BOOKINGS[is_canceled] = 0)"
+          },
+          "ziel": "umsatz"
+        },
+        {
+          "begriff": {
+            "de": "SUM(FACT_BOOKINGS[revenue])"
+          },
+          "ziel": "gebucht"
+        },
+        {
+          "begriff": {
+            "de": "DIVIDE(CALCULATE(COUNTROWS(FACT_BOOKINGS), FACT_BOOKINGS[is_canceled] = 1), COUNTROWS(FACT_BOOKINGS))"
+          },
+          "ziel": "quote"
+        },
+        {
+          "begriff": {
+            "de": "CALCULATE(SUM(FACT_BOOKINGS[revenue]), USERELATIONSHIP(FACT_BOOKINGS[reservation_status_date_key], DIM_DATE[date_key]))"
+          },
+          "ziel": "storno"
+        },
+        {
+          "begriff": {
+            "de": "DIVIDE([Gebuchter Umsatz], [Anzahl Buchungen])"
+          },
+          "ziel": "je"
+        }
+      ],
+      "rueckmeldung": {
+        "de": "CALCULATE filtert, DIVIDE teilt sicher, USERELATIONSHIP schaltet die Rolle um, eckige Klammern verweisen auf andere Measures. Mit diesen vier Bausteinen ist der ganze Katalog geschrieben."
+      }
+    },
+    {
+      "id": "W07-04",
+      "typ": "reihenfolge",
+      "titel": {
+        "de": "Die Anbindung in der richtigen Reihenfolge"
+      },
+      "aufgabe": {
+        "de": "<p>Bringen Sie die Schritte vom leeren Power BI Desktop bis zum geprüften Modell in die richtige Reihenfolge.</p>"
+      },
+      "eintraege": [
+        {
+          "id": "abrufen",
+          "text": {
+            "de": "Daten abrufen → PostgreSQL-Datenbank wählen"
+          }
+        },
+        {
+          "id": "server",
+          "text": {
+            "de": "Server supabase.butscher.cloud:5433, Datenbank hotel, Modus Import"
+          }
+        },
+        {
+          "id": "anmelden",
+          "text": {
+            "de": "Anmeldung Datenbank: studi_hotel / thws, Verschlüsselung abwählen, Rückfrage bestätigen"
+          }
+        },
+        {
+          "id": "navigator",
+          "text": {
+            "de": "Im Navigator hotel_bi aufklappen, neun Tabellen ankreuzen, Laden"
+          }
+        },
+        {
+          "id": "modell",
+          "text": {
+            "de": "Modellansicht: neun Beziehungen prüfen, zweite zu DIM_DATE inaktiv"
+          }
+        },
+        {
+          "id": "measure",
+          "text": {
+            "de": "Erstes Measure schreiben: Anzahl Buchungen = COUNTROWS(FACT_BOOKINGS)"
+          }
+        }
+      ],
+      "richtig": [
+        "abrufen",
+        "server",
+        "anmelden",
+        "navigator",
+        "modell",
+        "measure"
+      ],
+      "start": [
+        "measure",
+        "navigator",
+        "abrufen",
+        "modell",
+        "anmelden",
+        "server"
+      ],
+      "rueckmeldung": {
+        "de": "Verbindung, Anmeldung, Auswahl, Modell, Measures – in dieser Reihenfolge gibt es an jeder Stelle eine Prüfung, bevor die nächste kommt."
+      }
+    },
+    {
+      "id": "W07-05",
+      "typ": "quiz",
+      "titel": {
+        "de": "Import, Beziehungen, Measures"
+      },
+      "aufgabe": {
+        "de": "<p>Drei Fragen zu den Entscheidungen im Modell.</p>"
+      },
+      "fragen": [
+        {
+          "frage": {
+            "de": "Die Datenbank wird neu geladen und enthält korrigierte Werte. Was zeigt ein Bericht im Import-Modus?"
+          },
+          "optionen": [
+            {
+              "de": "Sofort die neuen Werte"
+            },
+            {
+              "de": "Die alten Werte, bis jemand Aktualisieren klickt"
+            },
+            {
+              "de": "Eine Fehlermeldung"
+            },
+            {
+              "de": "Nur die Dimensionen neu, die Fakten alt"
+            }
+          ],
+          "richtig": [
+            1
+          ],
+          "erklaerung": {
+            "de": "Import kopiert die Daten in die PBIX-Datei. Sie bleiben, bis aktualisiert wird. DirectQuery würde jede Interaktion an die Datenbank schicken – aktuell, aber langsamer."
+          }
+        },
+        {
+          "frage": {
+            "de": "Warum darf die Beziehung über reservation_status_date_key nicht aktiv sein?"
+          },
+          "optionen": [
+            {
+              "de": "Weil Power BI nur acht Beziehungen erlaubt"
+            },
+            {
+              "de": "Weil zwischen zwei Tabellen nur ein aktiver Pfad erlaubt ist – sonst wäre unklar, was „Monat“ meint"
+            },
+            {
+              "de": "Weil das Stornodatum ein Text ist"
+            },
+            {
+              "de": "Weil die Tabelle DIM_DATE zu groß ist"
+            }
+          ],
+          "richtig": [
+            1
+          ],
+          "erklaerung": {
+            "de": "Ein Visual mit DIM_DATE auf der Achse braucht einen eindeutigen Weg zu den Fakten. Die zweite Beziehung bleibt inaktiv; das Measure Gebuchter Umsatz nach Stornodatum schaltet sie mit USERELATIONSHIP ein."
+          }
+        },
+        {
+          "frage": {
+            "de": "Jemand legt eine berechnete Spalte „storno“ = 1 für stornierte Buchungen an und zieht sie als Summe in eine Kachel. Was sieht er?"
+          },
+          "optionen": [
+            {
+              "de": "Die Stornoquote in Prozent"
+            },
+            {
+              "de": "Die Anzahl der stornierten Buchungen, keine Quote"
+            },
+            {
+              "de": "Einen Fehler, weil Spalten nicht summiert werden dürfen"
+            },
+            {
+              "de": "Immer 1"
+            }
+          ],
+          "richtig": [
+            1
+          ],
+          "erklaerung": {
+            "de": "Die Summe einer 0/1-Spalte ist eine Anzahl (44.224). Eine Quote braucht Zähler und Nenner im Kontext des Visuals – also ein Measure mit DIVIDE, wie Stornoquote % im Projekt."
+          }
+        }
+      ],
+      "rueckmeldung": {
+        "de": "Import friert ein, Beziehungen brauchen einen eindeutigen Pfad, Quoten sind Measures. Wer diese drei Entscheidungen begründen kann, kann das Modell erklären."
+      }
+    }
+  ]
+}

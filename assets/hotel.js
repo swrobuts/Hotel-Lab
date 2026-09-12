@@ -1187,7 +1187,7 @@ function baueDeploy (ziel, opt) {
   const zeichneRepo = () => {
     repoPane.replaceChildren()
     const kopf = el('div', 'deploy-repo-kopf')
-    kopf.append(el('span', 'gh', ''), el('span', null, (repo.url || 'https://github.com/studi/velocity-api').replace('https://github.com/', '')))
+    kopf.append(el('span', 'gh', ''), el('span', null, (repo.url || 'https://github.com/swrobuts/hotel').replace('https://github.com/', '')))
     repoPane.append(kopf)
     const baum = el('ul', 'dateibaum')
     const inhalt = el('pre', 'dateiinhalt')
@@ -1218,7 +1218,7 @@ function baueDeploy (ziel, opt) {
   }
 
   form.append(el('div', 'deploy-titel', 'New Web Service'))
-  const name = text(repo.name || 'velocity-api', '', false)
+  const name = text(repo.name || 'hotel-dashboard', '', false)
   name.disabled = true
   form.append(feld('Name', name))
 

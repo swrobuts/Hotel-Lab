@@ -5,7 +5,7 @@
         "de": "Eine Route aufrufen"
       },
       "prompt": "$",
-      "befehl": "curl \"https://hotel-dashboard-cuoi.onrender.com/api/hotels?jahr=2016\"\n\n{\"daten\": [{\"hotel\": \"City Hotel\", \"anzahl\": 38140, \"stornierungen\": 15407, \"erloes\": 11789581.13, \"erloes_nicht_storniert\": 6862128.0, …},\n           {\"hotel\": \"Resort Hotel\", \"anzahl\": 18567, \"stornierungen\": 4930, …}],\n \"sql\": \"SELECT h.hotel AS hotel, COUNT(*) … WHERE d.year = :jahr GROUP BY h.hotel\",\n \"parameter\": {\"jahr\": 2016}}",
+      "befehl": "curl \"https://hotel.butscher.cloud/api/hotels?jahr=2016\"\n\n{\"daten\": [{\"hotel\": \"City Hotel\", \"anzahl\": 38140, \"stornierungen\": 15407, \"erloes\": 11789581.13, \"erloes_nicht_storniert\": 6862128.0, …},\n           {\"hotel\": \"Resort Hotel\", \"anzahl\": 18567, \"stornierungen\": 4930, …}],\n \"sql\": \"SELECT h.hotel AS hotel, COUNT(*) … WHERE d.year = :jahr GROUP BY h.hotel\",\n \"parameter\": {\"jahr\": 2016}}",
       "teile": [
         {
           "was": "/api/hotels?jahr=2016",

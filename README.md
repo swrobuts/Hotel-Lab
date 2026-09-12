@@ -6,7 +6,7 @@ Interaktive Lernumgebung zum BI-Einstiegsprojekt **Hotel Booking Demand** (Vorle
 Intelligence, THWS Business School). Sie erklärt Schritt für Schritt, was im Projekt
 [swrobuts/hotel](https://github.com/swrobuts/hotel) gebaut wurde – Fallstudie, Datenquelle,
 Colab-Notebook, Sternschema, PostgreSQL-Datenbank, Kennzahlenkatalog, Power-BI-Bericht und das
-[Dashboard](https://hotel-dashboard-cuoi.onrender.com) – und lässt Studierende jeden Schritt
+[Dashboard](https://hotel.butscher.cloud) – und lässt Studierende jeden Schritt
 selbst ausprobieren.
 
 Zehn Labs, **48 Übungen** in acht Formen mit sofortiger Rückmeldung; **PostgreSQL im Browser**

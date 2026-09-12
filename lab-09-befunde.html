@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="de" data-lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Lab 09 · Vom Befund zur Handlungsempfehlung · Hotel-Lab</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/hotel.css" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%232E3238'/><text x='16' y='23' font-family='sans-serif' font-size='18' font-weight='bold' text-anchor='middle' fill='%23C0662B'>H</text></svg>" />
+</head>
+<body class="lab-page" data-lab="lab-09">
+
+<header class="header">
+  <div class="header-left">
+    <a class="header-logo" href="index.html" data-lab-link><span class="mark">Hotel</span>-Lab</a>
+    <a class="header-back" href="index.html" data-lab-link>← Zur Übersicht</a>
+  </div>
+</header>
+
+<nav class="sidebar" aria-label="Lab-Navigation">
+  <div class="sidebar-title">Abschnitte</div>
+  <a class="sidebar-link" href="#lesen">Eine Aussage lesen</a>
+  <a class="sidebar-link" href="#abweichung">Eine Abweichung einordnen</a>
+  <a class="sidebar-link" href="#kette">Vom Befund zur Empfehlung</a>
+  <a class="sidebar-link" href="#befunde">Die Befunde des Projekts</a>
+  <a class="sidebar-link" href="#gut">Was eine gute Empfehlung braucht</a>
+  <a class="sidebar-link" href="#fehlschluesse">Fehlschlüsse</a>
+  <a class="sidebar-link" href="#uebungen">Übungen</a>
+  <a class="sidebar-link" href="#zusammenfassung">Zusammenfassung</a>
+</nav>
+
+<div class="lab-header">
+  <div class="lab-num-big">09</div>
+  <h1 class="lab-title">Vom Befund zur Handlungsempfehlung</h1>
+  <p class="lab-intro">Ein Dashboard, das niemand in eine Entscheidung übersetzt, ist Dekoration. Dieses Lab übt den
+    letzten Schritt: eine Aussage lesen, eine Abweichung einordnen, den Befund deuten und daraus eine Empfehlung
+    ableiten, die man vor der Hotelleitung begründen kann – samt der Kennzahl, an der man später prüft, ob sie
+    gewirkt hat. Und es benennt die Fehlschlüsse, die auf dem Weg dorthin lauern.</p>
+  <div class="lernziele">
+    <span class="lernziel-chip">Aussage · Beschreibung</span>
+    <span class="lernziel-chip">Abweichung</span>
+    <span class="lernziel-chip">Interpretation</span>
+    <span class="lernziel-chip">Handlungsempfehlung</span>
+    <span class="lernziel-chip">Kontrollkennzahl</span>
+  </div>
+  <div data-einordnung></div>
+</div>
+
+<main class="main-content">
+
+  <section class="section-block" id="lesen">
+    <h2>Eine Aussage lesen</h2>
+    <p>Jedes Diagramm des Dashboards hat zwei Textzeilen: die <strong>Aussage</strong> (fett, der Befund mit
+      Zeitbezug) und die <strong>Beschreibung</strong> (Messgröße, Einheit, Zeitraum, Filter). Wer beide liest, weiß,
+      was das Diagramm zeigt, bevor er es ansieht – und weiß, was es <em>nicht</em> zeigt.</p>
+    <div class="shot">
+      <div class="shot-bar"><span class="ampel"><i></i><i></i><i></i></span><span class="titel">Hotel Booking Demand – Dashboard</span><span class="spacer"></span>Stornorisiko</div>
+      <div class="shot-body eins">
+        <div class="shot-main">
+          <div class="zeile"><span class="feld breit"><b>Stornorisiko steigt mit der Vorlaufzeit: 10 % bei 0–7 Tagen, 51 % bei über 90 Tagen – nicht erstattbare Buchungen 99 %</b></span> <span class="callout">1</span></div>
+          <div class="zeile"><span class="feld breit">Stornoquote = Anteil stornierter Buchungen, je Hotel, Kautionstyp, Marktsegment und Vorlaufzeit · Anreisen Juli 2015 bis August 2017</span> <span class="callout">2</span></div>
+          <div class="leinwand">nach Vorlaufzeit (Tage zwischen Buchung und Anreise)<br>0–7 Tage &nbsp;▮▮ 10 %<br>8–30 Tage &nbsp;▮▮▮▮▮ 28 %<br>31–90 Tage &nbsp;▮▮▮▮▮▮▮ 38 %<br>über 90 Tage &nbsp;▮▮▮▮▮▮▮▮▮▮ 51 % &nbsp;┆ insgesamt 37 %</div>
+          <div class="zeile"><span class="feld breit">▸ Interpretation und Handlungsempfehlung &nbsp; ▸ SQL anzeigen</span> <span class="callout">3</span></div>
+        </div>
+      </div>
+    </div>
+    <p class="shot-hinweis">Nachbildung der Oberfläche, Stand 09/2026 – Beschriftungen wie im Original.</p>
+    <ol class="shot-legende">
+      <li><span class="callout">1</span><span>Die Aussage: ein Satz, der den Befund nennt und die Zahlen dazu. Sie ändert sich mit dem Filter – sie wird aus den Daten formuliert.</span></li>
+      <li><span class="callout">2</span><span>Die Beschreibung: Was ist gemessen (Stornoquote = Anteil), wonach gegliedert, welcher Zeitraum, welcher Filter.</span></li>
+      <li><span class="callout">3</span><span>Aufklappbar: Interpretation und Handlungsempfehlung getrennt, darunter die SQL-Abfrage, die die Zahlen geliefert hat.</span></li>
+    </ol>
+    <div class="concept-box">
+      <h3>Drei Fragen an jede Aussage</h3>
+      <ul>
+        <li><strong>Was genau wird gezählt?</strong> Buchungen, nicht Gäste; Anreisemonat, nicht Buchungsmonat; stornobereinigt oder gebucht.</li>
+        <li><strong>Worauf bezieht sich der Vergleich?</strong> Auf den Vorjahresmonat, auf „insgesamt“, auf das andere Hotel.</li>
+        <li><strong>Gilt das unter dem aktuellen Filter?</strong> Ein Befund für das City Hotel im Jahr 2016 ist kein Befund für beide Hotels.</li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="section-block" id="abweichung">
+    <h2>Eine Abweichung einordnen</h2>
+    <p>Die Kacheln zeigen zwei Abweichungen des Bezugsmonats: gegenüber dem Vormonat und gegenüber dem
+      Vorjahresmonat. Die Farbe sagt, ob die Bewegung gut oder schlecht für das Ergebnis ist (Lab 06). Ob sie
+      <em>bedeutsam</em> ist, muss man selbst einordnen – mit drei Fragen.</p>
+    <div class="table-scroll">
+      <table class="table">
+        <thead><tr><th>Frage</th><th>Beispiel August 2017</th><th>Einordnung</th></tr></thead>
+        <tbody>
+          <tr><td>Ist es Saison oder Geschäft?</td><td>Buchungen −7,3 % gegenüber Juli</td><td>Vormonat: August ist auch 2016 unter dem Juli gewesen? Dann ist es Saison. Der Vorjahresmonat (−2,7 %) ist die bessere Frage.</td></tr>
+          <tr><td>Wie groß ist die Basis?</td><td>Umsatz +8,9 % gegenüber August 2016</td><td>August ist der stärkste Monat; +8,9 % auf 1,8 Mio. sind 160.000 €. Dieselben +8,9 % im Januar wären 24.000 €.</td></tr>
+          <tr><td>Bewegen sich die Treiber?</td><td>Stornoquote +2,3 % gegenüber Vorjahresmonat</td><td>Mehr Buchungen mit langer Vorlaufzeit? Mehr Gruppen? Die Stornoanalyse nach Segment und Vorlaufzeit gibt die Antwort.</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="tip-box">
+      <p>Eine Abweichung ist ein Anlass, nicht ein Befund. Der Befund entsteht erst, wenn man weiß, woher die
+        Bewegung kommt – und dafür filtert man: Klick auf das Hotel, das Segment, den Monat, und sieht, ob die
+        Abweichung bleibt oder verschwindet.</p>
+    </div>
+  </section>
+
+  <section class="section-block" id="kette">
+    <h2>Vom Befund zur Empfehlung</h2>
+    <p>Der Weg hat fünf Stationen, und jede beantwortet eine andere Frage. Wer eine überspringt, empfiehlt
+      etwas, das niemand begründen kann – oder etwas, dessen Wirkung niemand messen wird.</p>
+    <div class="kette">
+      <div class="glied hell"><span class="titel">Frage</span><span class="was">Was will die Leitung wissen?</span></div>
+      <span class="pfeil">→</span>
+      <div class="glied hell"><span class="titel">Befund</span><span class="was">Was zeigen die Zahlen?</span></div>
+      <span class="pfeil">→</span>
+      <div class="glied betont"><span class="titel">Deutung</span><span class="was">Warum ist das so?</span></div>
+      <span class="pfeil">→</span>
+      <div class="glied betont"><span class="titel">Empfehlung</span><span class="was">Was tun – konkret?</span></div>
+      <span class="pfeil">→</span>
+      <div class="glied hell"><span class="titel">Kontrolle</span><span class="was">Woran merkt man, dass es wirkt?</span></div>
+    </div>
+    <div class="table-scroll">
+      <table class="table">
+        <thead><tr><th>Station</th><th>Beispiel Stornorisiko</th></tr></thead>
+        <tbody>
+          <tr><td>Frage</td><td>Welche Buchungen werden storniert, und lässt sich das vorher erkennen?</td></tr>
+          <tr><td>Befund</td><td>Die Stornoquote steigt mit der Vorlaufzeit: 9,6 % bei 0–7 Tagen, 27,9 % bei 8–30, 37,7 % bei 31–90, 50,7 % bei über 90 Tagen.</td></tr>
+          <tr><td>Deutung</td><td>Wer früh bucht, bindet sich nicht: Ohne Anzahlung kostet die Stornierung nichts, und bis zur Anreise ändern sich Pläne. Die Quote ist keine Eigenschaft der Gäste, sondern der Bedingungen.</td></tr>
+          <tr><td>Empfehlung</td><td>Stornobedingungen nach Vorlaufzeit staffeln: Buchungen mit mehr als 90 Tagen Vorlauf nur mit Anzahlung; zwei Wochen vor Anreise rückbestätigen; Überbuchung an den Quoten je Vorlaufklasse ausrichten.</td></tr>
+          <tr><td>Kontrolle</td><td>Stornoquote der Klasse „über 90 Tage“ je Anreisemonat gegenüber dem Vorjahresmonat; durch Stornierung entgangener Umsatz je Monat.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="section-block" id="befunde">
+    <h2>Die Befunde des Projekts</h2>
+    <p>Sechs Befunde, die das Dashboard ausweist – mit der Deutung und der Empfehlung, die es dazu vorschlägt. Sie
+      sind aus den Daten formuliert und ändern sich mit dem Filter; die Zahlen hier gelten für alle Buchungen.</p>
+    <div class="karten">
+      <div class="karte">
+        <div class="kopfzeile">Gruppen: 61 % storniert</div>
+        <p>Gruppen sind mit 19.811 Buchungen das drittgrößte Segment und mit 61,1 % das riskanteste. Deutung:
+          Sammelbuchungen ohne Bindung. Empfehlung: Gruppen nur mit gestaffelten Anzahlungen annehmen.</p>
+      </div>
+      <div class="karte">
+        <div class="kopfzeile">Inland storniert häufiger</div>
+        <p>Portugiesische Gäste: 56,6 % storniert, ausländische: 23,6 %. Der Inlandsmarkt ist groß, aber
+          unzuverlässig. Empfehlung: Stornobedingungen nach Markt differenzieren, Marketingbudget auf Länder mit
+          niedriger Quote und hohem Umsatz je Buchung lenken.</p>
+      </div>
+      <div class="karte">
+        <div class="kopfzeile">Direktbuchungen bringen Umsatz</div>
+        <p>Direktbuchungen: 10,6 % der Buchungen, aber 15,8 % des Umsatzes – und nur 15,3 % Stornoquote.
+          Empfehlung: Direktbuchungen mit Vorteilen fördern, die es nur über die eigene Seite gibt; den
+          Direktvertriebsanteil als Kennzahl führen.</p>
+      </div>
+      <div class="karte">
+        <div class="kopfzeile">Non Refund: ein Datenproblem</div>
+        <p>99,4 % der nicht erstattbaren Buchungen storniert – fachlich unplausibel. Deutung: ein Artefakt der
+          Datenquelle (Lab 01). Empfehlung: mit der Buchungsabteilung klären, bevor daraus eine Maßnahme wird.
+          Nicht jeder Befund verlangt eine Maßnahme; mancher verlangt eine Rückfrage.</p>
+      </div>
+      <div class="karte">
+        <div class="kopfzeile">Wenig Wiederholungsgäste</div>
+        <p>3,2 % Wiederholungsgäste. Deutung: Ferienhotel und Stadthotel mit Durchreisenden – aber auch kein
+          Bindungsprogramm in den Daten erkennbar. Empfehlung: Bindungsprogramm prüfen; Kontrolle über den Anteil je
+          Anreisemonat.</p>
+      </div>
+      <div class="karte">
+        <div class="kopfzeile">Die Saison trägt den Umsatz</div>
+        <p>Umsatz im August 2016 fast siebenmal so hoch wie im Januar. Deutung: Beide Häuser hängen an der
+          Sommersaison. Empfehlung: Tiefmonate über Preis und Pakete stützen statt die Hochsaison zu rabattieren;
+          Prognosen auf 2016 stützen, das einzige vollständige Jahr.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section-block" id="gut">
+    <h2>Was eine gute Empfehlung braucht</h2>
+    <div class="concept-box">
+      <h3>Fünf Prüfsteine</h3>
+      <ul>
+        <li><strong>Konkret:</strong> „Anzahlung ab 90 Tagen Vorlauf“ statt „Stornierungen reduzieren“.</li>
+        <li><strong>Begründet:</strong> mit dem Befund und der Deutung, nicht mit dem Bauchgefühl. Wer die Zahl nennt,
+          kann widerlegt werden – das ist ein Vorteil.</li>
+        <li><strong>Messbar:</strong> mit einer Kontrollkennzahl aus dem Katalog, die man in drei Monaten wieder
+          ansieht.</li>
+        <li><strong>Verhältnismäßig:</strong> Ein Prozentpunkt weniger Stornierungen entspricht etwa 427.000 €
+          gebuchtem Umsatz – eine Maßnahme, die weniger kostet, lohnt sich; eine, die Stammgäste vergrault,
+          nicht.</li>
+        <li><strong>Mit Grenzen:</strong> Was die Daten nicht hergeben, steht dabei – keine Kapazität, kein
+          Nebenumsatz, zwei Häuser, zwei Jahre.</li>
+      </ul>
+    </div>
+    <div class="challenge-box">
+      <p>Probe: Lesen Sie die Empfehlung so, als wären Sie die Hotelleitung. Können Sie am Montag etwas tun? Wissen Sie,
+        warum? Wissen Sie, woran Sie im Dezember erkennen, ob es gewirkt hat? Dreimal ja – dann ist es eine
+        Empfehlung.</p>
+    </div>
+  </section>
+
+  <section class="section-block" id="fehlschluesse">
+    <h2>Fehlschlüsse</h2>
+    <div class="karten">
+      <div class="karte">
+        <div class="kopfzeile">Korrelation als Ursache</div>
+        <p>Lange Vorlaufzeit und hohe Stornoquote treten zusammen auf. Das heißt nicht, dass die Vorlaufzeit die
+          Stornierung verursacht – vielleicht buchen bestimmte Segmente früh und stornieren aus anderen Gründen.
+          Die Deutung muss den Mechanismus nennen; die Empfehlung setzt am Mechanismus an (Anzahlung), nicht am
+          Merkmal (Frühbucher ablehnen).</p>
+      </div>
+      <div class="karte">
+        <div class="kopfzeile">Mittelwert der Mittelwerte</div>
+        <p>„Der ADR beider Hotels ist 100,13 €“ – falsch, er ist 101,83 € (Lab 06). Wer Quoten und Mittelwerte
+          addiert oder mittelt, empfiehlt auf Basis einer Zahl, die es nicht gibt.</p>
+      </div>
+      <div class="karte">
+        <div class="kopfzeile">Der Ausreißer als Trend</div>
+        <p>Ein Monat mit +15,6 % beim gebuchten Umsatz ist ein Monat. Ein Trend braucht mehrere Monate, die in
+          dieselbe Richtung zeigen – und den Blick auf den Vorjahresmonat, nicht auf den Vormonat.</p>
+      </div>
+      <div class="karte">
+        <div class="kopfzeile">Das Artefakt als Befund</div>
+        <p>„Nicht erstattbare Buchungen werden zu 99 % storniert – also die Kaution abschaffen“: eine Maßnahme auf
+          Basis eines Datenfehlers. Erst prüfen, ob die Zahl das misst, was sie zu messen scheint.</p>
+      </div>
+      <div class="karte">
+        <div class="kopfzeile">Zwei Häuser, eine Regel</div>
+        <p>Das City Hotel storniert zu 41,7 %, das Resort Hotel zu 27,8 %; das Resort hat längere Aufenthalte und
+          eine andere Saison. Eine Empfehlung „für die Kette“ trifft beide falsch. Die Hotels nicht über einen Kamm
+          scheren.</p>
+      </div>
+      <div class="karte">
+        <div class="kopfzeile">Der fehlende Nenner</div>
+        <p>„Mehr Zimmernächte im August“ sagt nichts über die Auslastung, weil die Kapazität fehlt. Wer aus
+          Zimmernächten auf Auslastung schließt, empfiehlt Preise, die vielleicht schon nicht mehr durchsetzbar
+          sind.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section-block" id="uebungen">
+    <h2>Übungen</h2>
+    <p>Vier Übungen: eine Aussage lesen, Befunde ihren Empfehlungen zuordnen, den Weg von der Frage zur Kontrolle
+      ordnen und Fehlschlüsse erkennen.</p>
+    <div data-uebung="W09-01"></div>
+    <div data-uebung="W09-02"></div>
+    <div data-uebung="W09-03"></div>
+    <div data-uebung="W09-04"></div>
+    <div data-fortschritt></div>
+  </section>
+
+  <section class="section-block" id="zusammenfassung">
+    <h2>Zusammenfassung</h2>
+    <ul>
+      <li>Aussage und Beschreibung sagen, was ein Diagramm zeigt und was nicht; drei Fragen: Was wird gezählt, worauf bezieht sich der Vergleich, gilt es unter dem Filter?</li>
+      <li>Eine Abweichung ist ein Anlass; Saison, Basis und Treiber entscheiden, ob sie ein Befund ist.</li>
+      <li>Fünf Stationen: Frage, Befund, Deutung, Empfehlung, Kontrolle – keine überspringen.</li>
+      <li>Sechs Befunde des Projekts: Gruppen, Inland, Direktbuchungen, Non Refund, Wiederholungsgäste, Saison.</li>
+      <li>Eine gute Empfehlung ist konkret, begründet, messbar, verhältnismäßig und nennt ihre Grenzen.</li>
+      <li>Fehlschlüsse: Korrelation als Ursache, Mittelwert der Mittelwerte, Ausreißer als Trend, Artefakt als Befund, eine Regel für zwei Häuser, fehlender Nenner.</li>
+    </ul>
+    <div data-lab-nav></div>
+  </section>
+
+</main>
+
+<footer class="footer">
+  <p>Hotel-Lab · Lab 09 · THWS Business School · Stand 09/2026</p>
+</footer>
+
+<script type="module" src="assets/hotel.js"></script>
+</body>
+</html>

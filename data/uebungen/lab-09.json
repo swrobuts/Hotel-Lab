@@ -1,0 +1,339 @@
+{
+  "befehle": {},
+  "uebungen": [
+    {
+      "id": "W09-01",
+      "typ": "quiz",
+      "titel": {
+        "de": "Eine Aussage lesen"
+      },
+      "aufgabe": {
+        "de": "<p>Im Dashboard steht bei Filter „Hotel: City Hotel“ die Aussage: <em>„Reisebüro online: 48,8 % der Buchungen, 60,9 % des Umsatzes – Reisebüro online bringt mehr Umsatz als Buchungen (12,1 Prozentpunkte)“</em>. Drei Fragen dazu.</p>"
+      },
+      "fragen": [
+        {
+          "frage": {
+            "de": "Für wen gilt die Aussage?"
+          },
+          "optionen": [
+            {
+              "de": "Für beide Hotels"
+            },
+            {
+              "de": "Nur für das City Hotel – der Filter steht in der Beschreibung"
+            },
+            {
+              "de": "Für alle Hotels der Kette in Portugal"
+            },
+            {
+              "de": "Für das Jahr 2016"
+            }
+          ],
+          "richtig": [
+            1
+          ],
+          "erklaerung": {
+            "de": "Die Beschreibung unter der Aussage nennt Zeitraum und Filter. Mit Hotelfilter ist jede Zahl eine Zahl des City Hotels; für beide Hotels stehen andere Werte (47,3 % der Buchungen, 52,8 % des Umsatzes)."
+          }
+        },
+        {
+          "frage": {
+            "de": "Was bedeutet „Reisebüro online bringt mehr Umsatz als Buchungen“?"
+          },
+          "optionen": [
+            {
+              "de": "Online-Reisebüros buchen mehr Zimmer als alle anderen zusammen"
+            },
+            {
+              "de": "Der Umsatzanteil des Segments liegt über seinem Buchungsanteil – es zahlt höhere Zimmerpreise, bleibt länger oder storniert seltener"
+            },
+            {
+              "de": "Das Segment hat die niedrigste Stornoquote"
+            },
+            {
+              "de": "Der Umsatz der Online-Reisebüros wächst schneller als ihre Buchungen"
+            }
+          ],
+          "richtig": [
+            1
+          ],
+          "erklaerung": {
+            "de": "Das Balkenpaar zeigt Anteil an den Buchungen neben Anteil am Umsatz. Liegt der Umsatzanteil darüber, ist das Segment mehr wert als seine Menge. Bei Gruppen ist es im City Hotel umgekehrt: 17,6 % der Buchungen, 6,8 % des Umsatzes – vor allem wegen der Stornierungen."
+          }
+        },
+        {
+          "frage": {
+            "de": "Welcher Umsatz ist in dieser Aussage gemeint?"
+          },
+          "optionen": [
+            {
+              "de": "Der gebuchte Umsatz vor Stornierung"
+            },
+            {
+              "de": "Der stornobereinigte Umsatz – so steht es in der Beschreibung des Diagramms"
+            },
+            {
+              "de": "Der Umsatz einschließlich Frühstück"
+            },
+            {
+              "de": "Der Umsatz je Zimmer"
+            }
+          ],
+          "richtig": [
+            1
+          ],
+          "erklaerung": {
+            "de": "Die Beschreibung sagt: Anteil am stornobereinigten Umsatz. Deshalb schneiden Segmente mit hoher Stornoquote beim Umsatzanteil schlechter ab als beim Buchungsanteil."
+          }
+        }
+      ],
+      "rueckmeldung": {
+        "de": "Filter, Vergleichsgröße und Umsatzbegriff – die Beschreibung beantwortet alle drei Fragen, wenn man sie liest."
+      }
+    },
+    {
+      "id": "W09-02",
+      "typ": "zuordnen",
+      "titel": {
+        "de": "Befund und Empfehlung"
+      },
+      "aufgabe": {
+        "de": "<p>Ordnen Sie jede Empfehlung dem Befund zu, aus dem sie folgt.</p>"
+      },
+      "ziele": [
+        {
+          "id": "vorlauf",
+          "text": {
+            "de": "Stornoquote steigt mit der Vorlaufzeit auf 51 %"
+          }
+        },
+        {
+          "id": "gruppen",
+          "text": {
+            "de": "Gruppen: 61 % storniert"
+          }
+        },
+        {
+          "id": "inland",
+          "text": {
+            "de": "Inland 57 % storniert, Ausland 24 %"
+          }
+        },
+        {
+          "id": "direkt",
+          "text": {
+            "de": "Direktbuchungen: mehr Umsatz als Buchungen, 15 % Storno"
+          }
+        },
+        {
+          "id": "nonrefund",
+          "text": {
+            "de": "Nicht erstattbar: 99 % storniert"
+          }
+        },
+        {
+          "id": "saison",
+          "text": {
+            "de": "August siebenmal so viel Umsatz wie Januar"
+          }
+        }
+      ],
+      "paare": [
+        {
+          "begriff": {
+            "de": "Buchungen mit über 90 Tagen Vorlauf nur mit Anzahlung annehmen"
+          },
+          "ziel": "vorlauf"
+        },
+        {
+          "begriff": {
+            "de": "Gruppen nur mit gestaffelten Anzahlungen annehmen"
+          },
+          "ziel": "gruppen"
+        },
+        {
+          "begriff": {
+            "de": "Stornobedingungen nach Markt differenzieren"
+          },
+          "ziel": "inland"
+        },
+        {
+          "begriff": {
+            "de": "Vorteile, die es nur über die eigene Seite gibt; Direktvertriebsanteil als Kennzahl führen"
+          },
+          "ziel": "direkt"
+        },
+        {
+          "begriff": {
+            "de": "Mit der Buchungsabteilung klären, bevor daraus eine Maßnahme wird"
+          },
+          "ziel": "nonrefund"
+        },
+        {
+          "begriff": {
+            "de": "Tiefmonate über Preis und Pakete stützen statt die Hochsaison zu rabattieren"
+          },
+          "ziel": "saison"
+        },
+        {
+          "begriff": {
+            "de": "Zwei Wochen vor Anreise rückbestätigen"
+          },
+          "ziel": "vorlauf"
+        }
+      ],
+      "rueckmeldung": {
+        "de": "Jede Empfehlung setzt am Mechanismus ihres Befunds an: Bindung gegen Vorlauf und Gruppen, Regeln nach Markt, Anreize für den Direktkanal, Rückfrage beim Artefakt, Preispolitik gegen die Saison."
+      }
+    },
+    {
+      "id": "W09-03",
+      "typ": "reihenfolge",
+      "titel": {
+        "de": "Von der Frage zur Kontrolle"
+      },
+      "aufgabe": {
+        "de": "<p>Bringen Sie die Stationen einer Handlungsempfehlung in die richtige Reihenfolge – am Beispiel des Inlandsmarkts.</p>"
+      },
+      "eintraege": [
+        {
+          "id": "frage",
+          "text": {
+            "de": "Frage: Verhalten sich Inlandsgäste anders als ausländische?"
+          }
+        },
+        {
+          "id": "befund",
+          "text": {
+            "de": "Befund: Portugal stellt 41 % der Gäste und storniert zu 57 %, das Ausland zu 24 %"
+          }
+        },
+        {
+          "id": "deutung",
+          "text": {
+            "de": "Deutung: kurze Anreise, spontane Planänderung, keine Anzahlung – die Stornierung kostet nichts"
+          }
+        },
+        {
+          "id": "empfehlung",
+          "text": {
+            "de": "Empfehlung: Stornobedingungen für den Inlandsmarkt strenger, Anzahlung ab bestimmter Vorlaufzeit"
+          }
+        },
+        {
+          "id": "kontrolle",
+          "text": {
+            "de": "Kontrolle: Stornoquote Inland je Anreisemonat gegenüber dem Vorjahresmonat"
+          }
+        }
+      ],
+      "richtig": [
+        "frage",
+        "befund",
+        "deutung",
+        "empfehlung",
+        "kontrolle"
+      ],
+      "start": [
+        "empfehlung",
+        "kontrolle",
+        "frage",
+        "deutung",
+        "befund"
+      ],
+      "rueckmeldung": {
+        "de": "Frage, Befund, Deutung, Empfehlung, Kontrolle. Wer mit der Empfehlung beginnt, sucht danach Zahlen, die sie stützen – das ist der umgekehrte Weg."
+      }
+    },
+    {
+      "id": "W09-04",
+      "typ": "quiz",
+      "titel": {
+        "de": "Fehlschlüsse erkennen"
+      },
+      "aufgabe": {
+        "de": "<p>Drei Aussagen – welche ist haltbar, welche nicht?</p>"
+      },
+      "fragen": [
+        {
+          "frage": {
+            "de": "„Der gebuchte Umsatz lag im August 2017 um 15,6 % über dem Vorjahresmonat – das Geschäft wächst zweistellig.“"
+          },
+          "optionen": [
+            {
+              "de": "Haltbar: Der Vorjahresmonat ist der richtige Vergleich"
+            },
+            {
+              "de": "Nicht haltbar: Ein Monat ist kein Trend; erst mehrere Monate in dieselbe Richtung, und zwar beim stornobereinigten Umsatz"
+            },
+            {
+              "de": "Nicht haltbar: Man müsste mit dem Vormonat vergleichen"
+            },
+            {
+              "de": "Haltbar, weil August der stärkste Monat ist"
+            }
+          ],
+          "richtig": [
+            1
+          ],
+          "erklaerung": {
+            "de": "Der Vergleich ist richtig gewählt, aber ein einzelner Monat trägt keine Wachstumsaussage. Und gebuchter Umsatz enthält die Stornierungen – das Geschäft misst sich am stornobereinigten."
+          }
+        },
+        {
+          "frage": {
+            "de": "„Frühbucher stornieren häufiger – wir nehmen keine Buchungen mehr mit über 90 Tagen Vorlauf an.“"
+          },
+          "optionen": [
+            {
+              "de": "Haltbar: Der Befund ist eindeutig"
+            },
+            {
+              "de": "Nicht haltbar: Die Maßnahme setzt am Merkmal an, nicht am Mechanismus – und verschenkt 51.131 Buchungen, von denen die Hälfte kommt"
+            },
+            {
+              "de": "Nicht haltbar, weil Vorlaufzeit nicht messbar ist"
+            },
+            {
+              "de": "Haltbar, wenn man es nur im City Hotel macht"
+            }
+          ],
+          "richtig": [
+            1
+          ],
+          "erklaerung": {
+            "de": "Der Mechanismus ist die fehlende Bindung, nicht das Datum der Buchung. Anzahlung ab 90 Tagen behält die Buchungen und senkt die Quote; Ablehnen verliert die Hälfte, die angereist wäre."
+          }
+        },
+        {
+          "frage": {
+            "de": "„Im August 2016 waren 19.793 Zimmernächte gebucht, im Januar 6.161 – im Januar sind die Hotels zu zwei Dritteln leer.“"
+          },
+          "optionen": [
+            {
+              "de": "Haltbar: Zimmernächte sind der Ersatz für die Auslastung"
+            },
+            {
+              "de": "Nicht haltbar: Ohne Kapazität gibt es keinen Nenner; Zimmernächte zeigen die Nachfrage, nicht die Auslastung"
+            },
+            {
+              "de": "Nicht haltbar, weil der Januar nur 31 Tage hat"
+            },
+            {
+              "de": "Haltbar, wenn man stornierte Buchungen abzieht"
+            }
+          ],
+          "richtig": [
+            1
+          ],
+          "erklaerung": {
+            "de": "Die Auslastung braucht die verfügbaren Zimmer, und die stehen nicht im Datensatz. Aus Zimmernächten folgt, dass im Januar weniger nachgefragt wird – wie leer die Häuser sind, weiß man nicht."
+          }
+        }
+      ],
+      "rueckmeldung": {
+        "de": "Trend, Mechanismus, Nenner: drei Prüfungen, die eine Aussage bestehen muss, bevor sie eine Empfehlung trägt."
+      }
+    }
+  ]
+}

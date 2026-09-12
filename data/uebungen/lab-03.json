@@ -480,6 +480,11 @@
         },
         {
           "text": {
+            "de": "Links das Schlüsselsymbol (<em>Secrets</em>) öffnen, ein Secret <code>HOTEL_DB_URL</code> mit der Verbindungs-URL aus dem README anlegen und <em>Zugriff auf Notebook</em> einschalten. Steht das Secret in der Liste mit eingeschaltetem Schalter?"
+          }
+        },
+        {
+          "text": {
             "de": "<code>Laufzeit → Alle ausführen</code>. Erscheint links neben der ersten Codezelle nach dem Lauf <code>[1]</code> und unter ihr „Zeilen, Spalten: (119390, 32)“?"
           }
         },

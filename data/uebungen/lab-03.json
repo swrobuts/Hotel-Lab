@@ -1,0 +1,218 @@
+{
+  "befehle": {
+    "B01": {
+      "titel": { "de": "Das Notebook öffnen" },
+      "prompt": "🖱",
+      "befehl": "https://colab.research.google.com/github/swrobuts/hotel/blob/main/notebooks/BI_Hotel_Booking_Demand.ipynb\n\n  1  Datei → Kopie in Drive speichern      ← sonst gehen Änderungen verloren\n  2  Laufzeit → Alle ausführen             ← läuft etwa eine Minute\n  3  Bis Abschnitt 4 rollen und die KPI-Tabelle mit Lab 06 vergleichen",
+      "teile": [
+        { "was": "colab.research.google.com/github/…", "bedeutet": { "de": "Colab öffnet ein Notebook direkt aus GitHub (Lab 02). Das Original im Repository bleibt unverändert; Sie arbeiten auf einer Kopie." } },
+        { "was": "Kopie in Drive speichern", "bedeutet": { "de": "Erst dann ist das Notebook Ihres. Ohne Kopie zeigt Colab beim Schließen einen Hinweis, dass Änderungen verloren gehen." } },
+        { "was": "Alle ausführen", "bedeutet": { "de": "Führt die 30 Zellen von oben nach unten aus – die einzige Reihenfolge, in der das Notebook fehlerfrei läuft." } }
+      ]
+    },
+    "B02": {
+      "titel": { "de": "Lücken füllen – jede Zeile eine Annahme" },
+      "prompt": "[7]",
+      "befehl": "df[\"children\"] = df[\"children\"].fillna(0)\ndf[\"country\"] = df[\"country\"].fillna(\"UNK\")\ndf[\"agent\"] = df[\"agent\"].replace(\"NULL\", np.nan)\ndf[\"company\"] = df[\"company\"].replace(\"NULL\", np.nan)",
+      "teile": [
+        { "was": "fillna(0)", "bedeutet": { "de": "Ersetzt fehlende Werte durch 0. Fachliche Annahme: keine Angabe = kein Kind. Vier Zeilen." } },
+        { "was": "fillna(\"UNK\")", "bedeutet": { "de": "Ein sichtbarer Platzhalter statt eines Lochs. 488 Buchungen ohne Land bleiben so in jedem Join und in jeder Summe." } },
+        { "was": "replace(\"NULL\", np.nan)", "bedeutet": { "de": "Macht aus dem Wort NULL einen echten fehlenden Wert. Neuere pandas-Versionen tun das schon beim Laden; die Zeile schadet nicht und schützt bei anderen Quellen." } }
+      ]
+    },
+    "B03": {
+      "titel": { "de": "Spalten ableiten – hier entsteht revenue" },
+      "prompt": "[8]",
+      "befehl": "df[\"arrival_date\"] = pd.to_datetime(dict(\n    year=df[\"arrival_date_year\"], month=df[\"arrival_date_month_num\"],\n    day=df[\"arrival_date_day_of_month\"]))\n\ndf[\"total_nights\"] = df[\"stays_in_weekend_nights\"] + df[\"stays_in_week_nights\"]\ndf[\"total_guests\"] = df[\"adults\"] + df[\"children\"] + df[\"babies\"]\ndf[\"revenue\"] = df[\"adr\"] * df[\"total_nights\"]   # Zimmerpreis × Nächte, nur Übernachtung",
+      "teile": [
+        { "was": "pd.to_datetime(dict(year=…, month=…, day=…))", "bedeutet": { "de": "Baut aus drei Zahlenspalten ein Datum. Der Monat muss vorher vom englischen Namen zur Zahl gewandelt sein (Zeile davor im Notebook)." } },
+        { "was": "total_nights", "bedeutet": { "de": "Wochenend- plus Wochentagsnächte. 715 Buchungen bleiben bei 0 – Tagesnutzung oder Stornierung am Anreisetag." } },
+        { "was": "revenue = adr * total_nights", "bedeutet": { "de": "Der Zimmerumsatz einer Buchung. Über alle Buchungen summiert: gebuchter Umsatz; nur nicht stornierte: stornobereinigter Umsatz; die Differenz: durch Stornierung entgangener Umsatz." } }
+      ]
+    },
+    "B04": {
+      "titel": { "de": "Die zwei Umsatzzeilen" },
+      "prompt": "[10]",
+      "befehl": "total_revenue  = df.loc[df[\"is_canceled\"] == 0, \"revenue\"].sum()   # stornobereinigt\nbooked_revenue = df[\"revenue\"].sum()                                 # gebucht, vor Storno",
+      "teile": [
+        { "was": "df.loc[df[\"is_canceled\"] == 0, \"revenue\"]", "bedeutet": { "de": "Zeilenfilter und Spaltenwahl in einem Ausdruck: nur die nicht stornierten Buchungen, davon die Spalte revenue." } },
+        { "was": ".sum()", "bedeutet": { "de": "Summe über alle gefilterten Zeilen: 25.996.260 €. Ohne Filter 42.723.498 € – 16,7 Mio. € sind durch Stornierung entgangen." } }
+      ]
+    },
+    "B05": {
+      "titel": { "de": "Stornoquote nach Vorlaufzeit" },
+      "prompt": "[19]",
+      "befehl": "df[\"lead_time_bucket\"] = pd.cut(\n    df[\"lead_time\"], bins=[-1, 7, 30, 90, 180, 365, 10000],\n    labels=[\"0-7\", \"8-30\", \"31-90\", \"91-180\", \"181-365\", \">365\"])\nstorno_by_leadtime = df.groupby(\"lead_time_bucket\", observed=True)[\"is_canceled\"].mean() * 100",
+      "teile": [
+        { "was": "pd.cut(…, bins=…, labels=…)", "bedeutet": { "de": "Teilt eine Zahl in Klassen. Die Grenzen sind fachlich gewählt: eine Woche, ein Monat, ein Quartal, ein halbes Jahr, ein Jahr." } },
+        { "was": "bins=[-1, 7, …]", "bedeutet": { "de": "Die erste Grenze liegt bei −1, damit die Vorlaufzeit 0 in die erste Klasse fällt – pd.cut schließt die untere Grenze aus." } },
+        { "was": "[\"is_canceled\"].mean() * 100", "bedeutet": { "de": "Der Mittelwert eines 0/1-Flags ist ein Anteil; mal 100 die Stornoquote in Prozent je Klasse. Ergebnis: von 10 % (0–7 Tage) auf über 50 % (über 90 Tage)." } }
+      ]
+    },
+    "B06": {
+      "titel": { "de": "Eine Dimension aus einer Spalte" },
+      "prompt": "[22]",
+      "befehl": "def make_dim(colname, id_name):\n    vals = sorted(df[colname].dropna().unique().tolist())\n    return pd.DataFrame({id_name: range(1, len(vals)+1), colname: vals})\n\ndim_hotel = make_dim(\"hotel\", \"hotel_id\")        # 2 Zeilen\ndim_country = make_dim(\"country\", \"country_id\")  # 178 Zeilen",
+      "teile": [
+        { "was": "unique()", "bedeutet": { "de": "Jeder Wert genau einmal – aus 119.390 Zeilen werden zwei Hotels, 178 Länder, acht Marktsegmente." } },
+        { "was": "sorted(…)", "bedeutet": { "de": "Alphabetisch, damit die Nummern bei jedem Lauf gleich vergeben werden. Reproduzierbarkeit auch hier." } },
+        { "was": "range(1, len(vals)+1)", "bedeutet": { "de": "Die laufende Nummer wird der Primärschlüssel der Dimension und der Fremdschlüssel in der Faktentabelle." } }
+      ]
+    },
+    "B07": {
+      "titel": { "de": "Aus der Datenbank lesen" },
+      "prompt": "[28]",
+      "befehl": "%pip install -q sqlalchemy psycopg2-binary\nfrom sqlalchemy import create_engine\n\nengine = create_engine(\"postgresql://studi_hotel:thws@supabase.butscher.cloud:5433/hotel\")\nsql = \"\"\"\nSELECT h.hotel, COUNT(*) AS buchungen,\n       ROUND(AVG(f.is_canceled::int) * 100, 1) AS stornoquote_pct\nFROM   hotel_bi.fact_bookings f\nJOIN   hotel_bi.dim_hotel h ON h.hotel_id = f.hotel_id\nGROUP  BY h.hotel ORDER BY h.hotel\n\"\"\"\npd.read_sql(sql, engine)",
+      "teile": [
+        { "was": "%pip install -q", "bedeutet": { "de": "Installiert zwei Pakete in die laufende Colab-Laufzeit: SQLAlchemy als Verbindungsschicht, psycopg2 als PostgreSQL-Treiber. Nach einem Neustart der Laufzeit sind sie wieder weg." } },
+        { "was": "postgresql://studi_hotel:thws@supabase.butscher.cloud:5433/hotel", "bedeutet": { "de": "Die Verbindungs-URL: Treiber, Benutzer, Kennwort, Host, Port, Datenbank. Dieselben Angaben, die Power BI und DBeaver in Formularfelder verteilen." } },
+        { "was": "AVG(f.is_canceled::int)", "bedeutet": { "de": "In der Datenbank ist is_canceled ein Wahrheitswert; ::int macht daraus 0 und 1, damit AVG rechnen kann. In pandas war die Spalte schon eine Zahl." } },
+        { "was": "pd.read_sql(sql, engine)", "bedeutet": { "de": "Führt die Abfrage aus und liefert einen DataFrame – 41,7 % und 27,8 %, genau wie in Abschnitt 5.1." } }
+      ]
+    }
+  },
+  "uebungen": [
+    {
+      "id": "W03-01",
+      "typ": "reihenfolge",
+      "titel": { "de": "Die Abschnitte in Laufreihenfolge" },
+      "aufgabe": { "de": "<p>Bringen Sie die Abschnitte des Notebooks in die Reihenfolge, in der sie laufen müssen. Denken Sie daran, welche Zelle welche Spalte erzeugt.</p>" },
+      "eintraege": [
+        { "id": "laden", "text": { "de": "Rohdaten per URL laden, df.shape prüfen" } },
+        { "id": "sichten", "text": { "de": "df.info() und df.describe() lesen" } },
+        { "id": "bereinigen", "text": { "de": "Lücken füllen, arrival_date und revenue ableiten" } },
+        { "id": "kpi", "text": { "de": "Die zehn Kennzahlen als pd.Series rechnen" } },
+        { "id": "auswerten", "text": { "de": "Vier Auswertungen mit groupby und matplotlib" } },
+        { "id": "stern", "text": { "de": "Dimensionen und Faktentabelle erzeugen, als CSV exportieren" } },
+        { "id": "live", "text": { "de": "Stornoquote je Hotel aus der Datenbank lesen und vergleichen" } }
+      ],
+      "richtig": ["laden", "sichten", "bereinigen", "kpi", "auswerten", "stern", "live"],
+      "start": ["kpi", "live", "laden", "stern", "sichten", "auswerten", "bereinigen"],
+      "rueckmeldung": { "de": "Kennzahlen brauchen revenue, das Sternschema braucht arrival_date – beides entsteht in der Bereinigung. Wer die Reihenfolge kennt, liest jeden KeyError als Wegweiser." }
+    },
+    {
+      "id": "W03-02",
+      "typ": "quiz",
+      "titel": { "de": "Die Annahmen der Bereinigung" },
+      "aufgabe": { "de": "<p>Drei Fragen dazu, was die Bereinigungszellen tun und warum.</p>" },
+      "fragen": [
+        {
+          "frage": { "de": "Warum wird country mit „UNK“ gefüllt statt die 488 Zeilen zu löschen?" },
+          "optionen": [
+            { "de": "Weil pandas keine Zeilen löschen kann" },
+            { "de": "Weil die Buchungen für Stornoquote und Umsatz weiter zählen sollen und nur das Land fehlt" },
+            { "de": "Weil UNK ein gültiger ISO-Code ist" },
+            { "de": "Weil das Dashboard sonst abstürzt" }
+          ],
+          "richtig": [1],
+          "erklaerung": { "de": "Die 488 Buchungen sind vollständig – nur das Land fehlt. Löschen würde Umsatz und Stornoquote verändern. Ein sichtbarer Platzhalter hält die Zeilen in jeder Summe und in jedem Join." }
+        },
+        {
+          "frage": { "de": "Was ist revenue für eine stornierte Buchung mit adr 100 und 3 Nächten?" },
+          "optionen": [
+            { "de": "0, weil storniert" },
+            { "de": "300 – revenue wird für jede Buchung gerechnet; erst die Kennzahl filtert" },
+            { "de": "−300 als Verlust" },
+            { "de": "100, weil nur die erste Nacht zählt" }
+          ],
+          "richtig": [1],
+          "erklaerung": { "de": "revenue ist eine Spalte je Buchung, unabhängig vom Status. Erst die Kennzahlen entscheiden: stornobereinigter Umsatz filtert is_canceled = 0, gebuchter Umsatz nimmt alle. Die 300 € dieser Buchung sind durch Stornierung entgangener Umsatz." }
+        },
+        {
+          "frage": { "de": "Warum steht in der Zelle zu 5.2 ein reindex(month_order)?" },
+          "optionen": [
+            { "de": "Weil groupby die Monate alphabetisch sortiert und die Linie sonst eine falsche Saison zeigt" },
+            { "de": "Weil matplotlib nur Zahlen auf der Achse akzeptiert" },
+            { "de": "Weil fehlende Monate ergänzt werden müssen" },
+            { "de": "Weil die Monate ins Deutsche übersetzt werden" }
+          ],
+          "richtig": [0],
+          "erklaerung": { "de": "groupby liefert April, August, December, … – alphabetisch. reindex bringt die zwölf Monate in Kalenderreihenfolge; die Übersetzung ins Deutsche macht danach rename." }
+        }
+      ],
+      "rueckmeldung": { "de": "Jede dieser Entscheidungen steht im Notebook als Text. Genau das unterscheidet eine dokumentierte Bereinigung von einer Zahl, die niemand mehr erklären kann." }
+    },
+    {
+      "id": "W03-03",
+      "typ": "zuordnen",
+      "titel": { "de": "Codezeile und Abschnitt" },
+      "aufgabe": { "de": "<p>Ordnen Sie jede Codezeile dem Abschnitt des Notebooks zu, in dem sie steht.</p>" },
+      "ziele": [
+        { "id": "laden", "text": { "de": "1–2 Laden und sichten" } },
+        { "id": "bereinigen", "text": { "de": "3 Bereinigen und ableiten" } },
+        { "id": "kpi", "text": { "de": "4 Kennzahlen" } },
+        { "id": "auswerten", "text": { "de": "5 Auswertungen" } },
+        { "id": "stern", "text": { "de": "6–7 Sternschema, Export, Datenbank" } }
+      ],
+      "paare": [
+        { "begriff": { "de": "df = pd.read_csv(URL)" }, "ziel": "laden" },
+        { "begriff": { "de": "df[\"revenue\"] = df[\"adr\"] * df[\"total_nights\"]" }, "ziel": "bereinigen" },
+        { "begriff": { "de": "df[\"is_canceled\"].mean() * 100" }, "ziel": "kpi" },
+        { "begriff": { "de": "df.groupby(\"hotel\").agg(…)" }, "ziel": "auswerten" },
+        { "begriff": { "de": "dim_hotel = make_dim(\"hotel\", \"hotel_id\")" }, "ziel": "stern" },
+        { "begriff": { "de": "df.describe(include=\"all\").T" }, "ziel": "laden" },
+        { "begriff": { "de": "pd.cut(df[\"lead_time\"], bins=…)" }, "ziel": "auswerten" },
+        { "begriff": { "de": "pd.read_sql(sql, engine)" }, "ziel": "stern" }
+      ],
+      "rueckmeldung": { "de": "Wer eine Zeile ihrem Abschnitt zuordnen kann, kann auch sagen, welche Zellen vor ihr gelaufen sein müssen." }
+    },
+    {
+      "id": "W03-04",
+      "typ": "checkliste",
+      "titel": { "de": "Einmal komplett durch das Notebook" },
+      "aufgabe": { "de": "<p>Öffnen Sie das Notebook in Colab (Befehlskarte oben) und arbeiten Sie die Schritte ab. Jeder Schritt endet mit einer Prüffrage – haken Sie ihn erst ab, wenn die Antwort stimmt.</p>" },
+      "schritte": [
+        { "text": { "de": "Notebook über den Colab-Link öffnen und <code>Datei → Kopie in Drive speichern</code> wählen. Steht im Titel jetzt „Kopie von BI_Hotel_Booking_Demand.ipynb“?" } },
+        { "text": { "de": "<code>Laufzeit → Alle ausführen</code>. Erscheint links neben der ersten Codezelle nach dem Lauf <code>[1]</code> und unter ihr „Zeilen, Spalten: (119390, 32)“?" } },
+        { "text": { "de": "Zur Ausgabe von <code>df.info()</code> rollen. Steht bei <code>children</code> „119386 non-null“?" } },
+        { "text": { "de": "Abschnitt 4: Zeigt die KPI-Tabelle „Stornoquote (%) 37.0“ und „Umsatz (EUR) 25996260“?" } },
+        { "text": { "de": "Abschnitt 5.4: Steigt die Stornoquote im Säulendiagramm von der Klasse 0–7 bis zur Klasse über 365 Tage an?" } },
+        { "text": { "de": "Abschnitt 6: Führen Sie eine neue Zelle mit <code>len(fact_bookings), len(dim_country)</code> aus. Erscheint <code>(119390, 178)</code>?" } },
+        { "text": { "de": "Abschnitt 7.1: Zeigt die Tabelle aus der Datenbank 41.7 für City Hotel und 27.8 für Resort Hotel – dieselben Werte wie in Abschnitt 5.1?" } }
+      ],
+      "rueckmeldung": { "de": "Sie haben das Notebook einmal reproduzierbar durchlaufen lassen und die Kontrollzahlen an vier Stellen geprüft. Genau so nimmt man ein fremdes Notebook ab." }
+    },
+    {
+      "id": "W03-05",
+      "typ": "quiz",
+      "titel": { "de": "Sternschema und Datenbankzelle" },
+      "aufgabe": { "de": "<p>Drei Fragen zu den Abschnitten 6 bis 8.</p>" },
+      "fragen": [
+        {
+          "frage": { "de": "Warum sortiert make_dim die Werte, bevor sie Nummern vergibt?" },
+          "optionen": [
+            { "de": "Damit Power BI die Dimension schneller lädt" },
+            { "de": "Damit jeder Lauf dieselben Nummern vergibt – sonst hieße City Hotel einmal 1 und einmal 2" },
+            { "de": "Weil unique() nur sortierte Listen akzeptiert" },
+            { "de": "Damit die Dimension alphabetisch angezeigt wird" }
+          ],
+          "richtig": [1],
+          "erklaerung": { "de": "unique() liefert die Werte in Reihenfolge des ersten Auftretens; die kann sich mit der Quelldatei ändern. Sortiert bleiben die Schlüssel stabil – und Datenbank, Power BI und Dashboard meinen mit hotel_id 1 dasselbe Haus." }
+        },
+        {
+          "frage": { "de": "Was beweist die Zelle in Abschnitt 7.1?" },
+          "optionen": [
+            { "de": "Dass die Datenbank schneller ist als pandas" },
+            { "de": "Dass Notebook und Datenbank dieselben Daten tragen: die Stornoquoten je Hotel stimmen überein" },
+            { "de": "Dass man in Colab keine Datenbank braucht" },
+            { "de": "Dass die Rolle studi_hotel schreiben darf" }
+          ],
+          "richtig": [1],
+          "erklaerung": { "de": "Zwei Wege, ein Ergebnis: 41,7 % und 27,8 % aus pandas und aus SQL. Weichen die Zahlen ab, ist eines der beiden Artefakte nicht auf dem Stand des anderen." }
+        },
+        {
+          "frage": { "de": "Ein Assistent schlägt für das Sternschema vor, agent als Kennzahl in die Faktentabelle zu übernehmen. Was ist richtig?" },
+          "optionen": [
+            { "de": "Übernehmen – die KI kennt den Datensatz" },
+            { "de": "Ablehnen: agent ist eine Kennnummer und damit ein Merkmal; die Summe von Agenturnummern bedeutet nichts" },
+            { "de": "Übernehmen, aber als Mittelwert statt Summe" },
+            { "de": "Die Spalte ganz löschen" }
+          ],
+          "richtig": [1],
+          "erklaerung": { "de": "Abschnitt 8 sagt es selbst: KI schlägt vor, der Mensch prüft. Die Rolle einer Spalte (Lab 01) entscheidet, und agent ist ein Merkmal – im Projekt bleibt es als Attribut in der Faktentabelle, ohne je summiert zu werden." }
+        }
+      ],
+      "rueckmeldung": { "de": "Stabile Schlüssel, ein Beweis über zwei Wege und ein geprüfter Vorschlag – drei Gewohnheiten, die ein Notebook von einem Skript unterscheiden." }
+    }
+  ]
+}

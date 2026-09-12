@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="de" data-lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Lab 04 · Das Sternschema · Hotel-Lab</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/hotel.css" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%232E3238'/><text x='16' y='23' font-family='sans-serif' font-size='18' font-weight='bold' text-anchor='middle' fill='%23C0662B'>H</text></svg>" />
+</head>
+<body class="lab-page" data-lab="lab-04">
+
+<header class="header">
+  <div class="header-left">
+    <a class="header-logo" href="index.html" data-lab-link><span class="mark">Hotel</span>-Lab</a>
+    <a class="header-back" href="index.html" data-lab-link>← Zur Übersicht</a>
+  </div>
+</header>
+
+<nav class="sidebar" aria-label="Lab-Navigation">
+  <div class="sidebar-title">Abschnitte</div>
+  <a class="sidebar-link" href="#warum">Warum nicht eine flache Tabelle</a>
+  <a class="sidebar-link" href="#stern">Der Stern: eine Faktentabelle, acht Dimensionen</a>
+  <a class="sidebar-link" href="#schluessel">Schlüssel</a>
+  <a class="sidebar-link" href="#datum">Die Datumsdimension in zwei Rollen</a>
+  <a class="sidebar-link" href="#ddl">Das Schema in SQL</a>
+  <a class="sidebar-link" href="#abfragen">Abfragen gegen den Stern</a>
+  <a class="sidebar-link" href="#uebungen">Übungen</a>
+  <a class="sidebar-link" href="#zusammenfassung">Zusammenfassung</a>
+</nav>
+
+<div class="lab-header">
+  <div class="lab-num-big">04</div>
+  <h1 class="lab-title">Das Sternschema</h1>
+  <p class="lab-intro">Eine flache Tabelle mit 32 Spalten beantwortet jede Frage – aber nur, wenn jemand pandas
+    bedient. Ein BI-Werkzeug braucht die Daten anders: als eine Faktentabelle, die zählt, und Dimensionen, die
+    beschreiben. Das Sternschema <code>hotel_bi</code> ist genau das. Dieses Lab erklärt, warum es so gebaut ist,
+    was Schlüssel dabei leisten, warum die Datumsdimension zweimal angebunden ist – und es lässt Sie das Modell in
+    PostgreSQL abfragen, mit allen 119.390 Buchungen in Ihrem Browser.</p>
+  <div class="lernziele">
+    <span class="lernziel-chip">Fact Table</span>
+    <span class="lernziel-chip">Dimension Table</span>
+    <span class="lernziel-chip">Primär- und Fremdschlüssel</span>
+    <span class="lernziel-chip">Role-Playing Dimension</span>
+    <span class="lernziel-chip">JOIN</span>
+  </div>
+  <div data-einordnung></div>
+</div>
+
+<main class="main-content">
+
+  <section class="section-block" id="warum">
+    <h2>Warum nicht eine flache Tabelle</h2>
+    <p>In der Rohdatei steht in jeder der 119.390 Zeilen der Text „Online TA“ oder „Resort Hotel“ noch einmal. Das
+      funktioniert – bis jemand fragt, wie „Online TA“ auf Deutsch heißt, welches Land zu „PRT“ gehört oder in
+      welchem Quartal der 14. März 2016 liegt. Solche Antworten gehören nicht in die Buchung, sondern zu dem Ding,
+      das die Buchung beschreibt. Ein <strong>Sternschema</strong> trennt beides: In der Mitte steht die
+      <strong>Faktentabelle</strong> (fact table) mit einer Zeile je Ereignis und den Kennzahlen; außen stehen die
+      <strong>Dimensionstabellen</strong> (dimension tables) mit den Beschreibungen, nach denen man filtert und
+      gruppiert.</p>
+    <div class="vergleich">
+      <div>
+        <h3>Flache Tabelle</h3>
+        <ul>
+          <li>eine Tabelle, 32 Spalten, Texte in jeder Zeile wiederholt</li>
+          <li>ein Attribut ergänzen (deutscher Klarname) heißt 119.390 Zeilen anfassen</li>
+          <li>Datum in vier Spalten, Quartal und Wochentag fehlen</li>
+          <li>gut für ein Notebook, schlecht für ein Modell mit Beziehungen</li>
+        </ul>
+      </div>
+      <div>
+        <h3>Sternschema</h3>
+        <ul>
+          <li>eine Faktentabelle, acht Dimensionen, Texte genau einmal</li>
+          <li>ein Attribut ergänzen heißt eine Zeile je Dimensionswert</li>
+          <li>Datumsdimension mit Jahr, Quartal, Monat, Woche, Wochentag, Wochenende</li>
+          <li>Power BI erkennt die Beziehungen selbst; jede Frage ist ein Join plus GROUP BY</li>
+        </ul>
+      </div>
+    </div>
+    <div class="concept-box">
+      <h3>Die Regel, nach der sortiert wird</h3>
+      <p>Alles, was man <em>summiert oder mittelt</em>, ist ein Fakt und bleibt in der Faktentabelle: Nächte, Preis,
+        Umsatz, Vorlaufzeit, Flags. Alles, <em>wonach man filtert oder gruppiert</em> und was einen Namen hat, wird
+        eine Dimension: Hotel, Marktsegment, Kanal, Kundentyp, Verpflegung, Kaution, Land, Datum. Das ist die Rolle
+        aus Lab 01, jetzt als Tabellenentscheidung.</p>
+    </div>
+  </section>
+
+  <section class="section-block" id="stern">
+    <h2>Der Stern: eine Faktentabelle, acht Dimensionen</h2>
+    <div class="table-scroll">
+      <table class="table">
+        <thead><tr><th>Tabelle</th><th>Rolle</th><th>Zeilen</th><th>Schlüssel</th><th>Inhalt</th></tr></thead>
+        <tbody>
+          <tr><td><code>fact_bookings</code></td><td>Fakten</td><td>119.390</td><td><code>booking_id</code> + neun Fremdschlüssel</td><td>is_canceled, lead_time, Nächte, Gäste, adr, revenue, Sonderwünsche …</td></tr>
+          <tr><td><code>dim_hotel</code></td><td>Dimension</td><td>2</td><td><code>hotel_id</code></td><td>City Hotel, Resort Hotel</td></tr>
+          <tr><td><code>dim_date</code></td><td>Dimension, zweimal angebunden</td><td>1.064</td><td><code>date_key</code></td><td>ein Tag je Zeile: Jahr, Quartal, Monat, Monatsname, Woche, Tag, Wochentag, Wochenende, Datum</td></tr>
+          <tr><td><code>dim_market_segment</code></td><td>Dimension</td><td>8</td><td><code>market_segment_id</code></td><td>Online TA, Offline TA/TO, Groups, Direct, …</td></tr>
+          <tr><td><code>dim_distribution_channel</code></td><td>Dimension</td><td>5</td><td><code>distribution_channel_id</code></td><td>TA/TO, Direct, Corporate, GDS, Undefined</td></tr>
+          <tr><td><code>dim_customer_type</code></td><td>Dimension</td><td>4</td><td><code>customer_type_id</code></td><td>Transient, Transient-Party, Contract, Group</td></tr>
+          <tr><td><code>dim_meal</code></td><td>Dimension</td><td>5</td><td><code>meal_id</code></td><td>BB, HB, FB, SC, Undefined</td></tr>
+          <tr><td><code>dim_deposit_type</code></td><td>Dimension</td><td>3</td><td><code>deposit_type_id</code></td><td>No Deposit, Non Refund, Refundable</td></tr>
+          <tr><td><code>dim_country</code></td><td>Dimension</td><td>178</td><td><code>country_id</code></td><td>ISO-3-Code, plus UNK</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p>Gezeichnet ergibt das den Stern: die Faktentabelle in der Mitte, die Dimensionen außen, jede über genau eine
+      Beziehung verbunden – <code>dim_date</code> über zwei. Power BI zeigt in Lab 07 genau dieses Bild in seiner
+      Modellansicht.</p>
+    <div class="kette">
+      <div class="glied hell"><span class="titel">dim_hotel</span><span class="was">2</span></div>
+      <span class="pfeil">→</span>
+      <div class="glied betont"><span class="titel">fact_bookings</span><span class="was">119.390 Buchungen · 9 Fremdschlüssel</span></div>
+      <span class="pfeil">←</span>
+      <div class="glied hell"><span class="titel">dim_date</span><span class="was">1.064 · Anreise und Status</span></div>
+    </div>
+    <div class="tip-box">
+      <p>Die Faktentabelle hat auch Spalten, die weder Kennzahl noch Schlüssel sind: <code>reserved_room_type</code>,
+        <code>reservation_status</code>. Das sind <em>degenerierte Dimensionen</em> – Merkmale mit so wenig Inhalt,
+        dass eine eigene Tabelle nur Aufwand wäre. Kimball, der das Sternschema in den 1990er-Jahren geprägt hat,
+        erlaubt sie ausdrücklich.</p>
+    </div>
+  </section>
+
+  <section class="section-block" id="schluessel">
+    <h2>Schlüssel</h2>
+    <p>Die Verbindung zwischen Fakt und Dimension läuft über Zahlen. Jede Dimension hat einen
+      <strong>Primärschlüssel</strong> (primary key): eine laufende Nummer, die in der Tabelle genau einmal
+      vorkommt. Die Faktentabelle trägt diese Nummer als <strong>Fremdschlüssel</strong> (foreign key). Aus „Resort
+      Hotel“ in der Buchung wird <code>hotel_id = 2</code>; wer den Namen will, geht über den Schlüssel in die
+      Dimension.</p>
+    <div data-befehl="B01"></div>
+    <div class="concept-box">
+      <h3>Was ein Fremdschlüssel garantiert</h3>
+      <p>Die Klausel <code>REFERENCES hotel_bi.dim_hotel (hotel_id)</code> im Schema ist nicht Dokumentation, sondern
+        Zwang: PostgreSQL weist jede Buchung ab, deren <code>hotel_id</code> in <code>dim_hotel</code> nicht existiert.
+        Deshalb muss das Ladeskript die Dimensionen vor den Fakten laden – und deshalb kann es in diesem Modell keine
+        Buchung geben, die zu keinem Hotel gehört.</p>
+    </div>
+    <div class="warn-box">
+      <p>Die Nummern sind <em>künstlich</em> (surrogate keys): Sie bedeuten nichts und werden vom Notebook alphabetisch
+        vergeben. Wer sich merkt, dass 1 das City Hotel ist, hat einen Zufall gelernt. Im Bericht erscheint immer der
+        Name aus der Dimension, nie die Nummer.</p>
+    </div>
+  </section>
+
+  <section class="section-block" id="datum">
+    <h2>Die Datumsdimension in zwei Rollen</h2>
+    <p>Eine Buchung hat zwei Daten: die Anreise und den Tag, an dem der letzte Status gesetzt wurde – bei stornierten
+      Buchungen der Tag der Stornierung. Beide zeigen auf dieselbe Tabelle <code>dim_date</code>, über zwei
+      Fremdschlüssel: <code>arrival_date_key</code> und <code>reservation_status_date_key</code>. Eine Dimension, die
+      mehrfach angebunden ist, heißt <strong>Role-Playing Dimension</strong>.</p>
+    <div class="table-scroll">
+      <table class="table">
+        <thead><tr><th>Rolle</th><th>Fremdschlüssel</th><th>Frage, die sie beantwortet</th><th>In Power BI</th></tr></thead>
+        <tbody>
+          <tr><td>Anreise</td><td><code>arrival_date_key</code></td><td>Wie viel Umsatz fällt im August 2017 an? (Anreisemonat)</td><td>aktive Beziehung</td></tr>
+          <tr><td>Status</td><td><code>reservation_status_date_key</code></td><td>Wie viel gebuchter Umsatz wurde im März 2016 storniert? (Stornodatum)</td><td>inaktive Beziehung, per <code>USERELATIONSHIP</code> eingeschaltet</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p>Alle Kennzahlen des Projekts beziehen sich auf den <strong>Anreisemonat</strong>. Das ist eine Entscheidung, keine
+      Selbstverständlichkeit: Ein Controller könnte genauso nach Buchungsmonat fragen – der ist im Datensatz aber nur
+      als Anreise minus Vorlaufzeit rekonstruierbar.</p>
+    <div data-befehl="B02"></div>
+  </section>
+
+  <section class="section-block" id="ddl">
+    <h2>Das Schema in SQL</h2>
+    <p>Die Datei <code>sql/01_schema.sql</code> legt das Schema <code>hotel_bi</code> und die neun Tabellen an. Sie ist
+      für Erstsemester kommentiert und läuft unverändert in PostgreSQL – auf dem Server wie in Ihrem Browser. Drei
+      Ausschnitte zeigen den Aufbau.</p>
+    <div data-befehl="B03"></div>
+    <div class="info-box">
+      <p>Auf den Fremdschlüsseln der Faktentabelle liegen Indizes. Ohne sie müsste PostgreSQL bei „alle Buchungen aus
+        Portugal“ alle 119.390 Zeilen lesen; mit Index springt es direkt zu den passenden. Bei dieser Größe merkt man
+        den Unterschied kaum, bei Millionen Zeilen entscheidet er, ob ein Dashboard antwortet.</p>
+    </div>
+  </section>
+
+  <section class="section-block" id="abfragen">
+    <h2>Abfragen gegen den Stern</h2>
+    <p>Jede Frage an ein Sternschema hat dieselbe Form: Faktentabelle, ein oder mehrere Joins auf Dimensionen, eine
+      Aggregation, ein GROUP BY nach dem Attribut der Dimension. Wer das Muster einmal kann, kann alle Fragen. Die
+      Datenbank unten ist dieselbe wie auf dem Server – PostgreSQL in Ihrem Browser, Schema <code>hotel_bi</code> im
+      Suchpfad, deshalb reicht <code>fact_bookings</code> ohne Präfix.</p>
+    <div data-datenbank="postgres"></div>
+    <div data-befehl="B04"></div>
+    <div data-sql-konsole data-start="SELECT h.hotel, count(*) AS buchungen&#10;FROM fact_bookings f&#10;JOIN dim_hotel h USING (hotel_id)&#10;GROUP BY h.hotel&#10;ORDER BY h.hotel;"></div>
+    <div class="tip-box">
+      <p><code>USING (hotel_id)</code> geht, weil die Spalte in beiden Tabellen gleich heißt. Bei
+        <code>dim_date</code> heißt sie <code>date_key</code> in der Dimension und <code>arrival_date_key</code> in den
+        Fakten – dort braucht es <code>ON d.date_key = f.arrival_date_key</code>. Genau daran erkennt man die Rolle.</p>
+    </div>
+  </section>
+
+  <section class="section-block" id="uebungen">
+    <h2>Übungen</h2>
+    <p>Fünf Übungen: die Zuordnung von Spalten zu Fakt oder Dimension, Verständnisfragen zu Schlüsseln und Rollen
+      und drei SQL-Abfragen gegen das Sternschema – eine ohne Join, eine mit Join, eine über die Datumsdimension.</p>
+    <div data-uebung="W04-01"></div>
+    <div data-uebung="W04-02"></div>
+    <div data-uebung="W04-03"></div>
+    <div data-uebung="W04-04"></div>
+    <div data-uebung="W04-05"></div>
+    <div data-fortschritt></div>
+  </section>
+
+  <section class="section-block" id="zusammenfassung">
+    <h2>Zusammenfassung</h2>
+    <ul>
+      <li>Ein Sternschema trennt Fakten (was gezählt wird) von Dimensionen (wonach gefiltert und gruppiert wird).</li>
+      <li><code>hotel_bi</code>: eine Faktentabelle mit 119.390 Buchungen, acht Dimensionen, <code>dim_date</code> zweimal angebunden.</li>
+      <li>Primärschlüssel in der Dimension, Fremdschlüssel in den Fakten; PostgreSQL erzwingt, dass jeder Fremdschlüssel existiert.</li>
+      <li>Künstliche Schlüssel bedeuten nichts; im Bericht steht immer der Name aus der Dimension.</li>
+      <li>Zwei Rollen der Datumsdimension: Anreise (aktiv) und Status (inaktiv). Alle Kennzahlen des Projekts laufen über die Anreise.</li>
+      <li>Jede Frage ist Join plus Aggregation plus GROUP BY – das Muster gilt für SQL, DAX und das Dashboard gleichermaßen.</li>
+    </ul>
+    <div data-lab-nav></div>
+  </section>
+
+</main>
+
+<footer class="footer">
+  <p>Hotel-Lab · Lab 04 · THWS Business School · Stand 09/2026</p>
+</footer>
+
+<script type="module" src="assets/hotel.js"></script>
+</body>
+</html>

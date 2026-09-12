@@ -1,0 +1,150 @@
+{
+  "befehle": {
+    "B01": {
+      "titel": { "de": "Aus dem Text wird ein Schlüssel" },
+      "prompt": "📄",
+      "befehl": "Rohdatei (eine Zeile):        hotel = \"Resort Hotel\"   market_segment = \"Direct\"   country = \"PRT\"\n\ndim_hotel:                    hotel_id | hotel                 dim_country:  country_id | country\n                                     1 | City Hotel                              136 | PRT\n                                     2 | Resort Hotel\n\nfact_bookings (dieselbe Zeile): booking_id = 1   hotel_id = 2   market_segment_id = 4   country_id = 136",
+      "teile": [
+        { "was": "hotel_id = 2", "bedeutet": { "de": "Der Fremdschlüssel in der Faktentabelle. Er zeigt auf die Zeile 2 in dim_hotel – und nur dort steht der Name." } },
+        { "was": "country_id = 136", "bedeutet": { "de": "PRT ist das 136. Land in alphabetischer Reihenfolge; die Nummer bedeutet sonst nichts." } },
+        { "was": "booking_id = 1", "bedeutet": { "de": "Der Primärschlüssel der Faktentabelle selbst: jede Buchung genau einmal." } }
+      ]
+    },
+    "B02": {
+      "titel": { "de": "Dieselbe Dimension, zwei Joins" },
+      "prompt": "$",
+      "befehl": "-- Umsatz nach Anreisemonat (aktive Rolle)\nSELECT d.year, d.month, sum(f.revenue) FILTER (WHERE NOT f.is_canceled) AS umsatz\nFROM fact_bookings f\nJOIN dim_date d ON d.date_key = f.arrival_date_key\nGROUP BY d.year, d.month ORDER BY d.year, d.month;\n\n-- gebuchter Umsatz nach Stornodatum (zweite Rolle)\nSELECT d.year, d.month, sum(f.revenue) AS gebucht_storniert\nFROM fact_bookings f\nJOIN dim_date d ON d.date_key = f.reservation_status_date_key\nWHERE f.is_canceled\nGROUP BY d.year, d.month ORDER BY d.year, d.month;",
+      "teile": [
+        { "was": "ON d.date_key = f.arrival_date_key", "bedeutet": { "de": "Der Join nennt den Fremdschlüssel ausdrücklich, weil die Spalten verschieden heißen. Das ist die Rolle Anreise." } },
+        { "was": "ON d.date_key = f.reservation_status_date_key", "bedeutet": { "de": "Derselbe Join auf dieselbe Tabelle, nur über den anderen Fremdschlüssel: die Rolle Status." } },
+        { "was": "FILTER (WHERE NOT f.is_canceled)", "bedeutet": { "de": "PostgreSQL-Schreibweise für eine bedingte Summe: nur nicht stornierte Buchungen zählen – der stornobereinigte Umsatz." } }
+      ]
+    },
+    "B03": {
+      "titel": { "de": "Drei Ausschnitte aus sql/01_schema.sql" },
+      "prompt": "📄",
+      "befehl": "CREATE SCHEMA IF NOT EXISTS hotel_bi;\nSET search_path TO hotel_bi;\n\nCREATE TABLE hotel_bi.dim_hotel (\n    hotel_id  INTEGER PRIMARY KEY,\n    hotel     TEXT NOT NULL UNIQUE\n);\n\nCREATE TABLE hotel_bi.fact_bookings (\n    booking_id       INTEGER PRIMARY KEY,\n    hotel_id         INTEGER NOT NULL REFERENCES hotel_bi.dim_hotel (hotel_id),\n    arrival_date_key INTEGER NOT NULL REFERENCES hotel_bi.dim_date (date_key),\n    is_canceled      BOOLEAN NOT NULL,\n    adr              NUMERIC(10, 2) NOT NULL,\n    revenue          NUMERIC(12, 2) NOT NULL,\n    …\n);\nCREATE INDEX ON hotel_bi.fact_bookings (hotel_id);",
+      "teile": [
+        { "was": "CREATE SCHEMA hotel_bi", "bedeutet": { "de": "Ein Namensraum in der Datenbank, damit die Tabellen nicht mit anderen (public, auth der Supabase-Instanz) zusammenfallen." } },
+        { "was": "PRIMARY KEY", "bedeutet": { "de": "Eindeutig und nie leer. Die Datenbank prüft das bei jedem Einfügen." } },
+        { "was": "REFERENCES hotel_bi.dim_hotel (hotel_id)", "bedeutet": { "de": "Der Fremdschlüssel: Jeder Wert muss in dim_hotel existieren. Eine Buchung mit hotel_id 3 wird abgewiesen." } },
+        { "was": "BOOLEAN", "bedeutet": { "de": "In der Datenbank ist is_canceled ein echter Wahrheitswert. Zum Rechnen wird er mit ::int zu 0 und 1." } },
+        { "was": "NUMERIC(12, 2)", "bedeutet": { "de": "Zwölf Stellen, davon zwei nach dem Komma – exakt, kein Gleitkomma. Für Geldbeträge die richtige Wahl." } },
+        { "was": "CREATE INDEX", "bedeutet": { "de": "Ein Index je Fremdschlüssel, damit Joins und Filter nicht die ganze Tabelle lesen müssen." } }
+      ]
+    },
+    "B04": {
+      "titel": { "de": "Das Muster: Join, Aggregation, GROUP BY" },
+      "prompt": "$",
+      "befehl": "SELECT m.market_segment,                      -- Attribut der Dimension\n       count(*)              AS buchungen,   -- Aggregation über die Fakten\n       round(avg(f.is_canceled::int) * 100, 1) AS stornoquote\nFROM fact_bookings f                          -- Faktentabelle\nJOIN dim_market_segment m USING (market_segment_id)   -- Join über den Schlüssel\nGROUP BY m.market_segment                     -- eine Zeile je Dimensionswert\nORDER BY buchungen DESC;",
+      "teile": [
+        { "was": "FROM fact_bookings f", "bedeutet": { "de": "Immer die Faktentabelle als Ausgangspunkt; f ist ein Kürzel (Alias), das die Abfrage lesbar hält." } },
+        { "was": "JOIN … USING (market_segment_id)", "bedeutet": { "de": "Verbindet jede Buchung mit ihrem Marktsegment. USING geht, weil die Schlüsselspalte in beiden Tabellen gleich heißt." } },
+        { "was": "avg(f.is_canceled::int) * 100", "bedeutet": { "de": "Mittelwert des Flags = Anteil = Stornoquote. Dieselbe Rechnung wie in pandas, nur mit ::int, weil die Spalte BOOLEAN ist." } },
+        { "was": "GROUP BY m.market_segment", "bedeutet": { "de": "Eine Ergebniszeile je Segment. Alles im SELECT, das nicht aggregiert ist, muss hier stehen." } }
+      ]
+    }
+  },
+  "uebungen": [
+    {
+      "id": "W04-01",
+      "typ": "zuordnen",
+      "titel": { "de": "Fakt oder Dimension" },
+      "aufgabe": { "de": "<p>Ordnen Sie jede Spalte der Rohdatei der Tabelle zu, in der sie im Sternschema landet.</p>" },
+      "ziele": [
+        { "id": "fakt", "text": { "de": "fact_bookings (Kennzahl oder Flag)" } },
+        { "id": "dim", "text": { "de": "eine eigene Dimensionstabelle" } },
+        { "id": "date", "text": { "de": "dim_date (über einen Datumsschlüssel)" } },
+        { "id": "degeneriert", "text": { "de": "bleibt als Merkmal in fact_bookings" } }
+      ],
+      "paare": [
+        { "begriff": { "de": "adr" }, "ziel": "fakt" },
+        { "begriff": { "de": "market_segment" }, "ziel": "dim" },
+        { "begriff": { "de": "arrival_date_year, _month, _day_of_month" }, "ziel": "date" },
+        { "begriff": { "de": "reserved_room_type" }, "ziel": "degeneriert" },
+        { "begriff": { "de": "is_canceled" }, "ziel": "fakt" },
+        { "begriff": { "de": "country" }, "ziel": "dim" },
+        { "begriff": { "de": "reservation_status_date" }, "ziel": "date" },
+        { "begriff": { "de": "deposit_type" }, "ziel": "dim" }
+      ],
+      "rueckmeldung": { "de": "Kennzahlen und Flags bleiben Fakten, benannte Merkmale werden Dimensionen, Daten zeigen auf dim_date, und der Zimmertyp bleibt als degenerierte Dimension in den Fakten." }
+    },
+    {
+      "id": "W04-02",
+      "typ": "quiz",
+      "titel": { "de": "Schlüssel und Rollen" },
+      "aufgabe": { "de": "<p>Drei Fragen zu Schlüsseln, Fremdschlüsseln und der doppelt angebundenen Datumsdimension.</p>" },
+      "fragen": [
+        {
+          "frage": { "de": "Das Ladeskript versucht, fact_bookings vor dim_hotel zu laden. Was passiert?" },
+          "optionen": [
+            { "de": "Nichts – die Reihenfolge ist egal" },
+            { "de": "PostgreSQL weist die Buchungen ab, weil ihre hotel_id noch in keiner Dimension existiert" },
+            { "de": "Die Dimension wird automatisch aus den Fakten erzeugt" },
+            { "de": "Die Fremdschlüssel werden auf NULL gesetzt" }
+          ],
+          "richtig": [1],
+          "erklaerung": { "de": "REFERENCES ist ein Zwang. Erst die Dimensionen, dann die Fakten – so steht es im Ladeskript, und so lädt auch diese Lernumgebung die neun Dateien." }
+        },
+        {
+          "frage": { "de": "Warum ist dim_date zweimal mit fact_bookings verbunden?" },
+          "optionen": [
+            { "de": "Weil die Tabelle zu groß für eine Beziehung ist" },
+            { "de": "Weil eine Buchung zwei Daten hat: Anreise und Tag des letzten Status" },
+            { "de": "Weil Power BI immer zwei Beziehungen braucht" },
+            { "de": "Weil das Datum sowohl als Text als auch als Zahl gespeichert ist" }
+          ],
+          "richtig": [1],
+          "erklaerung": { "de": "arrival_date_key und reservation_status_date_key zeigen auf dieselbe Tabelle. Eine Dimension in zwei Rollen – in Power BI ist eine Beziehung aktiv, die andere wird per USERELATIONSHIP eingeschaltet." }
+        },
+        {
+          "frage": { "de": "Im Bericht steht hotel_id = 1. Was ist richtig?" },
+          "optionen": [
+            { "de": "Das ist das City Hotel, das weiß jeder" },
+            { "de": "Die Nummer bedeutet nichts; im Bericht gehört der Name aus dim_hotel hin" },
+            { "de": "Die Nummer ist ein Fehler, sie müsste 0 sein" },
+            { "de": "Die Nummer zeigt die Reihenfolge der Buchung" }
+          ],
+          "richtig": [1],
+          "erklaerung": { "de": "Künstliche Schlüssel werden alphabetisch vergeben und könnten beim nächsten Lauf anders sein. Ein Bericht zeigt Namen; die Nummern sind für die Joins da." }
+        }
+      ],
+      "rueckmeldung": { "de": "Schlüssel verbinden, sie beschreiben nicht. Wer das trennt, liest jedes Modell richtig." }
+    },
+    {
+      "id": "W04-03",
+      "typ": "sql",
+      "titel": { "de": "Eine Dimension lesen" },
+      "aufgabe": { "de": "<p>Listen Sie alle Marktsegmente aus <code>dim_market_segment</code> – nur die Spalte <code>market_segment</code>, alphabetisch sortiert.</p>" },
+      "start": "SELECT ",
+      "hinweis": { "de": "SELECT spalte FROM tabelle ORDER BY spalte. Die Dimension hat acht Zeilen; ein Join ist nicht nötig." },
+      "loesung": "SELECT market_segment FROM dim_market_segment ORDER BY market_segment;",
+      "sortiert": true,
+      "spalten": 1,
+      "rueckmeldung": { "de": "Acht Segmente, jedes genau einmal. Genau das ist der Zweck einer Dimension: die Liste der Werte, ohne 119.390 Wiederholungen." }
+    },
+    {
+      "id": "W04-04",
+      "typ": "sql",
+      "titel": { "de": "Der erste Join" },
+      "aufgabe": { "de": "<p>Wie viele Buchungen hat jedes Hotel? Liefern Sie zwei Spalten: den Hotelnamen aus <code>dim_hotel</code> und die Anzahl der Buchungen aus <code>fact_bookings</code>, eine Zeile je Hotel.</p>" },
+      "start": "SELECT h.hotel, \nFROM fact_bookings f\nJOIN dim_hotel h USING (hotel_id)\n",
+      "hinweis": { "de": "count(*) zählt die Zeilen; GROUP BY h.hotel macht daraus eine Zeile je Hotel. Erwartet: City Hotel 79.330, Resort Hotel 40.060." },
+      "loesung": "SELECT h.hotel, count(*) AS buchungen\nFROM fact_bookings f\nJOIN dim_hotel h USING (hotel_id)\nGROUP BY h.hotel;",
+      "spalten": 2,
+      "rueckmeldung": { "de": "Das Muster steht: Fakten, Join, Aggregation, GROUP BY. Jede weitere Frage tauscht nur die Dimension und die Kennzahl aus." }
+    },
+    {
+      "id": "W04-05",
+      "typ": "sql",
+      "titel": { "de": "Über die Datumsdimension" },
+      "aufgabe": { "de": "<p>Wie viele Buchungen haben ihre Anreise in jedem Jahr? Zwei Spalten: <code>year</code> aus <code>dim_date</code> und die Anzahl, eine Zeile je Jahr, nach Jahr sortiert. Achten Sie auf die richtige Rolle: die Anreise.</p>" },
+      "start": "SELECT d.year, count(*) AS buchungen\nFROM fact_bookings f\nJOIN dim_date d ON d.date_key = \nGROUP BY d.year\nORDER BY d.year;",
+      "hinweis": { "de": "Der Fremdschlüssel der Anreise heißt f.arrival_date_key. Erwartet: 2015 → 21.996, 2016 → 56.707, 2017 → 40.687." },
+      "loesung": "SELECT d.year, count(*) AS buchungen\nFROM fact_bookings f\nJOIN dim_date d ON d.date_key = f.arrival_date_key\nGROUP BY d.year\nORDER BY d.year;",
+      "sortiert": true,
+      "spalten": 2,
+      "rueckmeldung": { "de": "Mit reservation_status_date_key hätten Sie die Buchungen nach dem Datum ihres letzten Status gezählt – andere Zahlen, andere Frage. Die Rolle steht im Join." }
+    }
+  ]
+}

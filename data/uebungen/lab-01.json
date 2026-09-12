@@ -1,0 +1,177 @@
+{
+  "befehle": {
+    "B01": {
+      "titel": { "de": "Die Rohdaten laden – so wie das Notebook" },
+      "prompt": "[1]",
+      "befehl": "import pandas as pd\n\nURL = \"https://raw.githubusercontent.com/rfordatascience/tidytuesday/main/data/2020/2020-02-11/hotels.csv\"\ndf = pd.read_csv(URL)\nprint(\"Zeilen, Spalten:\", df.shape)   # (119390, 32)",
+      "teile": [
+        { "was": "raw.githubusercontent.com/…/hotels.csv", "bedeutet": { "de": "Die Datei liegt im TidyTuesday-Repository auf GitHub. „raw“ liefert den Inhalt, nicht die GitHub-Seite drumherum. Ohne Anmeldung, ohne Kaggle-Konto." } },
+        { "was": "pd.read_csv(URL)", "bedeutet": { "de": "pandas lädt direkt von der Adresse. Trenner ist das Komma, Dezimalzeichen der Punkt – deshalb keine weiteren Angaben nötig." } },
+        { "was": "df.shape", "bedeutet": { "de": "Zeilen und Spalten. Die erste Kontrolle nach jedem Laden: 119.390 Zeilen, 32 Spalten – stimmt eine Zahl nicht, ist die Quelle nicht die erwartete." } }
+      ]
+    },
+    "B02": {
+      "titel": { "de": "Eine Buchung als JSON" },
+      "prompt": "📄",
+      "befehl": "{\n  \"hotel\": \"Resort Hotel\",\n  \"is_canceled\": false,\n  \"lead_time\": 342,\n  \"arrival_date\": \"2015-07-01\",\n  \"nights\": { \"weekend\": 0, \"week\": 0 },\n  \"guests\": { \"adults\": 2, \"children\": 0, \"babies\": 0 },\n  \"country\": \"PRT\",\n  \"market_segment\": \"Direct\",\n  \"deposit_type\": \"No Deposit\",\n  \"adr\": 0.0,\n  \"reservation_status\": \"Check-Out\"\n}",
+      "teile": [
+        { "was": "\"is_canceled\": false", "bedeutet": { "de": "In der CSV steht 0, in JSON ein Wahrheitswert. Beides heißt „nicht storniert“; JSON kennt true und false ohne Anführungszeichen." } },
+        { "was": "\"arrival_date\": \"2015-07-01\"", "bedeutet": { "de": "Die vier Datumsspalten der CSV (Jahr, Monatsname, Woche, Tag) sind hier ein Datum nach ISO 8601. Genau das baut das Notebook in Abschnitt 3." } },
+        { "was": "\"nights\": { … }", "bedeutet": { "de": "Zusammengehörige Werte dürfen in JSON verschachtelt werden. Eine Tabelle kann das nicht – sie braucht zwei Spalten." } },
+        { "was": "\"adr\": 0.0", "bedeutet": { "de": "Eine Dezimalzahl, auch wenn sie null ist. Kein Text, keine Anführungszeichen." } }
+      ]
+    }
+  },
+  "uebungen": [
+    {
+      "id": "W01-01",
+      "typ": "quiz",
+      "titel": { "de": "Herkunft und Lizenz" },
+      "aufgabe": { "de": "<p>Drei Fragen dazu, woher die Daten kommen und was man damit darf.</p>" },
+      "fragen": [
+        {
+          "frage": { "de": "Wer hat den Datensatz veröffentlicht?" },
+          "optionen": [
+            { "de": "Kaggle als Betreiber der Plattform" },
+            { "de": "Antonio, de Almeida und Nunes (2019) in Data in Brief" },
+            { "de": "Die Hotelkette selbst als Pressemitteilung" },
+            { "de": "Die TidyTuesday-Community hat ihn erhoben" }
+          ],
+          "richtig": [1],
+          "erklaerung": { "de": "Die Autoren haben die Daten aus den Buchungssystemen gezogen, anonymisiert und in einer Fachzeitschrift beschrieben. TidyTuesday und Kaggle haben die Fassung nur zusammengeführt und verbreitet." }
+        },
+        {
+          "frage": { "de": "Was verlangt die Lizenz CC BY 4.0?" },
+          "optionen": [
+            { "de": "Nichts – die Daten sind gemeinfrei" },
+            { "de": "Die Nennung der Urheber bei jeder Nutzung" },
+            { "de": "Eine Genehmigung der Autoren vor jeder Auswertung" },
+            { "de": "Dass die Daten nicht kommerziell genutzt werden" }
+          ],
+          "richtig": [1],
+          "erklaerung": { "de": "BY steht für Attribution: Die Quelle muss genannt werden, sonst ist alles erlaubt, auch kommerzielle Nutzung. Deshalb nennt das Dashboard die Autoren in der Fußzeile." }
+        },
+        {
+          "frage": { "de": "Warum liest das Notebook die Datei per URL statt sie hochzuladen?" },
+          "optionen": [
+            { "de": "Weil Colab keine Uploads erlaubt" },
+            { "de": "Weil jeder, der das Notebook öffnet, dieselben Daten bekommt – ohne Datei, ohne Konto" },
+            { "de": "Weil die Datei zu groß für Google Drive ist" },
+            { "de": "Weil Kaggle das verlangt" }
+          ],
+          "richtig": [1],
+          "erklaerung": { "de": "Reproduzierbarkeit: Das Notebook läuft bei jedem gleich, weil die Quelle in der Zelle steht. Hochgeladene Dateien verschwinden mit der Laufzeit (Lab 02)." }
+        }
+      ],
+      "rueckmeldung": { "de": "Quelle, Lizenz, Ladeweg – drei Dinge, die in jedem Projektbericht stehen müssen, bevor die erste Zahl kommt." }
+    },
+    {
+      "id": "W01-02",
+      "typ": "zuordnen",
+      "titel": { "de": "Die Rolle einer Spalte" },
+      "aufgabe": { "de": "<p>Ordnen Sie jede Spalte ihrer Rolle in der Auswertung zu: Kennzahl (wird summiert oder gemittelt), Merkmal (wird gefiltert und gruppiert), Flag (Ja/Nein als 0/1) oder Zeitangabe.</p>" },
+      "ziele": [
+        { "id": "kennzahl", "text": { "de": "Kennzahl" } },
+        { "id": "merkmal", "text": { "de": "Merkmal" } },
+        { "id": "flag", "text": { "de": "Flag" } },
+        { "id": "zeit", "text": { "de": "Zeitangabe" } }
+      ],
+      "paare": [
+        { "begriff": { "de": "adr" }, "ziel": "kennzahl" },
+        { "begriff": { "de": "market_segment" }, "ziel": "merkmal" },
+        { "begriff": { "de": "is_canceled" }, "ziel": "flag" },
+        { "begriff": { "de": "reservation_status_date" }, "ziel": "zeit" },
+        { "begriff": { "de": "stays_in_week_nights" }, "ziel": "kennzahl" },
+        { "begriff": { "de": "agent (Kennnummer der Agentur)" }, "ziel": "merkmal" },
+        { "begriff": { "de": "is_repeated_guest" }, "ziel": "flag" },
+        { "begriff": { "de": "arrival_date_month" }, "ziel": "zeit" }
+      ],
+      "rueckmeldung": { "de": "agent ist eine Zahl und trotzdem ein Merkmal – die Summe aller Agenturnummern bedeutet nichts. Die Rolle entscheidet später, was Faktentabelle und was Dimension wird." }
+    },
+    {
+      "id": "W01-03",
+      "typ": "quiz",
+      "titel": { "de": "Die Eigenheiten" },
+      "aufgabe": { "de": "<p>Drei Fragen zu den Stellen, an denen eine Kennzahl kippt, wenn man sie nicht kennt.</p>" },
+      "fragen": [
+        {
+          "frage": { "de": "Was passiert, wenn man das Wort „NULL“ in der Spalte agent nicht behandelt?" },
+          "optionen": [
+            { "de": "Nichts – pandas erkennt es immer als fehlenden Wert" },
+            { "de": "„NULL“ zählt als eigene Agentur, zum Beispiel beim Zählen der Agenturen je Hotel" },
+            { "de": "Die Spalte wird beim Laden gelöscht" },
+            { "de": "Die Stornoquote wird falsch berechnet" }
+          ],
+          "richtig": [1],
+          "erklaerung": { "de": "Je nach pandas-Version ist „NULL“ ein Text. Dann ist die häufigste „Agentur“ das Wort NULL. Das Notebook ersetzt es durch NaN. Die Stornoquote hängt nicht an dieser Spalte." }
+        },
+        {
+          "frage": { "de": "Wie geht das Projekt mit dem Zimmerpreis 5.400 € um?" },
+          "optionen": [
+            { "de": "Die Zeile wird gelöscht" },
+            { "de": "Der Wert wird auf den Median gesetzt" },
+            { "de": "Der Wert bleibt stehen und wird als Ausreißer benannt" },
+            { "de": "Der Wert wird durch 100 geteilt" }
+          ],
+          "richtig": [2],
+          "erklaerung": { "de": "Eine einzelne Buchung verändert den Mittelwert aus 119.390 kaum; löschen oder korrigieren wäre ein Eingriff, den man begründen und dokumentieren müsste. Benennen ist ehrlicher als stillschweigend ändern." }
+        },
+        {
+          "frage": { "de": "Welche Buchungen zählt is_canceled = 1?" },
+          "optionen": [
+            { "de": "Nur Buchungen mit reservation_status = Canceled" },
+            { "de": "Canceled und No-Show zusammen" },
+            { "de": "Alle Buchungen mit Kautionstyp Non Refund" },
+            { "de": "Buchungen, deren Gäste nicht wiedergekommen sind" }
+          ],
+          "richtig": [1],
+          "erklaerung": { "de": "43.017 Canceled plus 1.207 No-Show ergeben die 44.224 stornierten Buchungen. Wer Stornofristen untersucht, braucht nur die erste Gruppe – die zweite hat gar nicht storniert, sondern ist nicht gekommen." }
+        }
+      ],
+      "rueckmeldung": { "de": "Eigenheiten löscht man nicht weg; man kennt sie, benennt sie und entscheidet je Kennzahl, was sie bedeuten." }
+    },
+    {
+      "id": "W01-04",
+      "typ": "json",
+      "titel": { "de": "Eine Buchung als JSON reparieren" },
+      "aufgabe": { "de": "<p>Ein Buchungssystem hat eine Buchung als JSON geliefert – aber fehlerhaft. Reparieren Sie das Dokument: Es soll ein gültiges JSON-Objekt sein mit <code>hotel</code> als Text, <code>is_canceled</code> als Wahrheitswert <code>false</code>, <code>lead_time</code> als Zahl 342, <code>arrival_date</code> als Text im Format JJJJ-MM-TT, <code>adults</code> als Zahl 2 und <code>country</code> als dreistelligem Ländercode.</p>" },
+      "start": "{\n  'hotel': 'Resort Hotel',\n  \"is_canceled\": \"0\",\n  \"lead_time\": \"342\",\n  \"arrival_date\": \"1.7.2015\",\n  \"adults\": 2,\n  \"country\": \"PRT\",\n}",
+      "hinweis": { "de": "JSON kennt nur doppelte Anführungszeichen, kein Komma nach dem letzten Eintrag, Zahlen und Wahrheitswerte ohne Anführungszeichen. Das Datum nach ISO 8601: Jahr, Monat, Tag, mit Bindestrichen." },
+      "loesung": "{\n  \"hotel\": \"Resort Hotel\",\n  \"is_canceled\": false,\n  \"lead_time\": 342,\n  \"arrival_date\": \"2015-07-01\",\n  \"adults\": 2,\n  \"country\": \"PRT\"\n}",
+      "regeln": [
+        { "pfad": "", "typ": "object", "schluessel": ["hotel", "is_canceled", "lead_time", "arrival_date", "adults", "country"], "text": { "de": "Das Dokument ist ein Objekt mit den sechs verlangten Schlüsseln." } },
+        { "pfad": "/hotel", "typ": "string", "wert": "Resort Hotel" },
+        { "pfad": "/is_canceled", "typ": "boolean", "wert": false, "text": { "de": "is_canceled ist ein Wahrheitswert: false ohne Anführungszeichen." } },
+        { "pfad": "/lead_time", "typ": "number", "wert": 342, "text": { "de": "lead_time ist eine Zahl, kein Text." } },
+        { "pfad": "/arrival_date", "typ": "string", "muster": "^\\d{4}-\\d{2}-\\d{2}$", "wert": "2015-07-01", "text": { "de": "Das Datum steht als 2015-07-01 (ISO 8601)." } },
+        { "pfad": "/adults", "typ": "number", "wert": 2 },
+        { "pfad": "/country", "typ": "string", "laenge": 3, "text": { "de": "Der Ländercode hat drei Buchstaben (ISO 3166-1 alpha-3)." } }
+      ],
+      "rueckmeldung": { "de": "Vier Fehler: einfache Anführungszeichen, Zahl und Wahrheitswert als Text, deutsches Datumsformat, Komma am Ende. Jeder davon kommt in echten Schnittstellen vor." }
+    },
+    {
+      "id": "W01-05",
+      "typ": "zuordnen",
+      "titel": { "de": "Was ein Wert bedeutet" },
+      "aufgabe": { "de": "<p>Ordnen Sie jeden Wert der Spalte zu, in der er vorkommt.</p>" },
+      "ziele": [
+        { "id": "country", "text": { "de": "country" } },
+        { "id": "deposit", "text": { "de": "deposit_type" } },
+        { "id": "segment", "text": { "de": "market_segment" } },
+        { "id": "status", "text": { "de": "reservation_status" } },
+        { "id": "meal", "text": { "de": "meal" } }
+      ],
+      "paare": [
+        { "begriff": { "de": "PRT" }, "ziel": "country" },
+        { "begriff": { "de": "Non Refund" }, "ziel": "deposit" },
+        { "begriff": { "de": "Online TA" }, "ziel": "segment" },
+        { "begriff": { "de": "No-Show" }, "ziel": "status" },
+        { "begriff": { "de": "BB" }, "ziel": "meal" },
+        { "begriff": { "de": "UNK (vom Notebook eingesetzt)" }, "ziel": "country" },
+        { "begriff": { "de": "Check-Out" }, "ziel": "status" },
+        { "begriff": { "de": "Offline TA/TO" }, "ziel": "segment" }
+      ],
+      "rueckmeldung": { "de": "TA steht für Travel Agent, TO für Tour Operator, BB für Bed and Breakfast. Das Dashboard übersetzt diese Kürzel in Klarnamen – die Datenbank behält die Originalwerte." }
+    }
+  ]
+}

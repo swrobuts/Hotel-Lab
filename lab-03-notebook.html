@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="de" data-lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Lab 03 · Das Notebook Schritt für Schritt · Hotel-Lab</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/hotel.css" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%232E3238'/><text x='16' y='23' font-family='sans-serif' font-size='18' font-weight='bold' text-anchor='middle' fill='%23C0662B'>H</text></svg>" />
+</head>
+<body class="lab-page" data-lab="lab-03">
+
+<header class="header">
+  <div class="header-left">
+    <a class="header-logo" href="index.html" data-lab-link><span class="mark">Hotel</span>-Lab</a>
+    <a class="header-back" href="index.html" data-lab-link>← Zur Übersicht</a>
+  </div>
+</header>
+
+<nav class="sidebar" aria-label="Lab-Navigation">
+  <div class="sidebar-title">Abschnitte</div>
+  <a class="sidebar-link" href="#fahrplan">Der Fahrplan</a>
+  <a class="sidebar-link" href="#laden">1–2 Laden und sichten</a>
+  <a class="sidebar-link" href="#bereinigen">3 Bereinigen und ableiten</a>
+  <a class="sidebar-link" href="#kennzahlen">4 Kennzahlen</a>
+  <a class="sidebar-link" href="#auswertungen">5 Auswertungen</a>
+  <a class="sidebar-link" href="#stern">6–7 Sternschema und Export</a>
+  <a class="sidebar-link" href="#live">7.1 Live aus der Datenbank</a>
+  <a class="sidebar-link" href="#ki">8 Wo KI hilft</a>
+  <a class="sidebar-link" href="#uebungen">Übungen</a>
+  <a class="sidebar-link" href="#zusammenfassung">Zusammenfassung</a>
+</nav>
+
+<div class="lab-header">
+  <div class="lab-num-big">03</div>
+  <h1 class="lab-title">Das Notebook Schritt für Schritt</h1>
+  <p class="lab-intro">Das Notebook <code>BI_Hotel_Booking_Demand.ipynb</code> ist das Herz des Projekts: 30 Zellen,
+    die aus der Rohdatei Kennzahlen, vier Auswertungen und ein Sternschema machen. Dieses Lab geht die acht Abschnitte
+    in der Reihenfolge durch, in der sie laufen müssen, und erklärt zu jeder Zelle, was sie tut, warum sie an dieser
+    Stelle steht und woran man erkennt, dass sie geklappt hat. Öffnen Sie das Notebook daneben in Colab – die
+    Checkliste in den Übungen führt einmal komplett hindurch.</p>
+  <div class="lernziele">
+    <span class="lernziel-chip">pandas</span>
+    <span class="lernziel-chip">Bereinigung als Annahme</span>
+    <span class="lernziel-chip">revenue = adr × Nächte</span>
+    <span class="lernziel-chip">groupby</span>
+    <span class="lernziel-chip">Sternschema erzeugen</span>
+  </div>
+  <div data-einordnung></div>
+</div>
+
+<main class="main-content">
+
+  <section class="section-block" id="fahrplan">
+    <h2>Der Fahrplan</h2>
+    <p>Das Notebook folgt den sechs Schritten aus Lab 00 – nur dass es die Schritte 2 bis 5 selbst ausführt und
+      Schritt 6 vorbereitet. Es läuft ohne Installation in Colab, weil alle Pakete (pandas, numpy, matplotlib) dort
+      vorhanden sind; nur für die Datenbankzelle installiert es zwei Pakete nach.</p>
+    <div class="kette">
+      <div class="glied hell"><span class="titel">1–2</span><span class="was">Laden, Sichten</span></div>
+      <span class="pfeil">→</span>
+      <div class="glied hell"><span class="titel">3</span><span class="was">Bereinigen, ableiten</span></div>
+      <span class="pfeil">→</span>
+      <div class="glied betont"><span class="titel">4</span><span class="was">Kennzahlen</span></div>
+      <span class="pfeil">→</span>
+      <div class="glied betont"><span class="titel">5</span><span class="was">Vier Auswertungen</span></div>
+      <span class="pfeil">→</span>
+      <div class="glied betont"><span class="titel">6–7</span><span class="was">Sternschema, Export, Datenbank</span></div>
+      <span class="pfeil">→</span>
+      <div class="glied hell"><span class="titel">8</span><span class="was">Wo KI hilft</span></div>
+    </div>
+    <div data-befehl="B01"></div>
+    <div class="tip-box">
+      <p>Die Reihenfolge ist zwingend: Abschnitt 4 rechnet mit <code>revenue</code>, das Abschnitt 3 erzeugt; Abschnitt
+        6 braucht <code>arrival_date</code>, ebenfalls aus Abschnitt 3. Wer eine Zelle überspringt, bekommt einen
+        <code>KeyError</code> – die Meldung sagt, welche Spalte fehlt, und damit, welche Zelle nicht gelaufen ist.
+        Deshalb der Rat aus Lab 02: nach dem Öffnen immer <em>Laufzeit → Alle ausführen</em>.</p>
+    </div>
+  </section>
+
+  <section class="section-block" id="laden">
+    <h2>Abschnitte 1 und 2: Laden und sichten</h2>
+    <p>Die erste Codezelle lädt die Datei per URL (Lab 01) und zeigt <code>df.head()</code>. Die zweite und dritte
+      Zelle sichten: <code>df.info()</code> nennt je Spalte Typ und Zahl der gefüllten Werte,
+      <code>df.describe()</code> Minimum, Maximum, Mittelwert und Quartile. Hier fallen die Eigenheiten aus Lab 01
+      zum ersten Mal auf – <code>adr</code> mit Maximum 5.400, <code>children</code> mit 119.386 statt 119.390
+      Werten.</p>
+    <div class="shot">
+      <div class="shot-bar"><span class="ampel"><i></i><i></i><i></i></span><span class="titel">BI_Hotel_Booking_Demand.ipynb – Colab</span><span class="spacer"></span>Python 3</div>
+      <div class="shot-body eins">
+        <div class="shot-main">
+          <div class="zelle"><span class="nrz">[3]</span><div class="code">df.info()</div></div>
+          <div class="ausgabe">&lt;class 'pandas.core.frame.DataFrame'&gt;<br>RangeIndex: 119390 entries, 0 to 119389 <span class="callout">1</span><br>Data columns (total 32 columns):<br>&nbsp;#&nbsp;&nbsp; Column&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Non-Null Count&nbsp;&nbsp; Dtype<br>&nbsp;0&nbsp;&nbsp; hotel&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 119390 non-null&nbsp; str<br>&nbsp;1&nbsp;&nbsp; is_canceled&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 119390 non-null&nbsp; int64 <span class="callout">2</span><br>&nbsp;…<br>&nbsp;10&nbsp; children&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 119386 non-null&nbsp; float64 <span class="callout">3</span><br>&nbsp;…<br>&nbsp;27&nbsp; adr&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 119390 non-null&nbsp; float64<br>dtypes: float64(4), int64(16), str(12)</div>
+        </div>
+      </div>
+    </div>
+    <p class="shot-hinweis">Nachbildung der Oberfläche, Stand 09/2026 – Beschriftungen wie im Original; Ausgabe gekürzt.</p>
+    <ol class="shot-legende">
+      <li><span class="callout">1</span><span>119.390 Zeilen – die Kontrollzahl, die in jedem späteren Artefakt wiederkehrt.</span></li>
+      <li><span class="callout">2</span><span><code>is_canceled</code> ist eine ganze Zahl (0/1). Ihr Mittelwert ist die Stornoquote – deshalb bleibt sie eine Zahl und wird nicht zu Text.</span></li>
+      <li><span class="callout">3</span><span>Vier fehlende Werte in <code>children</code>: 119.386 statt 119.390. Die Spalte ist deshalb <code>float64</code>, obwohl Kinder ganze Zahlen sind – pandas kann fehlende Werte nur in Dezimalspalten halten.</span></li>
+    </ol>
+  </section>
+
+  <section class="section-block" id="bereinigen">
+    <h2>Abschnitt 3: Bereinigen und ableiten</h2>
+    <p>Zwei Zellen. Die erste füllt Lücken, die zweite erzeugt die Spalten, die für Kennzahlen gebraucht werden.
+      Beide treffen <strong>Annahmen</strong>, und beide schreiben sie hin – das ist der didaktische Kern des
+      Abschnitts. Eine Bereinigung, die nur im Code steht, ist nach drei Monaten eine Zahl, die niemand mehr
+      erklären kann.</p>
+    <div data-befehl="B02"></div>
+    <div data-befehl="B03"></div>
+    <div class="concept-box">
+      <h3>Drei Annahmen der Bereinigung</h3>
+      <ul>
+        <li><code>children</code> fehlt → 0. Annahme: keine Angabe heißt kein Kind. Betrifft vier Zeilen.</li>
+        <li><code>country</code> fehlt → <code>UNK</code>. Annahme: lieber ein sichtbares „unbekannt“ als eine Zeile,
+          die später aus jedem Join fällt. Betrifft 488 Zeilen.</li>
+        <li><code>agent</code>, <code>company</code>: der Text „NULL“ → echtes <code>NaN</code>. Neuere pandas-Versionen
+          erkennen den Text schon beim Laden; die Zeilen sichern das für andere Quellen ab.</li>
+      </ul>
+    </div>
+    <div class="concept-box">
+      <h3>Vier abgeleitete Spalten</h3>
+      <ul>
+        <li><code>arrival_date</code> – aus Jahr, Monatsname und Tag ein echtes Datum; der englische Monatsname wird
+          über ein Wörterbuch zur Zahl.</li>
+        <li><code>total_nights</code> – Wochenend- plus Wochentagsnächte.</li>
+        <li><code>total_guests</code> – Erwachsene plus Kinder plus Babys.</li>
+        <li><code>revenue</code> – <code>adr × total_nights</code>: der Zimmerumsatz einer Buchung, nur Übernachtung.
+          Das ist die Spalte, aus der alle drei Umsatzbegriffe des Projekts entstehen.</li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="section-block" id="kennzahlen">
+    <h2>Abschnitt 4: Kennzahlen</h2>
+    <p>Eine Zelle rechnet den ganzen Katalog: zehn Kennzahlen über alle Buchungen, gesammelt in einer
+      <code>pd.Series</code>. Die Definitionen sind dieselben wie später in der Datenbank, in Power BI und im
+      Dashboard – Lab 06 rechnet sie in SQL nach. Zwei Zeilen verdienen einen zweiten Blick.</p>
+    <div data-befehl="B04"></div>
+    <div class="table-scroll">
+      <table class="table">
+        <thead><tr><th>Kennzahl</th><th>Zeile im Notebook</th><th>Wert</th></tr></thead>
+        <tbody>
+          <tr><td>Anzahl Buchungen</td><td><code>len(df)</code></td><td>119.390</td></tr>
+          <tr><td>Stornoquote</td><td><code>df["is_canceled"].mean() * 100</code></td><td>37,0 %</td></tr>
+          <tr><td>Ø Vorlaufzeit</td><td><code>df["lead_time"].mean()</code></td><td>104,0 Tage</td></tr>
+          <tr><td>Ø Aufenthaltsdauer</td><td><code>df["total_nights"].mean()</code></td><td>3,43 Nächte</td></tr>
+          <tr><td>Gebuchte Zimmernächte</td><td><code>df["total_nights"].sum()</code></td><td>409.257</td></tr>
+          <tr><td>Ø Zimmerpreis (ADR)</td><td><code>df["adr"].mean()</code></td><td>101,83 €</td></tr>
+          <tr><td>Umsatz (stornobereinigt)</td><td><code>df.loc[df["is_canceled"] == 0, "revenue"].sum()</code></td><td>25.996.260 €</td></tr>
+          <tr><td>Gebuchter Umsatz</td><td><code>df["revenue"].sum()</code></td><td>42.723.498 €</td></tr>
+          <tr><td>Wiederholungsgast-Anteil</td><td><code>df["is_repeated_guest"].mean() * 100</code></td><td>3,2 %</td></tr>
+          <tr><td>Anteil mit Sonderwünschen</td><td><code>(df["total_of_special_requests"] > 0).mean() * 100</code></td><td>41,1 %</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="warn-box">
+      <p>Der Hinweis im Notebook gilt für jede Auswertung danach: Der Datensatz kennt keine Zimmerkapazität, deshalb
+        gibt es keine Auslastung und keinen RevPAR. Gebuchte Zimmernächte sind der Ersatz – und das steht so dabei.</p>
+    </div>
+  </section>
+
+  <section class="section-block" id="auswertungen">
+    <h2>Abschnitt 5: Vier Auswertungen</h2>
+    <p>Jede Auswertung ist ein <code>groupby</code> plus ein Diagramm mit matplotlib. Die vier Zellen entsprechen den
+      vier Fragestellungen aus Lab 00 – und den vier Seiten des späteren Power-BI-Berichts.</p>
+    <div class="table-scroll">
+      <table class="table">
+        <thead><tr><th>Abschnitt</th><th>Gruppierung</th><th>Diagramm</th><th>Frage</th></tr></thead>
+        <tbody>
+          <tr><td>5.1</td><td><code>df.groupby("hotel")</code>: Buchungen, Stornoquote, ADR, Nächte</td><td>zwei Säulendiagramme</td><td>Hotels im Vergleich</td></tr>
+          <tr><td>5.2</td><td><code>df.groupby("arrival_date_month").size()</code>, Monate in Kalenderreihenfolge</td><td>Linie</td><td>Saisonalität</td></tr>
+          <tr><td>5.3</td><td><code>value_counts()</code> je Vertriebskanal und Marktsegment</td><td>zwei Balkendiagramme</td><td>Vertrieb</td></tr>
+          <tr><td>5.4</td><td><code>pd.cut(lead_time)</code> in sechs Klassen, dann Stornoquote je Klasse</td><td>Säulen</td><td>Stornorisiko</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div data-befehl="B05"></div>
+    <div class="tip-box">
+      <p>Die Zelle 5.2 hat einen Fallstrick, den man kennen sollte: <code>groupby("arrival_date_month")</code>
+        sortiert alphabetisch – April, August, December. Die Zeile <code>.reindex(month_order)</code> bringt die
+        Monate in Kalenderreihenfolge. Ohne sie zeigt die Linie eine Saison, die es nicht gibt.</p>
+    </div>
+  </section>
+
+  <section class="section-block" id="stern">
+    <h2>Abschnitte 6 und 7: Sternschema und Export</h2>
+    <p>Hier wird aus der flachen Tabelle das Auswertungsmodell. Eine kleine Funktion <code>make_dim</code> erzeugt
+      aus jeder Merkmalsspalte eine Dimensionstabelle mit laufender Nummer; eine Datumsdimension entsteht aus allen
+      Tagen zwischen dem frühesten und dem spätesten Datum; die Faktentabelle bekommt statt der Texte die Nummern.
+      Lab 04 erklärt das Modell im Detail – hier geht es um den Mechanismus.</p>
+    <div data-befehl="B06"></div>
+    <div class="concept-box">
+      <h3>Woran man erkennt, dass es geklappt hat</h3>
+      <ul>
+        <li><code>dim_hotel</code> hat zwei Zeilen, <code>dim_country</code> 178 (177 Länder plus UNK),
+          <code>dim_date</code> 1.064 Tage.</li>
+        <li><code>fact_bookings</code> hat weiterhin 119.390 Zeilen – ein Join, der Zeilen verliert oder verdoppelt,
+          wäre hier sichtbar.</li>
+        <li>Keine Nummer in der Faktentabelle ist <code>NaN</code>; sonst gäbe es einen Wert, der in keiner Dimension
+          steht.</li>
+      </ul>
+    </div>
+    <p>Abschnitt 7 schreibt die neun Tabellen als CSV-Dateien ins Colab-Dateisystem. Für die Vorlesung ist dieser
+      Schritt schon getan: Dieselben Dateien liegen im Repository unter <code>data/</code> und sind mit
+      <code>sql/02_load_data.py</code> in die Datenbank geladen worden – genau die Dateien, die auch diese
+      Lernumgebung in Ihren Browser lädt.</p>
+  </section>
+
+  <section class="section-block" id="live">
+    <h2>Abschnitt 7.1: Live aus der Datenbank</h2>
+    <p>Die letzte Codezelle schließt den Kreis: Sie verbindet sich mit der fertigen Datenbank und liest die
+      Stornoquote je Hotel per SQL. Das Ergebnis muss mit Abschnitt 5.1 übereinstimmen – 41,7 % und 27,8 %. Tut es
+      das, ist bewiesen, dass Notebook und Datenbank dieselben Daten tragen.</p>
+    <div data-befehl="B07"></div>
+    <div class="info-box">
+      <p>Die Zugangsdaten stehen hier ausnahmsweise im Code, weil die Rolle <code>studi_hotel</code> nur lesen darf
+        und die Daten öffentlich sind. Für jede andere Datenbank gilt Lab 02: Zugangsdaten ins Secrets-Panel.
+        Lab 05 erklärt, was die Rolle darf und was nicht.</p>
+    </div>
+  </section>
+
+  <section class="section-block" id="ki">
+    <h2>Abschnitt 8: Wo KI hilft</h2>
+    <p>Der letzte Abschnitt ist Text: eine Tabelle, an welchen Stellen des Projekts ein KI-Assistent hilft – Spalten
+      erklären, Auffälligkeiten finden, ein Sternschema vorschlagen, Diagrammcode erzeugen, eine Zusammenfassung
+      schreiben. Die Regel dazu steht im Notebook selbst: KI schlägt vor, der Mensch prüft. Ein vorgeschlagenes
+      Sternschema, das <code>agent</code> als Kennzahl führt, ist schnell erzeugt und langsam bemerkt.</p>
+    <div class="challenge-box">
+      <p>Probieren Sie es aus: Lassen Sie sich von einem Assistenten den Code für Abschnitt 5.4 erklären und
+        vergleichen Sie die Erklärung mit der Zelle. Wo die Erklärung eine Zeile auslässt oder erfindet, haben Sie
+        gelernt, warum man prüft.</p>
+    </div>
+  </section>
+
+  <section class="section-block" id="uebungen">
+    <h2>Übungen</h2>
+    <p>Fünf Übungen: die Reihenfolge der Abschnitte, die Annahmen der Bereinigung, eine Zuordnung von Codezeilen
+      zu Abschnitten, eine Checkliste durch das echte Notebook in Colab und Verständnisfragen zu Sternschema und
+      Datenbankzelle.</p>
+    <div data-uebung="W03-01"></div>
+    <div data-uebung="W03-02"></div>
+    <div data-uebung="W03-03"></div>
+    <div data-uebung="W03-04"></div>
+    <div data-uebung="W03-05"></div>
+    <div data-fortschritt></div>
+  </section>
+
+  <section class="section-block" id="zusammenfassung">
+    <h2>Zusammenfassung</h2>
+    <ul>
+      <li>Acht Abschnitte in fester Reihenfolge; ein KeyError nennt die Zelle, die nicht gelaufen ist.</li>
+      <li>Sichten heißt <code>info()</code> und <code>describe()</code> lesen – dort zeigen sich die Eigenheiten zuerst.</li>
+      <li>Jede Bereinigung ist eine Annahme und steht im Text: children → 0, country → UNK, „NULL“ → NaN.</li>
+      <li><code>revenue = adr × total_nights</code> ist die Spalte, aus der alle drei Umsatzbegriffe entstehen.</li>
+      <li>Vier Auswertungen, vier Fragen; die Monatsreihenfolge braucht <code>reindex</code>.</li>
+      <li>Das Sternschema entsteht aus Merkmalsspalten und einer Datumsdimension; die Faktentabelle behält 119.390 Zeilen.</li>
+      <li>Abschnitt 7.1 beweist, dass Notebook und Datenbank dieselben Zahlen liefern.</li>
+    </ul>
+    <div data-lab-nav></div>
+  </section>
+
+</main>
+
+<footer class="footer">
+  <p>Hotel-Lab · Lab 03 · THWS Business School · Stand 09/2026</p>
+</footer>
+
+<script type="module" src="assets/hotel.js"></script>
+</body>
+</html>

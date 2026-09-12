@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="de" data-lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Hotel-Lab · Business Intelligence am Beispiel Hotel Booking Demand · THWS Business School</title>
+  <meta name="description" content="Interaktive Lernumgebung zum BI-Einstiegsprojekt Hotel Booking Demand: Fallstudie, Datenquelle, Colab-Notebook, Sternschema, PostgreSQL-Datenbank, Kennzahlen, Power BI und Dashboard – mit Übungen und einer echten Datenbank im Browser, ohne Anmeldung und ohne Installation." />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/hotel.css" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%232E3238'/><text x='16' y='23' font-family='sans-serif' font-size='18' font-weight='bold' text-anchor='middle' fill='%23C0662B'>H</text></svg>" />
+</head>
+<body>
+
+<header class="header">
+  <div class="header-left">
+    <a class="header-logo" href="index.html"><span class="mark">Hotel</span>-Lab</a>
+    <span class="header-back">THWS Business School · Business Intelligence</span>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="hero-inner">
+    <span class="hero-tag">Lernumgebung · BI-Einstiegsprojekt Hotel Booking Demand</span>
+    <h1 class="hero-title">Hotel-Lab</h1>
+    <p class="hero-subtitle">Von 119.390 Buchungen zum Dashboard – jeden Schritt des Projekts selbst nachvollziehen</p>
+    <p class="hero-desc">Zehn Labs folgen dem Weg der Daten: die Fragestellungen zweier Hotels, die Rohdatei und ihre
+      Eigenheiten, das Notebook in Google Colab, das Sternschema, die Datenbank auf dem Server, der Kennzahlenkatalog,
+      der Bericht in Power BI, das Dashboard auf Render und zuletzt die Frage, was aus den Zahlen folgt. Der Bericht
+      und das Dashboard sind nachgebildet – die Datenbank ist echt: PostgreSQL läuft in Ihrem Browser, mit demselben
+      Sternschema und denselben 119.390 Buchungen wie auf dem Server.</p>
+    <div class="hero-badges">
+      <span class="hero-badge">Fallstudie</span>
+      <span class="hero-badge">Colab</span>
+      <span class="hero-badge">Sternschema</span>
+      <span class="hero-badge">PostgreSQL</span>
+      <span class="hero-badge">SQL</span>
+      <span class="hero-badge">Kennzahlen</span>
+      <span class="hero-badge">Power BI</span>
+      <span class="hero-badge">Dashboard</span>
+      <span class="hero-badge">Ohne Anmeldung</span>
+      <span class="hero-badge">Ohne Installation</span>
+    </div>
+    <div class="cta-row">
+      <a class="btn solid" href="lab-00-fallstudie.html" data-lab-link>Mit Lab 00 beginnen</a>
+      <a class="btn" href="#labs">Alle Labs ansehen</a>
+    </div>
+  </div>
+</section>
+
+<div class="stats-bar">
+  <div class="stats-grid">
+    <div class="stat-item"><div class="stat-value">10</div><div class="stat-label">Labs</div></div>
+    <div class="stat-item"><div class="stat-value">48</div><div class="stat-label">Übungen</div></div>
+    <div class="stat-item"><div class="stat-value">119.390</div><div class="stat-label">Buchungen im Browser</div></div>
+    <div class="stat-item"><div class="stat-value">0 €</div><div class="stat-label">Kosten</div></div>
+  </div>
+</div>
+
+<main>
+
+<section class="section" id="labs">
+  <div class="section-head">
+    <span class="badge">Die zehn Labs</span>
+    <div class="accent-line"></div>
+    <h2>Ein Projekt, zehn Schritte</h2>
+    <p>Die Labs sind so geordnet, wie das Projekt gelaufen ist: erst die Fragen und die Rohdaten, dann das Notebook,
+      das daraus Kennzahlen und ein Sternschema macht, dann die Datenbank, auf der Power BI und das Dashboard aufsetzen,
+      zuletzt die Deutung. Jedes Lab erklärt zuerst, wozu der Schritt da ist, zeigt dann die Handgriffe und lässt Sie
+      zuletzt ausprobieren, was Sie gelesen haben. Alle Labs arbeiten mit derselben Fallstudie: zwei Hotels in
+      Portugal, 119.390 Buchungen mit Anreise zwischen Juli 2015 und August 2017, veröffentlicht von Antonio, de
+      Almeida und Nunes (2019).</p>
+  </div>
+  <div class="kette">
+    <div class="glied hell"><span class="titel">00–01</span><span class="was">Fallstudie, Vorgehen, Datenquelle</span></div>
+    <span class="pfeil">→</span>
+    <div class="glied hell"><span class="titel">02–03</span><span class="was">Notebook in Colab: laden, bereinigen, rechnen</span></div>
+    <span class="pfeil">→</span>
+    <div class="glied hell"><span class="titel">04–05</span><span class="was">Sternschema und Datenbank</span></div>
+    <span class="pfeil">→</span>
+    <div class="glied betont"><span class="titel">06–08</span><span class="was">Kennzahlen, Power BI, Dashboard</span></div>
+    <span class="pfeil">→</span>
+    <div class="glied betont"><span class="titel">09</span><span class="was">Vom Befund zur Empfehlung</span></div>
+  </div>
+  <div data-fortschritt></div>
+  <div class="labs-grid">
+
+    <a class="lab-card" href="lab-00-fallstudie.html" data-lab-link>
+      <div class="lab-num">00</div>
+      <h3>Fallstudie und Vorgehen</h3>
+      <div class="sub">Zwei Hotels · vier Fragen · eine Werkzeugkette</div>
+      <div class="desc">Was ein Stadthotel und ein Resorthotel wissen wollen, was Business Intelligence dazu beiträgt und in welchen Schritten das Projekt von der Rohdatei zum Dashboard gelaufen ist.</div>
+      <div class="meta">4 Übungen · 45 Min</div>
+    </a>
+
+    <a class="lab-card" href="lab-01-datenquelle.html" data-lab-link>
+      <div class="lab-num">01</div>
+      <h3>Die Datenquelle</h3>
+      <div class="sub">Antonio, de Almeida, Nunes (2019) · Kaggle · 32 Spalten</div>
+      <div class="desc">Woher die Daten stammen, was jede Spalte bedeutet, welche Typen sie tragen und welche Eigenheiten man kennen muss, bevor man rechnet.</div>
+      <div class="meta">5 Übungen · 60 Min</div>
+    </a>
+
+    <a class="lab-card" href="lab-02-colab.html" data-lab-link>
+      <div class="lab-num">02</div>
+      <h3>Google Colab</h3>
+      <div class="sub">Notebook · Laufzeit · Kernel · Secrets</div>
+      <div class="desc">Ein Notebook so führen, dass es von oben nach unten reproduzierbar durchläuft – und wissen, was nach einem Neustart noch da ist.</div>
+      <div class="meta">5 Übungen · 75 Min</div>
+    </a>
+
+    <a class="lab-card" href="lab-03-notebook.html" data-lab-link>
+      <div class="lab-num">03</div>
+      <h3>Das Notebook Schritt für Schritt</h3>
+      <div class="sub">Laden · Sichten · Bereinigen · Kennzahlen · Diagramme</div>
+      <div class="desc">Die acht Abschnitte des Projekt-Notebooks, Zelle für Zelle: was dort passiert, warum in dieser Reihenfolge, und woran man erkennt, dass es geklappt hat.</div>
+      <div class="meta">5 Übungen · 90 Min</div>
+    </a>
+
+    <a class="lab-card" href="lab-04-sternschema.html" data-lab-link>
+      <div class="lab-num">04</div>
+      <h3>Das Sternschema</h3>
+      <div class="sub">Fakten · Dimensionen · Schlüssel · Datumsrollen</div>
+      <div class="desc">Warum eine flache Tabelle für BI nicht reicht, wie aus 32 Spalten eine Faktentabelle und acht Dimensionen werden – und wie man eine Kennzahl über einen Join aus dem Stern holt.</div>
+      <div class="meta">5 Übungen · 75 Min</div>
+    </a>
+
+    <a class="lab-card" href="lab-05-datenbank.html" data-lab-link>
+      <div class="lab-num">05</div>
+      <h3>Datenbank und Zugang</h3>
+      <div class="sub">PostgreSQL · Supabase · Rolle studi_hotel</div>
+      <div class="desc">Wo die Datenbank läuft, was die Leserolle darf und was nicht, wie psql, DBeaver, Python und Power BI sich verbinden – und warum die Verbindung unverschlüsselt sein darf.</div>
+      <div class="meta">5 Übungen · 60 Min</div>
+    </a>
+
+    <a class="lab-card" href="lab-06-kennzahlen.html" data-lab-link>
+      <div class="lab-num">06</div>
+      <h3>Kennzahlen</h3>
+      <div class="sub">Umsatz · Stornoquote · ADR · Vorlaufzeit</div>
+      <div class="desc">Die zehn Kennzahlen des Katalogs: Definition, Rechenweg in SQL, die drei Umsatzbegriffe und die Farblogik, die sagt, ob ein Anstieg gut oder schlecht für das Ergebnis ist.</div>
+      <div class="meta">5 Übungen · 75 Min</div>
+    </a>
+
+    <a class="lab-card" href="lab-07-powerbi.html" data-lab-link>
+      <div class="lab-num">07</div>
+      <h3>Power BI</h3>
+      <div class="sub">Import · Beziehungen · DAX · Bericht</div>
+      <div class="desc">Das Sternschema anbinden, Beziehungen prüfen, Measures schreiben und einen Bericht aus Feldern und Regalen bauen – mit einem nachgebildeten Feldfenster.</div>
+      <div class="meta">5 Übungen · 90 Min</div>
+    </a>
+
+    <a class="lab-card" href="lab-08-dashboard.html" data-lab-link>
+      <div class="lab-num">08</div>
+      <h3>Das Dashboard</h3>
+      <div class="sub">FastAPI · Observable Plot · Render</div>
+      <div class="desc">Wie das Dashboard aus Backend und Frontend zusammengesetzt ist, welche Gestaltungsregeln es befolgt und wie es als Container auf Render läuft – mit Deploy-Simulator.</div>
+      <div class="meta">5 Übungen · 75 Min</div>
+    </a>
+
+    <a class="lab-card" href="lab-09-befunde.html" data-lab-link>
+      <div class="lab-num">09</div>
+      <h3>Vom Befund zur Handlungsempfehlung</h3>
+      <div class="sub">Aussage · Abweichung · Deutung · Empfehlung</div>
+      <div class="desc">Wie man eine Aussage im Dashboard liest, eine Abweichung einordnet und daraus eine Empfehlung ableitet, die man vor der Hotelleitung begründen kann.</div>
+      <div class="meta">4 Übungen · 60 Min</div>
+    </a>
+
+  </div>
+</section>
+
+<section class="section soft">
+  <div class="inner">
+    <div class="section-head">
+      <span class="badge dark">Wie das hier funktioniert</span>
+      <div class="accent-line"></div>
+      <h2>Ausprobieren, nicht nachlesen</h2>
+    </div>
+    <div class="labs-grid">
+      <div class="concept-box">
+        <h3>Eine Datenbank, die wirklich rechnet</h3>
+        <p>PostgreSQL läuft als WebAssembly in Ihrem Browser. Das ist kein Simulator: dieselben Datentypen, dieselben
+          Fehlermeldungen, dieselben Ergebnisse. Beim Öffnen einer Seite mit SQL-Übungen wird das Sternschema
+          <code>hotel_bi</code> angelegt und mit allen 119.390 Buchungen geladen – das dauert einige Sekunden, danach
+          liefert jede Abfrage dieselben Zahlen wie das Dashboard.</p>
+      </div>
+      <div class="concept-box">
+        <h3>Übungen mit sofortiger Rückmeldung</h3>
+        <p>Verständnisfragen, Zuordnungen, Reihenfolgen, Checklisten an der echten Oberfläche, SQL-Abfragen, JSON und
+          zwei Simulatoren: das Feldfenster von Power BI und das Deploy-Formular von Render. Eine SQL-Übung wird am
+          Ergebnis geprüft, nicht am Wortlaut – es gibt mehrere richtige Abfragen.</p>
+      </div>
+      <div class="concept-box">
+        <h3>Dieselben Zahlen wie im Projekt</h3>
+        <p>119.390 Buchungen, 37,0 % storniert, 26,0 Mio. € stornobereinigter Umsatz: Was Sie hier ausrechnen, steht
+          so im Notebook, in der Power-BI-Referenzlösung und im Dashboard. Weicht Ihr Ergebnis ab, liegt es an der
+          Abfrage – nicht an den Daten.</p>
+      </div>
+      <div class="concept-box">
+        <h3>Nachbildungen statt Screenshots</h3>
+        <p>Colab, Power BI, DBeaver und das Dashboard sind als Oberflächen nachgezeichnet, mit Ziffern an den Stellen,
+          auf die es ankommt. Beschriftungen stehen wie im Original; die Erklärung darunter ist deutsch.</p>
+      </div>
+      <div class="concept-box">
+        <h3>Ihr Stand bleibt im Browser</h3>
+        <p>Gelöste Übungen werden lokal vermerkt, damit Sie beim nächsten Besuch sehen, wo Sie stehen. Es gibt keine
+          Anmeldung, keinen Server und keine Auswertung: Der Vermerk liegt in Ihrem Browser und nirgendwo sonst.
+          Zurücksetzen können Sie ihn oben in der Fortschrittskarte.</p>
+      </div>
+      <div class="concept-box">
+        <h3>Deutsch, mit englischen Fachbegriffen</h3>
+        <p>Die Umgebung ist deutsch. Die Fachbegriffe bleiben englisch – Measure, Fact Table, Data Source, Deploy –,
+          weil die Werkzeuge, ihre Dokumentation und die Spaltennamen des Datensatzes englisch sind. Wer die Begriffe
+          kennt, findet die Antwort.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="section-head">
+    <span class="badge">Einordnung</span>
+    <div class="accent-line"></div>
+    <h2>Das Projekt, in dem alles zusammenhängt</h2>
+  </div>
+  <p>Diese Umgebung begleitet das BI-Einstiegsprojekt „Hotel Booking Demand“. Alles, was hier erklärt wird, existiert
+    wirklich: das Notebook im Repository <a href="https://github.com/swrobuts/hotel">swrobuts/hotel</a>, die Datenbank
+    <code>hotel</code> auf einem Server der Hochschule, die Power-BI-Referenzlösung und das
+    <a href="https://hotel-dashboard-cuoi.onrender.com">Dashboard</a>. Die Labs zeigen die Handgriffe; die Vorlesung
+    liefert den fachlichen Rahmen – Datenmodellierung, Kennzahlen, Interpretation. Wer die Kette einmal selbst
+    durchlaufen hat, weiß, an welchem Glied es hakt, wenn eine Zahl im Bericht nicht stimmt.</p>
+  <div class="auswahl-hinweis">
+    <p><strong>Hinweis zur Werkzeugauswahl.</strong> Bei den in dieser Lernumgebung gezeigten Tools handelt es sich um
+      eine Auswahl – diese ist weder als Empfehlung noch als Werbung zu verstehen. Sie folgt dem Projekt und dem
+      Kriterium, dass sich jedes Werkzeug ohne Kosten ausprobieren lässt. Zu jedem gezeigten Werkzeug gibt es
+      Alternativen; die jeweiligen Labs benennen sie. Angaben zu Lizenzen, Preisen und kostenlosen Kontingenten geben
+      den Stand 09/2026 wieder und ändern sich erfahrungsgemäß schneller als Lehrmaterial – prüfen Sie sie vor einer
+      Entscheidung beim Anbieter nach.</p>
+  </div>
+  <div class="karten">
+    <div class="karte">
+      <div class="kopfzeile">Verwandte Umgebungen</div>
+      <p>Für die Werkzeugkette eines Datenprojekts gibt es das WInf-SP-Lab, für Projekt- und IT-Management das PITM-Lab,
+        für Datenbanken und SQL das DABA-Lab. Sie folgen derselben Formsprache und unterscheiden sich in der Leitfarbe.
+        Das Lab zu Google Colab teilt sich das Hotel-Lab wörtlich mit WInf-SP.</p>
+    </div>
+    <div class="karte">
+      <div class="kopfzeile">Echte Daten, ohne Personenbezug</div>
+      <p>Der Datensatz ist ein veröffentlichter Forschungsdatensatz (Antonio, de Almeida und Nunes 2019, CC BY 4.0).
+        Er enthält keine Namen, Adressen oder Kontaktdaten – Kundennummern und Agenturkennungen sind anonymisiert.
+        Deshalb darf er in einem Notebook bei Google, in einer Datenbank auf einem Server und in einem öffentlichen
+        Repository liegen.</p>
+    </div>
+    <div class="karte">
+      <div class="kopfzeile">Rückmeldung</div>
+      <p>Fehler, veraltete Angaben und Wünsche gern in der Veranstaltung oder per Nachricht. Die Umgebung wird
+        semesterweise fortgeschrieben.</p>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer class="footer">
+  <p>Hotel-Lab · Prof. Dr. Robert Butscher · THWS Business School · Technische Hochschule Würzburg-Schweinfurt · Stand 09/2026</p>
+</footer>
+
+<script type="module" src="assets/hotel.js"></script>
+</body>
+</html>

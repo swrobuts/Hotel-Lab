@@ -1,0 +1,117 @@
+{
+  "befehle": {},
+  "uebungen": [
+    {
+      "id": "W00-01",
+      "typ": "quiz",
+      "titel": { "de": "Die Fallstudie in Zahlen" },
+      "aufgabe": { "de": "<p>Drei Fragen zu den Hotels, den Daten und der Kennzahl, um die sich alles dreht.</p>" },
+      "fragen": [
+        {
+          "frage": { "de": "Was ist eine Zeile des Datensatzes?" },
+          "optionen": [
+            { "de": "Ein Gast" },
+            { "de": "Eine Buchung – ob angetreten oder storniert" },
+            { "de": "Eine Übernachtung" },
+            { "de": "Ein Zimmer an einem Tag" }
+          ],
+          "richtig": [1],
+          "erklaerung": { "de": "Jede Zeile ist eine Buchung mit Anreisedatum. Stornierte Buchungen bleiben enthalten – nur deshalb lässt sich die Stornoquote überhaupt berechnen. Gäste, Übernachtungen und Zimmertage sind daraus abgeleitet, nicht die Zeilen selbst." }
+        },
+        {
+          "frage": { "de": "Welche Aussage zur Stornoquote stimmt?" },
+          "optionen": [
+            { "de": "Das Resort Hotel storniert häufiger als das City Hotel." },
+            { "de": "Über beide Hotels wird gut jede dritte Buchung storniert." },
+            { "de": "Stornierte Buchungen wurden aus den Daten entfernt." },
+            { "de": "Die Stornoquote lässt sich ohne die Zimmerkapazität nicht berechnen." }
+          ],
+          "richtig": [1],
+          "erklaerung": { "de": "37,0 % aller Buchungen sind storniert; das City Hotel liegt mit 41,7 % über dem Resort Hotel mit 27,8 %. Die Quote braucht keine Kapazität – sie ist ein Anteil an den Buchungen." }
+        },
+        {
+          "frage": { "de": "Was meint das Projekt mit „Umsatz“?" },
+          "optionen": [
+            { "de": "Alle Einnahmen des Hotels einschließlich Restaurant und Spa" },
+            { "de": "Zimmerpreis mal Nächte aller Buchungen, auch der stornierten" },
+            { "de": "Zimmerpreis mal Nächte der nicht stornierten Buchungen" },
+            { "de": "Den Preis, den der Gast bei der Buchung genannt bekam" }
+          ],
+          "richtig": [2],
+          "erklaerung": { "de": "Der stornobereinigte Umsatz ist Zimmerpreis (adr) mal Nächte für Buchungen, die nicht storniert wurden. Alle Buchungen zusammen ergeben den gebuchten Umsatz; die Differenz ist der durch Stornierung entgangene Umsatz. Nebenumsätze enthält der Datensatz nicht." }
+        }
+      ],
+      "rueckmeldung": { "de": "Mit diesen drei Festlegungen lesen Sie jede Zahl des Projekts richtig: Zeile = Buchung, Stornierte bleiben drin, Umsatz = stornobereinigter Logisumsatz." }
+    },
+    {
+      "id": "W00-02",
+      "typ": "zuordnen",
+      "titel": { "de": "Auswertung und Fragestellung" },
+      "aufgabe": { "de": "<p>Ordnen Sie jede Auswertung der Fragestellung zu, die sie beantwortet.</p>" },
+      "ziele": [
+        { "id": "storno", "text": { "de": "Stornorisiko" } },
+        { "id": "saison", "text": { "de": "Saisonalität" } },
+        { "id": "vertrieb", "text": { "de": "Vertrieb" } },
+        { "id": "herkunft", "text": { "de": "Herkunft" } }
+      ],
+      "paare": [
+        { "begriff": { "de": "Stornoquote nach Vorlaufzeit (0–7 Tage bis über 90 Tage)" }, "ziel": "storno" },
+        { "begriff": { "de": "Buchungen und Umsatz je Anreisemonat mit Vorjahresmonat" }, "ziel": "saison" },
+        { "begriff": { "de": "Anteil an den Buchungen neben dem Anteil am Umsatz je Marktsegment" }, "ziel": "vertrieb" },
+        { "begriff": { "de": "Stornoquote Inland gegenüber Ausland" }, "ziel": "herkunft" },
+        { "begriff": { "de": "Durch Stornierung entgangener Umsatz je Monat" }, "ziel": "storno" },
+        { "begriff": { "de": "Die 15 größten Herkunftsländer als Balken" }, "ziel": "herkunft" },
+        { "begriff": { "de": "Marktsegment × Kundentyp als Tabelle" }, "ziel": "vertrieb" }
+      ],
+      "rueckmeldung": { "de": "Jede Auswertung des Dashboards hängt an einer der vier Fragen. Eine Auswertung, die zu keiner Frage gehört, gehört auch nicht ins Dashboard." }
+    },
+    {
+      "id": "W00-03",
+      "typ": "reihenfolge",
+      "titel": { "de": "Das Vorgehen in der richtigen Reihenfolge" },
+      "aufgabe": { "de": "<p>Bringen Sie die sechs Schritte des Projekts in die Reihenfolge, in der sie sinnvoll aufeinander aufbauen.</p>" },
+      "eintraege": [
+        { "id": "fragen", "text": { "de": "Fragen der Hotelleitung klären" } },
+        { "id": "verstehen", "text": { "de": "Die 32 Spalten der Rohdatei verstehen" } },
+        { "id": "bereinigen", "text": { "de": "Lücken füllen und Merkmale wie revenue ableiten" } },
+        { "id": "kennzahlen", "text": { "de": "Kennzahlenkatalog definieren und nachrechnen" } },
+        { "id": "modell", "text": { "de": "Sternschema bauen und in die Datenbank laden" } },
+        { "id": "bericht", "text": { "de": "Bericht und Dashboard bauen, Befunde deuten" } }
+      ],
+      "richtig": ["fragen", "verstehen", "bereinigen", "kennzahlen", "modell", "bericht"],
+      "start": ["bericht", "modell", "fragen", "kennzahlen", "verstehen", "bereinigen"],
+      "rueckmeldung": { "de": "Erst die Frage, dann die Daten, dann die Definition, dann das Modell, zuletzt der Bericht. Wer vorne anfängt, baut hinten nichts um." }
+    },
+    {
+      "id": "W00-04",
+      "typ": "quiz",
+      "titel": { "de": "Was die Daten nicht können" },
+      "aufgabe": { "de": "<p>Zwei Fragen zu den Grenzen des Datensatzes.</p>" },
+      "fragen": [
+        {
+          "frage": { "de": "Warum steht im Projekt keine Auslastung?" },
+          "optionen": [
+            { "de": "Weil die Hotelleitung sie nicht sehen wollte" },
+            { "de": "Weil der Datensatz keine Zimmerzahl enthält und ohne Kapazität kein Nenner existiert" },
+            { "de": "Weil Power BI keine Prozentwerte darstellen kann" },
+            { "de": "Weil die stornierten Buchungen die Auslastung verfälschen würden" }
+          ],
+          "richtig": [1],
+          "erklaerung": { "de": "Auslastung ist belegte durch verfügbare Zimmer. Die verfügbaren Zimmer fehlen im Datensatz, also fehlt der Nenner. Das Projekt weicht auf gebuchte Zimmernächte aus und benennt die Lücke." }
+        },
+        {
+          "frage": { "de": "Welcher Vergleich ist mit diesen Daten sauber möglich?" },
+          "optionen": [
+            { "de": "Gesamtjahr 2015 gegen Gesamtjahr 2016" },
+            { "de": "August 2017 gegen August 2016" },
+            { "de": "Diese beiden Hotels gegen den Branchendurchschnitt" },
+            { "de": "Restaurantumsatz gegen Zimmerumsatz" }
+          ],
+          "richtig": [1],
+          "erklaerung": { "de": "Nur 2016 ist vollständig; 2015 beginnt im Juli, 2017 endet im August. Deshalb vergleicht das Dashboard Monate mit dem Vorjahresmonat. Branchenwerte und Nebenumsätze enthält der Datensatz nicht." }
+        }
+      ],
+      "rueckmeldung": { "de": "Die Grenzen zu kennen ist Teil der Auswertung. Ein Bericht, der sie verschweigt, wird irgendwann an genau dieser Stelle falsch gelesen." }
+    }
+  ]
+}

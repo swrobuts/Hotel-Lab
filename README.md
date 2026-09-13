@@ -112,7 +112,8 @@ gh api repos/swrobuts/Hotel-Lab/pages -X POST -f source[branch]=main -f source[p
 
 ## Quellen
 
-Datensatz: Antonio, de Almeida, Nunes (2019), *Hotel booking demand datasets*, Data in Brief 22,
-CC BY 4.0, in der TidyTuesday-Fassung. Gestaltungsregeln: IBCS SUCCESS, Few, Tufte, Bissantz
+Datensatz: Nuno Antonio, Ana de Almeida, Luis Nunes (2019), *Hotel booking demand datasets*,
+Data in Brief 22 (Februar 2019), 41–49, doi:10.1016/j.dib.2018.11.126, CC BY 4.0, in der
+TidyTuesday-Fassung. Gestaltungsregeln: IBCS SUCCESS, Few, Tufte, Bissantz
 (*Bella berät*; „Using business effects as color criteria“). Angaben zu Werkzeugen und Lizenzen
 Stand 09/2026.

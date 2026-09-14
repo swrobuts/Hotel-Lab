@@ -15,7 +15,7 @@ export const TABELLEN = ['dim_hotel', 'dim_date', 'dim_market_segment', 'dim_dis
 
 /** Liefert eine geladene Datenbank; der Suchpfad steht auf hotel_bi. */
 export async function hotelDatenbank () {
-  const { PGlite } = await import(join(WURZEL, 'assets/pglite/index.js'))
+  const { PGlite } = await import(new URL('../assets/pglite/index.js', import.meta.url))
   const db = await PGlite.create()
   await db.exec(readFileSync(join(WURZEL, 'data/schema.sql'), 'utf8'))
   for (const tabelle of TABELLEN) {

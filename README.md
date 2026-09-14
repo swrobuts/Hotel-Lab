@@ -39,6 +39,7 @@ lab-09-befunde.html           Aussagen lesen, Abweichungen einordnen, Empfehlung
 assets/
   hotel.css                   Gemeinsames Stylesheet: Anthrazit #2E3238, Kupfer #C0662B
   hotel.js                    Laufzeit: LABS, Übungsboxen, Datenbank, Regal- und Deploy-Simulator
+  sqlpruefung.js              SQL-Auftragsreihenfolge und Prüfung auf dem Ausgangsbestand
   jsonpruefung.js             Prüfung von JSON-Übungen (JSON Pointer, Regeln)
   regal.js                    Aggregation und Zielprüfung des Feldfensters
   deploy.js                   Protokoll und Zielprüfung des Deploy-Simulators
@@ -55,6 +56,7 @@ tools/
   verify.mjs                  Abnahmelauf ohne Browser (siehe unten)
   sql.mjs                     SQL gegen das Sternschema auf der Kommandozeile
   datenbank.mjs               PGlite in Node mit demselben Lader wie die Seite
+  tests/regression.test.mjs   Regressionstests mit DOM und echtem PGlite
   eindeutschen.py             macht eine zweisprachige WInf-SP-Seite einsprachig deutsch
 ```
 
@@ -75,13 +77,21 @@ tools/
 
 Beim Öffnen einer Seite mit SQL-Übungen legt PGlite das Schema aus `data/schema.sql` an und lädt die
 neun CSV-Dateien per `COPY … FROM '/dev/blob'` – etwa fünf Sekunden, danach liegen 119.390 Buchungen
-im Browser. Leseabfragen laufen auf diesem Bestand; nur Übungen mit `vorher`/`kontrolle` oder
-Eingaben, die den Bestand ändern, säen neu. Kennzahlen zum Gegenprüfen: 119.390 Buchungen,
+im Browser. „Ausführen“ erlaubt das Weiterarbeiten auf eigenen Änderungen. Eine Prüfung startet
+nach jeder eigenen SQL-Ausführung wieder auf dem Ausgangsbestand und ermittelt die Referenz vor
+der Eingabe. Übungen mit `vorher`/`kontrolle` erhalten für Referenz und Eingabe getrennt vorbereitete
+Bestände. SQL-Aktionen und Zurücksetzen laufen nacheinander, auch über mehrere Übungsboxen hinweg.
+Das erneute Laden benötigt einige Sekunden. Kennzahlen zum Gegenprüfen: 119.390 Buchungen,
 Stornoquote 37,0 %, stornobereinigter Umsatz 25.996.260 €, gebuchter Umsatz 42.723.498 €.
 
 ## Nach jeder Änderung prüfen
 
+Node.js ab Version 20; die Tests laufen auch unter Windows. Nur die DOM-Regressionstests benötigen
+die Entwicklungsabhängigkeiten. Die veröffentlichte Seite hat weiterhin keinen Build-Schritt.
+
 ```bash
+npm ci                         # Entwicklungsabhängigkeiten installieren
+npm test                       # DOM, SQL-Bewertung, Fortschritt und Simulatoren
 node tools/verify.mjs            # Struktur und alle SQL-Musterlösungen (lädt PGlite, ~10 s)
 node tools/verify.mjs --ohne-sql # nur Struktur
 node tools/sql.mjs "SELECT count(*) FROM fact_bookings"

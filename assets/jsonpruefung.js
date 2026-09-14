@@ -18,13 +18,14 @@
 
 /** JSON Pointer aufloesen; undefined, wenn der Pfad nicht existiert. */
 export function zeiger (wert, pfad) {
-  if (pfad === '' || pfad === '/') return wert
+  if (pfad === '') return wert
+  if (!pfad.startsWith('/')) return undefined
   const teile = pfad.split('/').slice(1).map(t => t.replace(/~1/g, '/').replace(/~0/g, '~'))
   let k = wert
   for (const t of teile) {
     if (k === null || typeof k !== 'object') return undefined
     if (Array.isArray(k)) {
-      if (!/^\d+$/.test(t)) return undefined
+      if (!/^(0|[1-9]\d*)$/.test(t)) return undefined
       k = k[Number(t)]
     } else {
       if (!Object.prototype.hasOwnProperty.call(k, t)) return undefined
@@ -98,14 +99,16 @@ export function pruefeJson (text, uebung) {
     if (w === undefined) { verletzt({ de: `${r.pfad} fehlt.`, en: `${r.pfad} is missing.` }); continue }
     if (r.typ && typVon(w) !== r.typ) { verletzt({ de: `${r.pfad} muss vom Typ ${r.typ} sein, ist aber ${typVon(w)}.`, en: `${r.pfad} must be of type ${r.typ} but is ${typVon(w)}.` }); continue }
     if (r.wert !== undefined && !gleich(w, r.wert)) verletzt({ de: `${r.pfad} hat nicht den erwarteten Wert.`, en: `${r.pfad} does not have the expected value.` })
-    if (r.laenge !== undefined && (w?.length ?? Object.keys(w).length) !== r.laenge) verletzt({ de: `${r.pfad} muss genau ${r.laenge} Einträge haben.`, en: `${r.pfad} must have exactly ${r.laenge} entries.` })
-    if (r.mindestens !== undefined && (w?.length ?? Object.keys(w).length) < r.mindestens) verletzt({ de: `${r.pfad} muss mindestens ${r.mindestens} Einträge haben.`, en: `${r.pfad} must have at least ${r.mindestens} entries.` })
+    const laenge = typeof w === 'string' || Array.isArray(w) ? w.length : w && typeof w === 'object' ? Object.keys(w).length : null
+    if (r.laenge !== undefined && (laenge === null || laenge !== r.laenge)) verletzt({ de: `${r.pfad} muss genau ${r.laenge} Einträge haben.`, en: `${r.pfad} must have exactly ${r.laenge} entries.` })
+    if (r.mindestens !== undefined && (laenge === null || laenge < r.mindestens)) verletzt({ de: `${r.pfad} muss mindestens ${r.mindestens} Einträge haben.`, en: `${r.pfad} must have at least ${r.mindestens} entries.` })
     if (r.muster !== undefined && !(typeof w === 'string' && new RegExp(r.muster).test(w))) verletzt({ de: `${r.pfad} hat nicht die erwartete Form.`, en: `${r.pfad} does not have the expected form.` })
     if (r.schluessel) {
-      const fehlend = r.schluessel.filter(k => !(w && typeof w === 'object' && !Array.isArray(w) && k in w))
+      const fehlend = r.schluessel.filter(k => !(w && typeof w === 'object' && !Array.isArray(w) && Object.prototype.hasOwnProperty.call(w, k)))
       if (fehlend.length) verletzt({ de: `${r.pfad}: Schlüssel fehlen: ${fehlend.join(', ')}.`, en: `${r.pfad}: keys missing: ${fehlend.join(', ')}.` })
     }
     if (r.jedes) {
+      if (!Array.isArray(w)) verletzt({ de: `${r.pfad} muss ein Array sein.`, en: `${r.pfad} must be an array.` })
       // Regel fuer jedes Element eines Feldes: gleiche Felder wie oben.
       const liste = Array.isArray(w) ? w : []
       liste.forEach((e, i) => {

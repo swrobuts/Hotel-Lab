@@ -21,6 +21,7 @@ import { zustandTrifft, schrittErfuellt } from './pruefung.js'
 import { pruefeJson } from './jsonpruefung.js'
 import { AGGREGATE, ergebnis as regalErgebnis, darstellung as regalDarstellung, abweichungen as regalAbweichungen } from './regal.js'
 import { simuliereDeploy, deployErfuellt } from './deploy.js'
+import { dbAuftrag, pruefeSql } from './sqlpruefung.js'
 
 /* ------------------------------------------------------------------ Sprache */
 
@@ -285,18 +286,32 @@ const labVon = (id) => LABS.find(l => l.id === id)
 /* --------------------------------------------------------------- Fortschritt */
 
 const fortschrittSchluessel = (lab) => `hotel:fortschritt:${lab}`
+const fortschrittSitzung = {}
+const uebungGehoertZuLab = (lab, id) => {
+  const nummer = /^W(\d{2})-(\d{2})$/.exec(id)
+  return !!nummer && lab === 'lab-' + nummer[1] && Number(nummer[2]) >= 1 && Number(nummer[2]) <= (labVon(lab)?.uebungen || 0)
+}
 
 function ladeFortschritt (lab) {
-  try { return JSON.parse(localStorage.getItem(fortschrittSchluessel(lab)) || '{}') } catch { return {} }
+  let wert = fortschrittSitzung[lab]
+  if (wert === undefined) {
+    try { wert = JSON.parse(localStorage.getItem(fortschrittSchluessel(lab)) || '{}') }
+    catch { wert = {} }
+  }
+  if (!wert || typeof wert !== 'object' || Array.isArray(wert)) return {}
+  return Object.fromEntries(Object.entries(wert).filter(([id, erledigt]) => erledigt === true && uebungGehoertZuLab(lab, id)))
 }
 function merkeFortschritt (lab, id) {
+  if (!uebungGehoertZuLab(lab, id)) return
   const f = ladeFortschritt(lab)
   f[id] = true
+  fortschrittSitzung[lab] = f
   try { localStorage.setItem(fortschrittSchluessel(lab), JSON.stringify(f)) } catch { /* egal */ }
   document.dispatchEvent(new CustomEvent('hotel:fortschritt'))
 }
 function loescheFortschritt () {
   for (const l of LABS) {
+    fortschrittSitzung[l.id] = {}
     try { localStorage.removeItem(fortschrittSchluessel(l.id)) } catch { /* egal */ }
   }
   document.dispatchEvent(new CustomEvent('hotel:fortschritt'))
@@ -624,7 +639,7 @@ async function holeDb (maschine = seitenMaschine) {
     dbVersprechen[maschine] = (async () => {
       const PGlite = await ladePGlite()
       return { maschine, db: await PGlite.create(), gesaet: false }
-    })()
+    })().catch(e => { delete dbVersprechen[maschine]; throw e })
   }
   return dbVersprechen[maschine]
 }
@@ -647,9 +662,11 @@ async function holeDatei (pfad) {
  */
 async function saeen (h) {
   h.gesaet = false
+  // Auch nach BEGIN + fehlerhafter Eingabe muss Zurücksetzen funktionieren.
+  await h.db.exec('ROLLBACK')
   const schemata = await h.db.query(
     "SELECT nspname FROM pg_namespace WHERE nspname NOT LIKE 'pg\\_%' AND nspname <> 'information_schema'")
-  for (const z of schemata.rows) await h.db.exec(`DROP SCHEMA IF EXISTS "${z.nspname}" CASCADE`)
+  for (const z of schemata.rows) await h.db.exec(`DROP SCHEMA IF EXISTS "${z.nspname.replaceAll('"', '""')}" CASCADE`)
   await h.db.exec('CREATE SCHEMA public;')
   await h.db.exec(await holeDatei('data/schema.sql'))
   for (const tabelle of TABELLEN) {
@@ -659,6 +676,7 @@ async function saeen (h) {
   }
   await h.db.exec('SET search_path TO hotel_bi, public')
   h.gesaet = true
+  h.veraendert = false
 }
 
 /**
@@ -737,7 +755,7 @@ function baueDbBand (ziel, maschine) {
     btn.disabled = true
     try {
       const h = await holeDb(maschine)
-      await saeen(h)
+      await dbAuftrag(h, () => saeen(h))
       band.className = 'db-status ready'
       text.textContent = bereit()
       btn.disabled = false
@@ -745,7 +763,7 @@ function baueDbBand (ziel, maschine) {
     } catch (e) {
       band.className = 'db-status failed'
       text.textContent = txt(T.dbFehler) + ' ' + e.message
-    }
+    } finally { btn.disabled = false }
   }
   btn.addEventListener('click', setzen)
   document.addEventListener('hotel:sprache', () => {
@@ -1030,7 +1048,9 @@ function baueRegal (ziel, opt) {
     if (art === 'leer' || !daten.length) { diagramm.append(el('p', 'hinweis-klein', txt(T.keineDaten))); return }
     const erg = regalErgebnis(daten, felder, belegung)
 
-    if (art === 'tabelle') {
+    // Das einfache Säulenmodell hat keine negative Achse. Die Tabelle zeigt
+    // auch negative ADR-Werte vollständig, statt ungültige SVG-Höhen zu erzeugen.
+    if (art === 'tabelle' || erg.zeilen.some(z => Object.values(z.werte).some(v => v < 0))) {
       const res = {
         fields: [...erg.dimensionen.map(d => ({ name: feldName(d.feld) })), ...erg.kennzahlen.map(k => ({ name: k.titel }))],
         rows: erg.zeilen.map(z => [...erg.dimensionen.map(d => z.schluessel[d.feld]), ...erg.kennzahlen.map(k => z.werte[k.titel] == null ? null : Math.round(z.werte[k.titel] * 100) / 100)])
@@ -1296,7 +1316,7 @@ function baueDeploy (ziel, opt) {
   btnDeploy.addEventListener('click', async () => {
     if (laeuft) return
     laeuft = true; btnDeploy.disabled = true
-    const e = lesen()
+    const e = JSON.parse(JSON.stringify(lesen()))
     const r = simuliereDeploy(e, repo)
     log.hidden = false
     log.replaceChildren(el('div', 'dim', txt(T.deployLaeuft)))
@@ -1501,8 +1521,11 @@ function baueBox (uebung, ctx) {
       sperren(true); status(meldung, 'note', txt(T.dbLaden))
       try {
         const h = await holeDb(maschine)
-        if (!h.gesaet) await saeen(h)
-        const res = await fuehre(h, sql)
+        const res = await dbAuftrag(h, async () => {
+          if (!h.gesaet) await saeen(h)
+          h.veraendert = true
+          return fuehre(h, sql)
+        })
         if (res.fields && res.fields.length) zeigeErgebnis('note', txt(T.ergebnis), res)
         else status(meldung, 'note', txt(T.ausgefuehrt))
       } catch (e) {
@@ -1520,19 +1543,7 @@ function baueBox (uebung, ctx) {
       sperren(true); status(meldung, 'note', txt(T.dbLaden))
       try {
         const h = await holeDb(maschine)
-        // Leseabfragen laufen auf dem geladenen Bestand; nur wenn die Uebung oder
-        // die Eingabe den Bestand veraendert, wird vorher und dazwischen neu gesaet.
-        const veraendert = !!(uebung.vorher || uebung.kontrolle) || !/^\s*(select|with|explain|table|values)\b/i.test(sql)
-        if (veraendert || !h.gesaet) await saeen(h)
-        if (uebung.vorher) await fuehre(h, uebung.vorher)
-        const meins = await fuehre(h, sql)
-        // Bei Anweisungen, die den Bestand aendern, wird das Ergebnis ueber
-        // eine Kontrollabfrage verglichen - sonst ueber die Abfrage selbst.
-        const kontrolle = uebung.kontrolle || null
-        const meinsK = kontrolle ? await fuehre(h, kontrolle) : meins
-        if (veraendert) await saeen(h)
-        if (uebung.vorher) await fuehre(h, uebung.vorher)
-        const soll = kontrolle ? (await fuehre(h, uebung.loesung), await fuehre(h, kontrolle)) : await fuehre(h, uebung.loesung)
+        const { meinsK, soll } = await dbAuftrag(h, () => pruefeSql(h, sql, uebung, saeen, fuehre))
         const spaltenGleich = meinsK.fields.length === soll.fields.length
         if (!spaltenGleich) {
           zeigeErgebnis('fail', txt(T.nochNicht), meinsK, txt(T.spaltenFalsch))

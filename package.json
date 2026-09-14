@@ -1,0 +1,11 @@
+{
+  "name": "hotel-lab",
+  "private": true,
+  "type": "module",
+  "engines": { "node": ">=20" },
+  "scripts": {
+    "test": "node --test tools/tests/regression.test.mjs",
+    "verify": "node tools/verify.mjs"
+  },
+  "devDependencies": { "jsdom": "26.1.0" }
+}

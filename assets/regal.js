@@ -20,7 +20,7 @@ export const AGGREGATE = ['SUM', 'AVG', 'COUNT', 'MIN', 'MAX']
 
 function aggregiere (werte, agg) {
   const zahlen = werte.filter(v => v !== null && v !== undefined && v !== '').map(Number)
-  if (agg === 'COUNT') return werte.length
+  if (agg === 'COUNT') return werte.filter(v => v !== null && v !== undefined).length
   if (!zahlen.length) return null
   if (agg === 'SUM') return zahlen.reduce((s, v) => s + v, 0)
   if (agg === 'AVG') return zahlen.reduce((s, v) => s + v, 0) / zahlen.length
@@ -101,6 +101,9 @@ export function darstellung (felder, belegung) {
   if (!sp.length && !ze.length) return 'leer'
   const dimsSp = sp.filter(f => f.typ !== 'kennzahl'); const kennSp = sp.filter(f => f.typ === 'kennzahl')
   const dimsZe = ze.filter(f => f.typ !== 'kennzahl'); const kennZe = ze.filter(f => f.typ === 'kennzahl')
+  // Die Diagramme können genau eine Achsendimension und eine Kennzahl zeigen.
+  // Weitere Felder bleiben in einer Tabelle sichtbar, statt still zu entfallen.
+  if (dimsSp.length + dimsZe.length !== 1 || kennSp.length + kennZe.length !== 1) return 'tabelle'
   if ((dimsSp.length && kennZe.length) || (dimsZe.length && kennSp.length)) {
     const dim = dimsSp[0] || dimsZe[0]
     return dim.geordnet ? 'linie' : 'balken'

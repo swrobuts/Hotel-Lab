@@ -971,3 +971,42 @@ tr:nth-child(even) td { background: var(--bg-soft); }
   .header, .sidebar, .lang-btn, .uebung-aktionen, .terminal-eingabe { display: none; }
   .main-content, .lab-header, .footer { margin-left: 0; }
 }
+
+/* --------------------------------------------------------------- Schrittfolgen, Abbildungen, Downloads (Lab 07) */
+
+/* Nummerierte Handgriffe: Kreis mit Zahl, fetter Schritttitel, Text darunter. */
+.schritte { counter-reset: schritt; list-style: none; margin: 1rem 0; padding: 0; }
+.schritte > li {
+  counter-increment: schritt; position: relative; padding-left: 2.6rem; margin-bottom: 1.1rem; min-width: 0;
+}
+.schritte > li::before {
+  content: counter(schritt); position: absolute; left: 0; top: 0;
+  width: 1.85rem; height: 1.85rem; border-radius: 50%; background: var(--primary); color: var(--on-primary);
+  font-weight: 800; font-size: 0.88rem; display: grid; place-items: center;
+}
+.schritte > li > strong:first-child { display: block; color: var(--primary-d); margin-bottom: 0.15rem; }
+.schritte pre.code-block { margin-top: 0.7rem; }
+
+/* Echte Bildschirmfotos mit Bildunterschrift (Ausnahme von der Nachbildungsregel, siehe Lab 07). */
+.abbildung { border: 1px solid var(--line); border-radius: 8px; background: #fff; padding: 0.6rem 0.6rem 0.5rem; margin: 1.2rem 0; }
+.abbildung img { display: block; width: 100%; height: auto; border-radius: 4px; }
+.abbildung figcaption { font-size: 0.82rem; color: var(--ink-soft); margin-top: 0.55rem; padding: 0 0.2rem; line-height: 1.55; }
+.abbildung figcaption strong { color: var(--ink); }
+.code-note { font-size: 0.8rem; color: var(--ink-soft); margin: 0.4rem 0 0; line-height: 1.55; }
+
+/* Starterpaket und veröffentlichte Dashboards: ein Kasten mit Knopfreihe. */
+.download-box {
+  border: 1px solid var(--line); border-left: 4px solid var(--signal); border-radius: 0 8px 8px 0;
+  background: #fff; padding: 1rem 1.25rem; margin: 1.1rem 0;
+}
+.download-box h3 { margin-top: 0; }
+.download-box p { font-size: 0.92rem; }
+.download-reihe { display: flex; gap: 0.5rem; flex-wrap: wrap; margin-top: 0.6rem; }
+.btn-download {
+  display: inline-block; text-decoration: none; padding: 0.45rem 0.95rem; border-radius: 6px;
+  font-size: 0.82rem; font-weight: 700; font-family: var(--sans);
+  background: var(--primary); color: var(--on-primary); border: 1.5px solid var(--primary);
+}
+.btn-download:hover { background: var(--accent); border-color: var(--accent); color: #fff; }
+.btn-download.sekundaer { background: #fff; color: var(--primary-d); }
+.btn-download.sekundaer:hover { background: var(--primary-l); color: var(--primary-d); }

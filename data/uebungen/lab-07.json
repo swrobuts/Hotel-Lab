@@ -236,6 +236,15 @@
         "farbe": null,
         "filter": {}
       }
+    },
+    "frei-tableau": {
+      "variante": "tableau",
+      "startBelegung": {
+        "spalten": [],
+        "zeilen": [],
+        "farbe": null,
+        "filter": {}
+      }
     }
   },
   "uebungen": [
@@ -277,12 +286,12 @@
     {
       "id": "W07-02",
       "typ": "regal",
-      "variante": "powerbi",
+      "variante": "tableau",
       "titel": {
-        "de": "Stornobereinigter Umsatz je Anreisemonat"
+        "de": "Umsatz je Anreisemonat in Tableau"
       },
       "aufgabe": {
-        "de": "<p>Zeigen Sie den Umsatz je Anreisemonat – aber nur den stornobereinigten: Anreisemonat auf die X-Achse, die Summe von revenue auf die Y-Achse, und ein Filter auf den Stornostatus „nicht storniert“.</p>"
+        "de": "<p>Dasselbe in den Regalen von Tableau: Zeigen Sie den stornobereinigten Umsatz je Anreisemonat – den Anreisemonat auf Columns, die Summe von umsatz auf Rows und einen Filter auf den Stornostatus „nicht storniert“. Eine geordnete Dimension auf Columns ergibt eine Linie.</p>"
       },
       "ziel": {
         "spalten": [
@@ -315,7 +324,7 @@
         }
       },
       "rueckmeldung": {
-        "de": "Eine Linie mit der Saisonkurve – geordnete Dimensionen werden Linien. Der Filter ist hier das, was in DAX CALCULATE mit is_canceled = 0 und in SQL FILTER (WHERE NOT is_canceled) leistet."
+        "de": "Dieselbe Saisonkurve wie in Power BI – nur die Regale heißen anders: Columns statt X-Achse, Rows statt Y-Achse. Der Filter leistet, was in Tableau das IF im berechneten Feld Umsatz und in DAX CALCULATE mit is_canceled = 0 leistet."
       }
     },
     {
@@ -478,10 +487,10 @@
       "id": "W07-05",
       "typ": "quiz",
       "titel": {
-        "de": "Import, Beziehungen, Measures"
+        "de": "Import, Beziehungen, Measures und Kacheln"
       },
       "aufgabe": {
-        "de": "<p>Drei Fragen zu den Entscheidungen im Modell.</p>"
+        "de": "<p>Vier Fragen zu den Entscheidungen im Modell und in den Kacheln.</p>"
       },
       "fragen": [
         {
@@ -558,10 +567,124 @@
           "erklaerung": {
             "de": "Die Summe einer 0/1-Spalte ist eine Anzahl (44.224). Eine Quote braucht Zähler und Nenner im Kontext des Visuals – also ein Measure mit DIVIDE, wie Stornoquote % im Projekt."
           }
+        },
+        {
+          "frage": {
+            "de": "Die Kachel „Umsatz 2016“ soll den Vergleich zum Vorjahr zeigen. Der Datensatz beginnt im Juli 2015. Welche Aussage ist ehrlich?"
+          },
+          "optionen": [
+            {
+              "de": "„+158,7 % zum Vorjahr“ – 2016 ganz gegen 2015 ganz"
+            },
+            {
+              "de": "„+56,1 % zu Jul–Dez 2015“ – nur die Monate, die beide Jahre haben"
+            },
+            {
+              "de": "Gar kein Vergleich, weil 2015 unvollständig ist"
+            },
+            {
+              "de": "„+56,1 % zum Vorjahr“ ohne Zeitraum, das versteht jeder"
+            }
+          ],
+          "richtig": [
+            1
+          ],
+          "erklaerung": {
+            "de": "Zwölf Monate gegen sechs zu rechnen ist kein Vergleich. Die Kachel vergleicht Juli bis Dezember 2016 mit Juli bis Dezember 2015 und schreibt den Zeitraum in den Text. Den Vergleich ganz wegzulassen verschenkt Information, ihn ohne Zeitraum zu zeigen täuscht Vollständigkeit vor."
+          }
         }
       ],
       "rueckmeldung": {
-        "de": "Import friert ein, Beziehungen brauchen einen eindeutigen Pfad, Quoten sind Measures. Wer diese drei Entscheidungen begründen kann, kann das Modell erklären."
+        "de": "Import friert ein, Beziehungen brauchen einen eindeutigen Pfad, Quoten sind Measures, Teiljahre vergleicht man nur über gemeinsame Monate. Wer diese vier Entscheidungen begründen kann, kann das Dashboard erklären."
+      }
+    },
+    {
+      "id": "W07-06",
+      "typ": "zuordnen",
+      "titel": {
+        "de": "Gestaltungsregel und Umsetzung"
+      },
+      "aufgabe": {
+        "de": "<p>Ordnen Sie jede Beobachtung an einem Dashboard der Regel zu, die sie verletzt oder erfüllt. Die Regeln gelten in Power BI wie in Tableau.</p>"
+      },
+      "ziele": [
+        {
+          "id": "aussage",
+          "text": {
+            "de": "Titel ist eine Aussage mit Zahl"
+          }
+        },
+        {
+          "id": "farbe",
+          "text": {
+            "de": "Farbe kodiert Bedeutung, nicht Kategorien"
+          }
+        },
+        {
+          "id": "marken",
+          "text": {
+            "de": "Werte an den Marken statt Achsen und Gitter"
+          }
+        },
+        {
+          "id": "bezug",
+          "text": {
+            "de": "Anteile brauchen den Gesamtbezug"
+          }
+        },
+        {
+          "id": "zeitraum",
+          "text": {
+            "de": "Untertitel nennt Größe, Einheit und Zeitraum"
+          }
+        }
+      ],
+      "paare": [
+        {
+          "begriff": {
+            "de": "„Umsatz nach Marktsegment“ als Diagrammtitel"
+          },
+          "ziel": "aussage"
+        },
+        {
+          "begriff": {
+            "de": "Acht Segmente in acht Farben mit Legende"
+          },
+          "ziel": "farbe"
+        },
+        {
+          "begriff": {
+            "de": "Wertachse 0 bis 14 Mio. mit Gitternetz, Balken ohne Beschriftung"
+          },
+          "ziel": "marken"
+        },
+        {
+          "begriff": {
+            "de": "„Top 10 Länder“ ohne Angabe, wie viel die zehn vom Ganzen sind"
+          },
+          "ziel": "bezug"
+        },
+        {
+          "begriff": {
+            "de": "Graue Zeile „Umsatz in Euro je Marktsegment, 2015–2017, beide Hotels“"
+          },
+          "ziel": "zeitraum"
+        },
+        {
+          "begriff": {
+            "de": "Letzter Wert der Monatslinie rot und fett, Rest der Linie blau"
+          },
+          "ziel": "farbe"
+        },
+        {
+          "begriff": {
+            "de": "„Fünf Länder liefern 66 % des Umsatzes, Portugal allein 21 %“"
+          },
+          "ziel": "aussage"
+        }
+      ],
+      "rueckmeldung": {
+        "de": "Fünf Regeln, die in beiden Werkzeugen gleich aussehen: Aussage im Titel, Zeitraum im Untertitel, Werte an den Marken, Farbe nur für Bedeutung, Anteile mit Bezug zum Ganzen. Wer sie prüft, findet in fast jedem Standard-Dashboard drei Verstöße."
       }
     }
   ]

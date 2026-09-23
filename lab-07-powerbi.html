@@ -542,9 +542,10 @@ THEN (IF [is_canceled] = 0 THEN [revenue] END) END</pre>
       einfachste Weg, für Unternehmensdaten ausgeschlossen.</p>
     <p><a class="btn-download" href="https://public.tableau.com/app/profile/robert.butscher7938/viz/Hotel_Dashboard_17901648227040/HotelDashboard" target="_blank" rel="noopener noreferrer">Dashboard auf Tableau Public öffnen</a></p>
     <figure class="abbildung">
-      <img src="assets/img/tableau-public.png" alt="Das Hotel-Dashboard auf Tableau Public im Browser mit der Kopfzeile von Tableau Public und der Leiste zum Teilen und Herunterladen" width="1400" height="1031" loading="lazy" />
-      <figcaption>Tableau Public: ohne Anmeldung erreichbar; die Leiste unten bietet Teilen, Vollbild und Herunterladen
-        der Arbeitsmappe. Das Gebietsschema der Arbeitsmappe bestimmt Tausenderpunkt und Dezimalkomma.</figcaption>
+      <img src="assets/img/tableau-public.png" alt="Das Hotel-Dashboard auf Tableau Public im Browser mit der Kopfzeile von Tableau Public und der Leiste zum Teilen und Herunterladen" width="1400" height="991" loading="lazy" />
+      <figcaption>Tableau Public ohne Anmeldung: Die Leiste unter dem Dashboard bietet Ansicht auf Tableau Public, Vollbild,
+        Herunterladen und Freigeben. Aufgerufen mit dem Parameter <code>?:language=de-DE</code> – ohne ihn formatiert
+        Tableau Public die Zahlen nach der Sprache des Betrachters, also mit Komma als Tausendertrenner.</figcaption>
     </figure>
     <h3>Tableau Cloud: geschlossen, für die Organisation</h3>
     <p><em>Server → Anmelden</em> mit dem Site-Namen als Adresse, dann <em>Server → Arbeitsmappe veröffentlichen</em>:
@@ -622,7 +623,9 @@ THEN (IF [is_canceled] = 0 THEN [revenue] END) END</pre>
 
   <section class="section-block" id="spielplatz">
     <h2>Sandbox</h2>
-    <p>Ein nachgebildeter Feldbereich mit den Feldern des Projekts und einer Stichprobe von 5.000 Buchungen, einmal mit den Field Wells von Power BI (X-Achse, Y-Achse, Legende), einmal mit den Shelves von Tableau (Columns, Rows, Color). Ziehen Sie Felder hinein; das Diagramm folgt aus der Belegung. Die Stichprobe liefert andere absolute Zahlen als das Dashboard, aber dieselben Muster – und die Σ-Falle
+    <p>Ein nachgebildeter Feldbereich mit den Feldern des Projekts und einer Stichprobe von 5.000 Buchungen, einmal mit den Field Wells von Power BI (X-Achse, Y-Achse, Legende), einmal mit den Shelves von Tableau (Columns, Rows, Color). Ziehen Sie Felder hinein; das Diagramm folgt aus der
+      Belegung. Die Werte tragen hier die Klarnamen des Dashboards (Reisebüro online, Ohne Anzahlung); Power BI und
+      Tableau zeigen die Originalwerte der Datenbank (Online TA, No Deposit), solange man sie nicht übersetzt. Die Stichprobe liefert andere absolute Zahlen als das Dashboard, aber dieselben Muster – und die Σ-Falle
       ist eingebaut.</p>
     <h3>Power BI: X-Achse, Y-Achse, Legende</h3>
     <div data-regal="frei" data-variante="powerbi"></div>

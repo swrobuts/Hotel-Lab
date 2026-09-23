@@ -100,6 +100,10 @@ node tools/verify.mjs --ohne-sql # nur Struktur
 node tools/sql.mjs "SELECT count(*) FROM fact_bookings"
 ```
 
+`node tools/links.mjs` ruft die externen Adressen der Labs auf (Tableau Public, Tableau Cloud,
+Power-BI-Dienst, Dashboard, Repositories) und meldet, welche nicht mehr antworten – einmal je Semester
+laufen lassen. Wie ein Lab geschrieben wird, steht in `AUTORENLEITFADEN.md`.
+
 Der Lauf prüft, dass Platzhalter und JSON deckungsgleich sind, jeder Text vorhanden ist, die
 Übungszahlen in `LABS` stimmen, jede JSON-, Reihenfolge-, Feldbereich- und Deploy-Übung mit ihrer
 Lösung lösbar ist und ihr Starttext noch nicht, und dass jede SQL-Musterlösung auf dem Sternschema

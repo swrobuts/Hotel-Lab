@@ -72,7 +72,7 @@
     <div class="karten">
       <div class="karte">
         <div class="kopfzeile">1 · Stornorisiko</div>
-        <p>Welche Buchungen werden storniert – und lässt sich das vorher erkennen? Vorlaufzeit, Kautionstyp,
+        <p>Welche Buchungen werden storniert – und lässt sich das vorher erkennen? Vorlaufzeit, Anzahlungsart,
           Marktsegment und Herkunftsland sind die Verdächtigen. Dahinter steht Geld: Jede stornierte Buchung ist
           gebuchter Umsatz, der nicht ankommt.</p>
       </div>
@@ -119,8 +119,7 @@
   <section class="section-block" id="vorgehen">
     <h2>Das Vorgehen in sechs Schritten</h2>
     <p>Das Projekt folgt dem Ablauf, der sich in der Praxis für Datenprojekte durchgesetzt hat und den das Vorgehensmodell
-      CRISP-DM seit den 1990er-Jahren beschreibt: erst die Frage, dann die Daten verstehen, dann aufbereiten, dann
-      auswerten, dann bereitstellen. Jeder Schritt beantwortet eine Frage, ohne die der nächste nicht sinnvoll ist.</p>
+      CRISP-DM seit den 1990er-Jahren beschreibt: erst die Frage, dann die Daten verstehen, dann aufbereiten, dann auswerten, dann das Deployment. Jeder Schritt beantwortet eine Frage, ohne die der nächste nicht sinnvoll ist.</p>
     <div class="kette">
       <div class="glied hell"><span class="titel">1 Fragen</span><span class="was">Was will die Hotelleitung wissen?</span></div>
       <span class="pfeil">→</span>
@@ -148,7 +147,7 @@
       </table>
     </div>
     <div class="tip-box">
-      <p>Die Reihenfolge ist wichtiger, als sie aussieht. Wer mit Schritt 6 anfängt – „erst mal ein Dashboard bauen“ –,
+      <p>Wer mit Schritt 6 anfängt – „erst mal ein Dashboard bauen“ –,
         merkt in Schritt 4, dass Umsatz noch nicht definiert ist, und in Schritt 2, dass <code>adr</code> negative
         Werte enthält. Dann werden Diagramme umgebaut, die schon jemand gesehen hat.</p>
     </div>
@@ -199,7 +198,7 @@
           <tr><td>Abfragen und prüfen</td><td>psql, DBeaver</td><td>DataGrip, pgAdmin</td><td>DBeaver Community: Open Source</td></tr>
           <tr><td>Berichten</td><td>Power BI Desktop</td><td>Tableau, Apache Superset, Metabase</td><td>Power BI Desktop: kostenfrei; Veröffentlichen braucht ein Konto</td></tr>
           <tr><td>Dashboard programmieren</td><td>FastAPI, Observable Plot, D3</td><td>Streamlit, Dash, Shiny</td><td>Open Source</td></tr>
-          <tr><td>Bereitstellen</td><td>Render (Docker, Free-Plan)</td><td>Fly.io, Railway, eigener Server</td><td>Render Free: schläft nach 15 Minuten Ruhe ein</td></tr>
+          <tr><td>Deploy</td><td>Render (Docker, Free-Plan)</td><td>Fly.io, Railway, eigener Server</td><td>Render Free: schläft nach 15 Minuten Ruhe ein</td></tr>
         </tbody>
       </table>
     </div>

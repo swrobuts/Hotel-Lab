@@ -70,7 +70,7 @@
         {
           "was": "FROM python:3.12-slim",
           "bedeutet": {
-            "de": "Das Grundabbild: ein schlankes Linux mit Python 3.12. Alles Weitere kommt in Schichten darauf."
+            "de": "Das Basis-Image: ein schlankes Linux mit Python 3.12. Alles Weitere kommt in Schichten darauf."
           }
         },
         {
@@ -97,13 +97,13 @@
         {
           "was": "runtime: docker",
           "bedeutet": {
-            "de": "Render baut ein Docker-Abbild aus dem Dockerfile statt selbst pip auszuführen. Build und Start stehen dann im Dockerfile, nicht im Formular."
+            "de": "Render baut ein Docker-Image aus dem Dockerfile statt selbst pip auszuführen. Build und Start stehen dann im Dockerfile, nicht im Formular."
           }
         },
         {
           "was": "rootDir: dashboard",
           "bedeutet": {
-            "de": "Das Dashboard liegt im Unterordner dashboard/ des Repositories. Ohne diese Zeile sucht Render das Dockerfile im Wurzelverzeichnis und findet keines."
+            "de": "Das Dashboard liegt im Unterordner dashboard/ des Repositories. Ohne diese Zeile sucht Render das Dockerfile im obersten Ordner des Repositories und findet keines."
           }
         },
         {
@@ -132,7 +132,7 @@
       "dashboard/Dockerfile": "# Hotel Booking Demand – Dashboard: ein Container für Backend und Frontend\nFROM python:3.12-slim\nWORKDIR /app\nCOPY requirements.txt .\nRUN pip install --no-cache-dir -r requirements.txt\nCOPY backend/ ./backend/\nCOPY frontend/ ./frontend/\nEXPOSE 8000\nCMD [\"sh\", \"-c\", \"uvicorn backend.app.main:app --host 0.0.0.0 --port ${PORT:-8000}\"]\n",
       "dashboard/requirements.txt": "fastapi>=0.115\nuvicorn[standard]>=0.30\nsqlalchemy>=2.0\npsycopg2-binary>=2.9\n",
       "dashboard/backend/app/main.py": "from fastapi import FastAPI, Depends\nfrom fastapi.staticfiles import StaticFiles\nfrom . import abfragen\nfrom .filter import Filter\n\napp = FastAPI(title=\"Hotel Booking Demand – Dashboard\")\n\n@app.get(\"/health\")\ndef health() -> dict:\n    return {\"status\": \"ok\"}\n\n@app.get(\"/api/kennzahlen\")\ndef kennzahlen(filter: Filter = Depends(filter_parameter)) -> dict:\n    return abfragen.kennzahlen(filter)\n\napp.mount(\"/\", StaticFiles(directory=\"frontend\", html=True), name=\"frontend\")\n",
-      "dashboard/backend/app/datenbank.py": "import os\nfrom sqlalchemy import create_engine\n\nSTANDARD_URL = \"postgresql://studi_hotel:thws@supabase.butscher.cloud:5433/hotel\"\n\ndef engine():\n    url = os.environ.get(\"DATABASE_URL\", STANDARD_URL)   # Rückfall auf die Leserolle\n    return create_engine(url, pool_size=4, pool_pre_ping=True)\n",
+      "dashboard/backend/app/datenbank.py": "import os\nfrom sqlalchemy import create_engine\n\nSTANDARD_URL = \"postgresql://studi_hotel:thws@supabase.butscher.cloud:5433/hotel\"\n\ndef engine():\n    url = os.environ.get(\"DATABASE_URL\", STANDARD_URL)   # Fallback auf die Leserolle\n    return create_engine(url, pool_size=4, pool_pre_ping=True)\n",
       "dashboard/kennzahlen_rechnen.py": "# Rechnet die Kennzahlen einmal durch und endet - ein Skript, kein Server.\nimport pandas as pd\nfrom backend.app.datenbank import engine\ndf = pd.read_sql(\"SELECT * FROM fact_bookings\", engine())\nprint(\"Buchungen geladen:\", len(df))\nprint(\"Fertig.\")\n",
       "dashboard/frontend/index.html": "<!DOCTYPE html>\n<html lang=\"de\"> … </html>\n"
     }
@@ -335,7 +335,7 @@
         "de": "Deploy wie im Projekt: Docker mit Root Directory"
       },
       "aufgabe": {
-        "de": "<p>Bringen Sie das Dashboard so online, wie es <code>render.yaml</code> beschreibt: Laufzeit Docker, Root Directory <code>dashboard</code>, keine Umgebungsvariable nötig. Der Dienst muss ohne Warnung online gehen.</p>"
+        "de": "<p>Bringen Sie das Dashboard so online, wie es <code>render.yaml</code> beschreibt: Runtime Docker, Root Directory <code>dashboard</code>, keine Umgebungsvariable nötig. Der Dienst muss ohne Warnung online gehen.</p>"
       },
       "startEingaben": {
         "runtime": "docker",
@@ -357,7 +357,7 @@
         "env": []
       },
       "rueckmeldung": {
-        "de": "Mit Root Directory dashboard findet Render das Dockerfile, baut das Abbild und startet den Befehl aus CMD – an 0.0.0.0, Port aus $PORT. Genau so läuft das echte Dashboard."
+        "de": "Mit Root Directory dashboard findet Render das Dockerfile, baut das Image und startet den Befehl aus CMD – an 0.0.0.0, Port aus $PORT. Genau so läuft das echte Dashboard."
       }
     },
     {
@@ -367,7 +367,7 @@
         "de": "Derselbe Dienst ohne Docker"
       },
       "aufgabe": {
-        "de": "<p>Angenommen, Sie wollen das Dashboard als Python-Dienst ohne Dockerfile betreiben. Laufzeit Python, Root Directory <code>dashboard</code>, Build Command <code>pip install -r requirements.txt</code>, Start Command mit uvicorn, gebunden an <code>0.0.0.0</code> und Port <code>$PORT</code>. Der Dienst muss ohne Warnung online gehen.</p>"
+        "de": "<p>Angenommen, Sie wollen das Dashboard als Python-Dienst ohne Dockerfile betreiben. Runtime Python, Root Directory <code>dashboard</code>, Build Command <code>pip install -r requirements.txt</code>, Start Command mit uvicorn, gebunden an <code>0.0.0.0</code> und Port <code>$PORT</code>. Der Dienst muss ohne Warnung online gehen.</p>"
       },
       "startEingaben": {
         "runtime": "python",

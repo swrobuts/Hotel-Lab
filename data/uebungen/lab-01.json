@@ -121,7 +121,7 @@
           "optionen": [
             { "de": "Nur Buchungen mit reservation_status = Canceled" },
             { "de": "Canceled und No-Show zusammen" },
-            { "de": "Alle Buchungen mit Kautionstyp Non Refund" },
+            { "de": "Alle Buchungen mit Anzahlungsart Non Refund" },
             { "de": "Buchungen, deren Gäste nicht wiedergekommen sind" }
           ],
           "richtig": [1],

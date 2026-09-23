@@ -166,7 +166,7 @@
         "id": "kaution",
         "typ": "dimension",
         "titel": {
-          "de": "Kautionstyp"
+          "de": "Anzahlungsart"
         }
       },
       {
@@ -291,7 +291,7 @@
         "de": "Umsatz je Anreisemonat in Tableau"
       },
       "aufgabe": {
-        "de": "<p>Dasselbe in den Regalen von Tableau: Zeigen Sie den stornobereinigten Umsatz je Anreisemonat – den Anreisemonat auf Columns, die Summe von umsatz auf Rows und einen Filter auf den Stornostatus „nicht storniert“. Eine geordnete Dimension auf Columns ergibt eine Linie.</p>"
+        "de": "<p>Dasselbe auf den Shelves von Tableau: Zeigen Sie den stornobereinigten Umsatz je Anreisemonat – den Anreisemonat auf Columns, die Summe von umsatz auf Rows und einen Filter auf den Stornostatus „nicht storniert“. Eine geordnete Dimension auf Columns ergibt eine Linie.</p>"
       },
       "ziel": {
         "spalten": [
@@ -324,7 +324,7 @@
         }
       },
       "rueckmeldung": {
-        "de": "Dieselbe Saisonkurve wie in Power BI – nur die Regale heißen anders: Columns statt X-Achse, Rows statt Y-Achse. Der Filter leistet, was in Tableau das IF im berechneten Feld Umsatz und in DAX CALCULATE mit is_canceled = 0 leistet."
+        "de": "Dieselbe Saisonkurve wie in Power BI – nur die Ablageflächen heißen anders: Shelves Columns und Rows in Tableau, Field Wells X-Achse und Y-Achse in Power BI. Der Filter leistet, was in Tableau das IF im berechneten Feld Umsatz und in DAX CALCULATE mit is_canceled = 0 leistet."
       }
     },
     {

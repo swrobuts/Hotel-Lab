@@ -27,7 +27,7 @@
   <a class="sidebar-link" href="#gestaltung">Gestaltungsregeln</a>
   <a class="sidebar-link" href="#container">Container und Render</a>
   <a class="sidebar-link" href="#stolpersteine">Stolpersteine beim Deploy</a>
-  <a class="sidebar-link" href="#spielplatz">Spielplatz</a>
+  <a class="sidebar-link" href="#spielplatz">Sandbox</a>
   <a class="sidebar-link" href="#uebungen">Übungen</a>
   <a class="sidebar-link" href="#zusammenfassung">Zusammenfassung</a>
 </nav>
@@ -143,7 +143,7 @@
     <p>Das Dashboard folgt Regeln, die vier Autoren geprägt haben: Edward Tufte (wenig Tinte ohne Daten), Stephen Few
       (Dashboards, die man auf einen Blick liest), Rolf Hichert (IBCS: einheitliche Notation, Aussage im Titel) und
       Nicolas Bissantz (Kennzahlen untereinander, Farbe als Werturteil). Jede Regel hat im Dashboard eine sichtbare
-      Umsetzung – und jede wurde in einer Überarbeitungsrunde erkämpft.</p>
+      Umsetzung.</p>
     <div class="table-scroll">
       <table class="table">
         <thead><tr><th>Regel</th><th>Quelle</th><th>Umsetzung im Dashboard</th></tr></thead>
@@ -161,16 +161,15 @@
     </div>
     <div class="warn-box">
       <p>Was das Dashboard bewusst nicht hat: Tortendiagramme, eine Landkarte, Liniendiagramme mit verschiedenen
-        Skalen nebeneinander, Prozentwerte mit Nachkommastellen in Diagrammen, eine Farbe je Kategorie. Jedes davon
-        war einmal drin und wurde aus einem benennbaren Grund wieder entfernt.</p>
+        Skalen nebeneinander, Prozentwerte mit Nachkommastellen in Diagrammen, eine Farbe je Kategorie. </p>
     </div>
   </section>
 
   <section class="section-block" id="container">
     <h2>Container und Render</h2>
     <p>Damit das Dashboard öffentlich läuft, braucht es einen Server, auf dem Python, die Pakete und der Code liegen
-      und der auf Anfragen antwortet. <strong>Docker</strong> packt das alles in ein Abbild (Image), das überall gleich
-      läuft; <strong>Render</strong> baut dieses Abbild aus dem Repository und betreibt es als <em>Web Service</em>. Zwei Dateien steuern das: das Dockerfile und der Blueprint <code>render.yaml</code>.</p>
+      und der auf Anfragen antwortet. <strong>Docker</strong> packt das alles in ein Image, das überall gleich
+      läuft; <strong>Render</strong> baut dieses Image aus dem Repository und betreibt es als <em>Web Service</em>. Zwei Dateien steuern das: das Dockerfile und der Blueprint <code>render.yaml</code>.</p>
     <div data-befehl="B03"></div>
     <div data-befehl="B04"></div>
     <div class="concept-box">
@@ -181,15 +180,14 @@
         <li><strong>Einen Port, den Render sieht:</strong> Der Server muss an <code>0.0.0.0</code> lauschen, nicht an
           <code>127.0.0.1</code>, und den Port aus der Umgebungsvariablen <code>PORT</code> nehmen. Sonst: „No open
           ports detected“.</li>
-        <li><strong>Die Konfiguration im Repository:</strong> <code>render.yaml</code> als Blueprint nennt Laufzeit
-          (Docker), Root Directory (<code>dashboard</code>), Plan (Free) und Health-Check-Pfad (<code>/health</code>).
+        <li><strong>Die Konfiguration im Repository:</strong> <code>render.yaml</code> als Blueprint nennt Runtime (Docker), Root Directory (<code>dashboard</code>), Plan (Free) und Health-Check-Pfad (<code>/health</code>).
           Jeder Push auf <code>main</code> löst einen neuen Deploy aus.</li>
         </ul>
     </div>
     <div class="info-box">
       <p>Free-Plan heißt: Der Dienst schläft nach 15 Minuten ohne Zugriff ein; der erste Aufruf danach dauert bis zu
         einer Minute. Für ein Lehrprojekt ist das in Ordnung, für einen Bericht, den die Geschäftsführung morgens um
-        acht öffnet, nicht. Deshalb läuft dasselbe Docker-Abbild zusätzlich auf einem eigenen Server unter
+        acht öffnet, nicht. Deshalb läuft dasselbe Docker-Image zusätzlich auf einem eigenen Server unter
         hotel.butscher.cloud – ohne Schlafpause, dafür mit eigenem Betrieb. Stand 09/2026.</p>
     </div>
   </section>
@@ -215,17 +213,16 @@
       </div>
       <div class="karte">
         <div class="kopfzeile">KeyError: 'DATABASE_URL'</div>
-        <p>Der Code liest eine Umgebungsvariable, die niemand gesetzt hat. Das Dashboard hat dafür einen Rückfall
-          auf die Leserolle; ein Projekt ohne Rückfall braucht die Variable im Render-Formular.</p>
+        <p>Der Code liest eine Umgebungsvariable, die niemand gesetzt hat. Das Dashboard hat dafür einen Fallback auf die Leserolle; ein Projekt ohne Fallback braucht die Variable im Render-Formular.</p>
       </div>
       <div class="karte">
         <div class="kopfzeile">Dockerfile nicht gefunden</div>
-        <p>Laufzeit Docker, aber das Dockerfile liegt in <code>dashboard/</code>, nicht im Wurzelverzeichnis. Abhilfe:
+        <p>Runtime Docker, aber das Dockerfile liegt in <code>dashboard/</code>, nicht im obersten Ordner des Repositories. Abhilfe:
           Root Directory auf <code>dashboard</code> setzen – so steht es in <code>render.yaml</code>.</p>
       </div>
       <div class="karte">
         <div class="kopfzeile">Alte Dateien im Browser</div>
-        <p>Nach einem Deploy zeigt der Browser das alte JavaScript aus seinem Zwischenspeicher. Das Dashboard schickt
+        <p>Nach einem Deploy zeigt der Browser das alte JavaScript aus seinem Cache. Das Dashboard schickt
           deshalb <code>Cache-Control: no-cache</code> und hängt an jede Skriptadresse eine Versionsnummer, die bei
           jeder Änderung hochgezählt wird.</p>
       </div>
@@ -233,7 +230,7 @@
   </section>
 
   <section class="section-block" id="spielplatz">
-    <h2>Spielplatz</h2>
+    <h2>Sandbox</h2>
     <p>Das Formular „New Web Service“ von Render, nachgebildet, daneben das Repository <code>swrobuts/hotel</code> mit
       den Dateien, auf die es ankommt. Probieren Sie aus, was passiert, wenn das Root Directory fehlt, der Host falsch
       ist oder ein Skript statt eines Servers startet – das Protokoll ist dem echten nachempfunden.</p>
@@ -260,7 +257,7 @@
       <li>Arbeitsteilung: Python liefert JSON über Routen, JavaScript zeichnet; der Filterzustand steht in der Adresse.</li>
       <li>Jede Route antwortet mit daten, sql und parameter – das Backend rechnet Rohwerte, das Frontend Quoten.</li>
       <li>Gestaltung nach Tufte, Few, IBCS und Bissantz: Aussage im Titel, gleiche Skalen, wenig Tinte, Fluchten, Vorjahresversatz, Farbe als Werturteil.</li>
-      <li>Docker packt, Render betreibt; render.yaml nennt Laufzeit, Root Directory, Plan und Health-Check.</li>
+      <li>Docker packt, Render betreibt; render.yaml nennt Runtime, Root Directory, Plan und Health-Check.</li>
       <li>Ein Web Service muss laufen bleiben, an 0.0.0.0 lauschen und den Port aus $PORT nehmen.</li>
     </ul>
     <div data-lab-nav></div>

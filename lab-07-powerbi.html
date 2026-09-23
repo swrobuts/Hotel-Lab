@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Lab 07 · Dashboard in Power BI und Tableau · Hotel-Lab</title>
-  <meta name="description" content="Ein Management-Dashboard für die Hotelbuchungen in Power BI und in Tableau bauen: Konzept, Kennzahlen, Aussagentitel, Kacheln, Filter, Veröffentlichung – Schritt für Schritt mit Bildschirmfotos." />
+  <meta name="description" content="Ein Management-Dashboard für die Hotelbuchungen in Power BI und in Tableau bauen: Konzept, Kennzahlen, Aussagentitel, Kacheln, Filter, Veröffentlichung – Schritt für Schritt mit Screenshots." />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -29,7 +29,7 @@
   <a class="sidebar-link" href="#vergleich">Zwei Werkzeuge, ein Ergebnis</a>
   <a class="sidebar-link" href="#deployment">Veröffentlichen</a>
   <a class="sidebar-link" href="#stolpersteine">Stolpersteine</a>
-  <a class="sidebar-link" href="#spielplatz">Spielplatz</a>
+  <a class="sidebar-link" href="#spielplatz">Sandbox</a>
   <a class="sidebar-link" href="#uebungen">Übungen</a>
   <a class="sidebar-link" href="#zusammenfassung">Zusammenfassung</a>
 </nav>
@@ -39,8 +39,7 @@
   <h1 class="lab-title">Dashboard in Power BI und Tableau</h1>
   <p class="lab-intro">Aus dem Sternschema wird ein Management-Dashboard: vier Kennzahlkacheln mit Vorjahresvergleich,
     drei Balkendiagramme und eine Monatslinie, jeder Titel eine Aussage mit Zahl, ein Filter für das Jahr und einer für
-    das Hotel. Dieses Lab baut dasselbe Dashboard zweimal – in Power BI Desktop und in Tableau Desktop – und zeigt jeden
-    Handgriff an echten Bildschirmfotos. Die Kennzahlen heißen wie in Lab 06, die Gestaltungsregeln gelten für beide
+    das Hotel. Dieses Lab baut dasselbe Dashboard zweimal – in Power BI Desktop und in Tableau Desktop – und zeigt jeden Handgriff an echten Screenshots. Die Kennzahlen heißen wie in Lab 06, die Gestaltungsregeln gelten für beide
     Werkzeuge, und am Ende steht das Dashboard im Netz.</p>
   <div class="lernziele">
     <span class="lernziel-chip">Konzeptblatt · KPI-Hierarchie</span>
@@ -68,7 +67,7 @@
         <tbody>
           <tr><td>Daten holen und formen</td><td>Power Query</td><td>Datenquellenseite (Beziehungen, benutzerdefiniertes SQL, Extrakt)</td></tr>
           <tr><td>Kennzahl berechnen</td><td>Measure in DAX</td><td>berechnetes Feld (Aggregat, LOD, Tabellenberechnung)</td></tr>
-          <tr><td>Diagramm bauen</td><td>Visual auf einer Berichtsseite, Felder in Wells</td><td>Arbeitsblatt, Felder auf Columns, Rows, Marks</td></tr>
+          <tr><td>Diagramm bauen</td><td>Visual auf einer Berichtsseite, Felder in den Field Wells</td><td>Arbeitsblatt, Felder auf den Shelves Columns, Rows, Marks</td></tr>
           <tr><td>Alles auf einer Fläche</td><td>Berichtsseite (hier 1920 × 1080)</td><td>Dashboard aus Arbeitsblättern (hier 1400 × 860)</td></tr>
           <tr><td>Filter für Betrachter</td><td>Slicer (Dropdown)</td><td>Parameter mit berechnetem Filterfeld</td></tr>
           <tr><td>Weitergeben</td><td>PBIX (mit Daten) oder PBIP (Textdateien)</td><td>TWBX (mit Extrakt) oder TWB (nur Verweis)</td></tr>
@@ -143,24 +142,40 @@ Teiljahre:         2015 nur Juli–Dezember, 2017 nur Januar–August</pre>
     <div class="accent-line"></div>
     <p>Power BI Desktop besteht aus drei Teilen, die man auseinanderhalten sollte: <em>Power Query</em> holt und formt
       die Daten, das <em>Modell</em> hält Tabellen, Beziehungen und Measures, der <em>Bericht</em> zeigt Visuals auf
-      Seiten. Die Referenzlösung liegt im Repo unter <code>powerbi/</code>: <code>Hotel.pbix</code> mit Daten zum Öffnen
-      per Doppelklick und <code>Hotel.pbip</code> als Projekt aus Textdateien, in denen jedes Measure und jedes Visual
-      nachzulesen ist.</p>
+      Seiten. Die Referenzlösung liegt im Starterpaket unten und im Repo unter <code>powerbi/</code>: <code>Hotel.pbix</code>
+      mit Daten zum Öffnen per Doppelklick und <code>Hotel.pbip</code> als Projekt aus Textdateien, in denen jedes Measure
+      und jedes Visual nachzulesen ist.</p>
+    <div class="download-box">
+      <h3>Starterpaket: Bericht, Arbeitsmappe und veröffentlichte Fassungen</h3>
+      <p><code>Hotel.pbix</code> öffnet per Doppelklick in Power BI Desktop und enthält die Daten vom 23.09.2026;
+        <code>Hotel_pbip.zip</code> ist dieselbe Lösung als Projekt aus Textdateien – entpacken, <code>Hotel.pbip</code>
+        öffnen, einmal <em>Aktualisieren</em>. <code>Hotel_Dashboard.twbx</code> ist die Tableau-Arbeitsmappe mit
+        Extrakt, 50 berechneten Feldern, zwölf Arbeitsblättern und dem Dashboard; sie läuft in Tableau Desktop wie in
+        Tableau Public ohne Datenbankverbindung. Zum Nachbauen erst selbst rechnen, dann vergleichen.</p>
+      <div class="download-reihe">
+        <a class="btn-download" href="starter/Hotel.pbix" download>Hotel.pbix</a>
+        <a class="btn-download sekundaer" href="starter/Hotel_pbip.zip" download>Hotel_pbip.zip</a>
+        <a class="btn-download" href="starter/Hotel_Dashboard.twbx" download>Hotel_Dashboard.twbx</a>
+        <a class="btn-download sekundaer" href="https://github.com/swrobuts/hotel" target="_blank" rel="noopener noreferrer">Quellen im Repository</a>
+      </div>
+      <p class="code-note">Veröffentlichte Fassungen zum Ansehen im Browser: <a href="https://public.tableau.com/app/profile/robert.butscher7938/viz/Hotel_Dashboard_17901648227040/HotelDashboard" target="_blank" rel="noopener noreferrer">Tableau Public</a> (ohne Konto),
+        <a href="https://prod-uk-a.online.tableau.com/t/tableau_demos/views/Hotel_Dashboard/HotelDashboard" target="_blank" rel="noopener noreferrer">Tableau Cloud</a> und
+        <a href="https://app.powerbi.com/groups/me/reports/c0843c14-2f7d-4f5f-9bc0-fc2d21d31608/uebersicht" target="_blank" rel="noopener noreferrer">Power-BI-Dienst</a> (jeweils mit Konto) – Abschnitt <a href="#deployment">Veröffentlichen</a>.</p>
+    </div>
     <ol class="schritte">
       <li>
         <strong>Die Datenbank anbinden</strong>
         <span>Dieselben sechs Angaben wie in Lab 05, verteilt auf drei Dialoge. Eine Entscheidung kommt dazu:
-          <strong>Import</strong> kopiert alle Zeilen in die PBIX – schnell, unabhängig von der Datenbank, aber ein
-          Abbild vom Ladezeitpunkt; <strong>DirectQuery</strong> schickt jede Interaktion als SQL an die Datenbank. Das
+          <strong>Import</strong> kopiert alle Zeilen in die PBIX – schnell, unabhängig von der Datenbank, aber eine Momentaufnahme vom Ladezeitpunkt; <strong>DirectQuery</strong> schickt jede Interaktion als SQL an die Datenbank. Das
           Projekt nimmt Import: 119.390 Zeilen sind klein, und die Daten ändern sich nicht.</span>
         <div data-befehl="B01"></div>
-        <figure class="abbildung">
-          <img src="assets/img/powerbi-daten-abrufen.png" alt="Power BI Desktop: Dialog Datenquelle auswählen mit Suchfeld Postgre, Treffer PostgreSQL-Datenbank unter Neue Quellen und zuletzt verwendeten PostgreSQL-Verbindungen" width="1800" height="1127" loading="lazy" />
+        <figure class="abbildung schmal">
+          <img src="assets/img/powerbi-daten-abrufen.png" alt="Power BI Desktop: Dialog Datenquelle auswählen mit Suchfeld Postgre, Treffer PostgreSQL-Datenbank unter Neue Quellen und zuletzt verwendeten PostgreSQL-Verbindungen" width="1100" height="650" loading="lazy" />
           <figcaption>Start → Daten abrufen → Weitere… öffnet „Datenquelle auswählen“. Wer „Postgre“ ins Suchfeld tippt,
             bekommt den Konnektor PostgreSQL-Datenbank; darunter listet Power BI zuletzt verwendete Verbindungen.</figcaption>
         </figure>
-        <figure class="abbildung">
-          <img src="assets/img/powerbi-verbinden.png" alt="Power BI Desktop: Dialog Mit Datenquelle verbinden für PostgreSQL mit Server supabase.butscher.cloud:5433, Datenbank hotel, Konnektivitätsmodus Importieren, Benutzername studi_hotel und abgewähltem Häkchen Verschlüsselte Verbindung verwenden" width="1800" height="1127" loading="lazy" />
+        <figure class="abbildung schmal">
+          <img src="assets/img/powerbi-verbinden.png" alt="Power BI Desktop: Dialog Mit Datenquelle verbinden für PostgreSQL mit Server supabase.butscher.cloud:5433, Datenbank hotel, Konnektivitätsmodus Importieren, Benutzername studi_hotel und abgewähltem Häkchen Verschlüsselte Verbindung verwenden" width="1100" height="650" loading="lazy" />
           <figcaption>„Mit Datenquelle verbinden“: Server und Port mit Doppelpunkt in einem Feld, Datenbank hotel, Modus
             Importieren; unten die Anmeldeinformationen mit Authentifizierungsart Standard, Benutzername studi_hotel und
             dem Kennwort. Das Häkchen „Verschlüsselte Verbindung verwenden“ ist entfernt, weil die Instanz kein
@@ -180,7 +195,7 @@ Teiljahre:         2015 nur Juli–Dezember, 2017 nur Januar–August</pre>
           Anreise oder das Stornodatum meint.</span>
         <div data-befehl="B03"></div>
         <figure class="abbildung">
-          <img src="assets/img/powerbi-modellansicht.png" alt="Modellansicht in Power BI Desktop: FACT_BOOKINGS in der Mitte, acht Dimensionstabellen außen, zwei Beziehungen zu DIM_DATE, eine davon gestrichelt, rechts die beziehungslose Tabelle Jahre" width="1800" height="1127" loading="lazy" />
+          <img src="assets/img/powerbi-modellansicht.png" alt="Modellansicht in Power BI Desktop: FACT_BOOKINGS in der Mitte, acht Dimensionstabellen außen, zwei Beziehungen zu DIM_DATE, eine davon gestrichelt, rechts die beziehungslose Tabelle Jahre" width="1400" height="876" loading="lazy" />
           <figcaption>Modellansicht: neun Beziehungen 1:n von den Dimensionen zur Faktentabelle, die gestrichelte Linie
             ist die inaktive zweite Rolle der Datumsdimension. Rechts steht die Tabelle Jahre ohne Beziehung – sie
             trägt später die Achse der Minisäulen (Schritt 4).</figcaption>
@@ -203,10 +218,10 @@ Stornoquote % = DIVIDE(CALCULATE(COUNTROWS(FACT_BOOKINGS), FACT_BOOKINGS[is_canc
 
 -- Sollwerte ohne Filter: 119.390 · 42.723.498 · 25.996.260 · 37,0 % · 101,83</pre>
         <figure class="abbildung">
-          <img src="assets/img/powerbi-measure.png" alt="Power BI Desktop mit Measuretools und der Formelleiste Umsatz Bezugsjahr = VAR j = [Bezugsjahr] RETURN CALCULATE([Umsatz], REMOVEFILTERS(DIM_DATE), DIM_DATE[year] = j); rechts der Datenbereich mit dem gesuchten Measure in FACT_BOOKINGS" width="1800" height="1127" loading="lazy" />
+          <img src="assets/img/powerbi-measure.png" alt="Power BI Desktop mit Measuretools und der Formelleiste Umsatz Bezugsjahr = VAR j = [Bezugsjahr] RETURN CALCULATE([Umsatz], REMOVEFILTERS(DIM_DATE), DIM_DATE[year] = j); rechts der Datenbereich mit dem gesuchten Measure in FACT_BOOKINGS" width="1400" height="277" loading="lazy" />
           <figcaption>Measure auswählen: Sobald ein Measure im Datenbereich markiert ist, zeigt die Formelleiste seine
             DAX-Formel und das Menüband die Measuretools mit Name, Basistabelle und Zahlenformat. Hier das Measure
-            Umsatz Bezugsjahr aus Schritt 4; im Hintergrund die fertige Seite.</figcaption>
+            Umsatz Bezugsjahr aus Schritt 4.</figcaption>
         </figure>
       </li>
       <li>
@@ -285,7 +300,7 @@ Land = SWITCH(DIM_COUNTRY[country], "PRT", "Portugal", "GBR", "Großbritannien",
           setzt Schrift, Farben, Achsen und Beschriftungen für alle Visuals auf einmal: <em>Ansicht → Designs → Nach
           Designs suchen</em>.</span>
         <figure class="abbildung">
-          <img src="assets/img/powerbi-dashboard.png" alt="Power-BI-Bericht Übersicht: Titel mit Aussage, zwei Dropdowns für Anreisejahr und Hotel, vier Kennzahlkacheln mit Minisäulen, Balken je Marktsegment und je Vorlaufzeit, Umsatz je Anreisemonat als Linie, rechts Balken je Herkunftsland" width="1800" height="1072" loading="lazy" />
+          <img src="assets/img/powerbi-dashboard.png" alt="Power-BI-Bericht Übersicht: Titel mit Aussage, zwei Dropdowns für Anreisejahr und Hotel, vier Kennzahlkacheln mit Minisäulen, Balken je Marktsegment und je Vorlaufzeit, Umsatz je Anreisemonat als Linie, rechts Balken je Herkunftsland" width="1400" height="834" loading="lazy" />
           <figcaption>Die Seite „Übersicht“ in Power BI Desktop: Seitentitel als Aussage, oben rechts die Dropdowns
             für Anreisejahr und Hotel, vier Kacheln mit Wert des Bezugsjahrs 2016, Veränderung zu Juli–Dezember 2015
             und Minisäulen je Jahr; links Balken je Marktsegment und je Vorlaufzeit-Klasse sowie der Umsatz je Anreisemonat
@@ -307,19 +322,8 @@ Land = SWITCH(DIM_COUNTRY[country], "PRT", "Portugal", "GBR", "Großbritannien",
     <h2>Schritt für Schritt: Tableau</h2>
     <div class="accent-line"></div>
     <p>Dasselbe Dashboard in Tableau Desktop. Statt Measures gibt es berechnete Felder, statt Slicer Parameter, statt
-      einer Berichtsseite ein Dashboard aus Arbeitsblättern. Die Arbeitsmappe liegt im Repo unter
-      <code>tableau/Hotel_Dashboard.twbx</code>, gepackt mit den Daten – sie läuft ohne Datenbankverbindung in Tableau
-      Desktop wie in Tableau Public.</p>
-    <div class="download-box">
-      <h3>Arbeitsmappe und veröffentlichte Fassungen</h3>
-      <p><code>Hotel_Dashboard.twbx</code> enthält die flache Buchungstabelle als Extrakt, alle berechneten Felder, die
-        zwölf Arbeitsblätter und das Dashboard. Zum Nachbauen erst selbst rechnen, dann vergleichen.</p>
-      <div class="download-reihe">
-        <a class="btn-download" href="https://github.com/swrobuts/hotel/raw/main/tableau/Hotel_Dashboard.twbx">Hotel_Dashboard.twbx</a>
-        <a class="btn-download sekundaer" href="https://github.com/swrobuts/hotel/tree/main/powerbi" target="_blank" rel="noopener noreferrer">Power-BI-Projekt im Repo</a>
-        <a class="btn-download" href="https://public.tableau.com/app/profile/robert.butscher7938/viz/Hotel_Dashboard_17901648227040/HotelDashboard" target="_blank" rel="noopener noreferrer">Dashboard auf Tableau Public</a>
-      </div>
-    </div>
+      einer Berichtsseite ein Dashboard aus Arbeitsblättern. Die Arbeitsmappe <code>Hotel_Dashboard.twbx</code> liegt im
+      Starterpaket oben, gepackt mit den Daten – sie läuft ohne Datenbankverbindung in Tableau Desktop wie in Tableau Public.</p>
     <ol class="schritte">
       <li>
         <strong>Mit der Datenbank verbinden</strong>
@@ -327,8 +331,8 @@ Land = SWITCH(DIM_COUNTRY[country], "PRT", "Portugal", "GBR", "Großbritannien",
           Port <code>5433</code>, Datenbank <code>hotel</code>, Authentifizierung Benutzername und Kennwort
           (<code>studi_hotel</code> / <code>thws</code>), <em>SSL erfordern</em> nicht ankreuzen. Fehlt der Treiber, zeigt
           Tableau einen Link zum Herunterladen; danach den Dialog erneut öffnen.</span>
-        <figure class="abbildung">
-          <img src="assets/img/tableau-verbinden.png" alt="Tableau Desktop: Dialog PostgreSQL mit Server supabase.butscher.cloud, Port 5433, Datenbank hotel, Authentifizierung Benutzername und Kennwort, Benutzername studi_hotel" width="1600" height="1504" loading="lazy" />
+        <figure class="abbildung schmal">
+          <img src="assets/img/tableau-verbinden.png" alt="Tableau Desktop: Dialog PostgreSQL mit Server supabase.butscher.cloud, Port 5433, Datenbank hotel, Authentifizierung Benutzername und Kennwort, Benutzername studi_hotel" width="800" height="752" loading="lazy" />
           <figcaption>Verbinden → PostgreSQL: Server, Port, Datenbank und Benutzername ausfüllen, das Kennwort kommt in
             das Feld darunter. Tableau fragt beim nächsten Öffnen der Arbeitsmappe erneut danach, solange kein Extrakt
             existiert.</figcaption>
@@ -358,7 +362,7 @@ JOIN dim_country l USING (country_id)</pre>
           Dieselbe Tabelle erzeugt <code>tools/flache_buchungstabelle.py</code> aus den CSV-Dateien des Repos – so ist die
           Arbeitsmappe im Starterpaket entstanden, mit deutschen Ländernamen in der Spalte <code>country_name</code>.</p>
         <figure class="abbildung">
-          <img src="assets/img/tableau-datenquelle.png" alt="Datenquellenseite in Tableau Desktop mit der Tabelle hotel_buchungen im Arbeitsbereich, der Feldliste mit Datentypen und der Datenvorschau, rechts oben die Wahl zwischen Live und Extrakt" width="1800" height="1113" loading="lazy" />
+          <img src="assets/img/tableau-datenquelle.png" alt="Datenquellenseite in Tableau Desktop mit der Tabelle hotel_buchungen im Arbeitsbereich, der Feldliste mit Datentypen und der Datenvorschau, rechts oben die Wahl zwischen Live und Extrakt" width="1400" height="866" loading="lazy" />
           <figcaption>Datenquellenseite der Arbeitsmappe aus dem Starterpaket: oben die Tabelle hotel_buchungen im
             Arbeitsbereich, unten links die Felder mit deutschem Namen und Typ, rechts die Vorschau der ersten Zeilen.
             Rechts oben schaltet man die Verbindung von Live auf Extrakt.</figcaption>
@@ -388,8 +392,8 @@ AVG([adr])
 IF [lead_time] &lt;= 7 THEN "0–7 Tage" ELSEIF [lead_time] &lt;= 30 THEN "8–30 Tage"
 ELSEIF [lead_time] &lt;= 90 THEN "31–90 Tage" ELSE "über 90 Tage" END</pre>
         <p class="code-note">Sollwerte ohne Filter: 119.390 · 25.996.260 · 42.723.498 · 37,0 % · 101,83. Weicht der Umsatz ab, fehlt das IF – dann wurden stornierte Buchungen mitgezählt.</p>
-        <figure class="abbildung">
-          <img src="assets/img/tableau-berechnetes-feld.png" alt="Dialog Berechnetes Feld in Tableau mit dem Namen Umsatz (Nachbau) und der Formel SUM(IF [is_canceled] = 0 THEN [revenue] END); Statuszeile Die Berechnung ist gültig; im Hintergrund das Blatt Umsatzverlauf" width="1600" height="975" loading="lazy" />
+        <figure class="abbildung mittel">
+          <img src="assets/img/tableau-berechnetes-feld.png" alt="Dialog Berechnetes Feld in Tableau mit dem Namen Umsatz (Nachbau) und der Formel SUM(IF [is_canceled] = 0 THEN [revenue] END); Statuszeile Die Berechnung ist gültig; im Hintergrund das Blatt Umsatzverlauf" width="1000" height="609" loading="lazy" />
           <figcaption>Analyse → Berechnetes Feld erstellen: Name und Formel, hier der stornobereinigte Umsatz. Tableau
             meldet unten, ob die Berechnung gültig ist; die Feldliste links zeigt danach das neue Feld mit dem Gleichheitszeichen.</figcaption>
         </figure>
@@ -472,7 +476,7 @@ THEN (IF [is_canceled] = 0 THEN [revenue] END) END</pre>
           Layout-Bereich 16 Pixel äußere Füllung je Blatt, keine Rahmen. Der Dashboardtitel ist die Aussage der Seite,
           darunter ein Textobjekt mit Umfang, Einheit und Quelle.</span>
         <figure class="abbildung">
-          <img src="assets/img/tableau-dashboard.png" alt="Tableau-Dashboard Hotel Booking Demand 2015–2017: Dropdowns für Jahr und Hotel, vier Kennzahlkacheln mit Minisäulen, Balken je Marktsegment und Vorlaufzeit, Umsatz je Monat als Linie mit rotem letztem Wert, rechts Balken je Herkunftsland" width="1800" height="1108" loading="lazy" />
+          <img src="assets/img/tableau-dashboard.png" alt="Tableau-Dashboard Hotel Booking Demand 2015–2017: Dropdowns für Jahr und Hotel, vier Kennzahlkacheln mit Minisäulen, Balken je Marktsegment und Vorlaufzeit, Umsatz je Monat als Linie mit rotem letztem Wert, rechts Balken je Herkunftsland" width="1400" height="862" loading="lazy" />
           <figcaption>Das Tableau-Dashboard auf fester Fläche von 1400 × 860 Pixeln, gestaltet wie die Power-BI-Seite:
             oben rechts die Dropdowns für Jahr und Hotel, Kacheln mit Bezugsjahr 2016, Vorjahresvergleich über die
             gemeinsamen Monate und drei Minisäulen, links Segment, Vorlaufzeit und Monatslinie mit grauen Punkten am
@@ -522,11 +526,11 @@ THEN (IF [is_canceled] = 0 THEN [revenue] END) END</pre>
       den Dienst, danach öffnet der Bericht unter app.powerbi.com mit Slicern, Kacheln und allen Interaktionen. Sehen
       können ihn nur Personen mit einem Konto im selben Mandanten (hier die THWS) und einer Power-BI-Lizenz. Der einzige
       Weg zu einem anonymen Link ist <em>Datei → Bericht einbetten → Im Web veröffentlichen</em>, und den muss der
-      Administrator freischalten – an der THWS ist er gesperrt. Das ist kein Mangel, sondern Absicht: Ein öffentlicher
+      Administrator freischalten – an der THWS ist er gesperrt. Das ist Absicht: Ein öffentlicher
       Einbettungscode gibt die Daten an jeden weiter, der den Link findet.</p>
     <p><a class="btn-download sekundaer" href="https://app.powerbi.com/groups/me/reports/c0843c14-2f7d-4f5f-9bc0-fc2d21d31608/uebersicht" target="_blank" rel="noopener noreferrer">Bericht im Power-BI-Dienst öffnen (THWS-Konto nötig)</a></p>
     <figure class="abbildung">
-      <img src="assets/img/powerbi-dienst.png" alt="Der veröffentlichte Hotel-Bericht im Power-BI-Dienst unter app.powerbi.com mit der Werkzeugleiste Datei, Exportieren, Freigeben und der Seite Übersicht" width="1800" height="1127" loading="lazy" />
+      <img src="assets/img/powerbi-dienst.png" alt="Der veröffentlichte Hotel-Bericht im Power-BI-Dienst unter app.powerbi.com mit der Werkzeugleiste Datei, Exportieren, Freigeben und der Seite Übersicht" width="1400" height="876" loading="lazy" />
       <figcaption>Power-BI-Dienst: Der Bericht aus Desktop läuft unverändert im Browser; die Werkzeugleiste bietet
         Freigeben, Exportieren und Abonnieren für Nutzer des Mandanten.</figcaption>
     </figure>
@@ -538,7 +542,7 @@ THEN (IF [is_canceled] = 0 THEN [revenue] END) END</pre>
       einfachste Weg, für Unternehmensdaten ausgeschlossen.</p>
     <p><a class="btn-download" href="https://public.tableau.com/app/profile/robert.butscher7938/viz/Hotel_Dashboard_17901648227040/HotelDashboard" target="_blank" rel="noopener noreferrer">Dashboard auf Tableau Public öffnen</a></p>
     <figure class="abbildung">
-      <img src="assets/img/tableau-public.png" alt="Das Hotel-Dashboard auf Tableau Public im Browser mit der Kopfzeile von Tableau Public und der Leiste zum Teilen und Herunterladen" width="1800" height="1326" loading="lazy" />
+      <img src="assets/img/tableau-public.png" alt="Das Hotel-Dashboard auf Tableau Public im Browser mit der Kopfzeile von Tableau Public und der Leiste zum Teilen und Herunterladen" width="1400" height="1031" loading="lazy" />
       <figcaption>Tableau Public: ohne Anmeldung erreichbar; die Leiste unten bietet Teilen, Vollbild und Herunterladen
         der Arbeitsmappe. Das Gebietsschema der Arbeitsmappe bestimmt Tausenderpunkt und Dezimalkomma.</figcaption>
     </figure>
@@ -549,7 +553,7 @@ THEN (IF [is_canceled] = 0 THEN [revenue] END) END</pre>
       Daten unter Kontrolle, Berechtigungen gelten je Projekt, Extrakte lassen sich automatisch aktualisieren.</p>
     <p><a class="btn-download sekundaer" href="https://prod-uk-a.online.tableau.com/t/tableau_demos/views/Hotel_Dashboard/HotelDashboard" target="_blank" rel="noopener noreferrer">Dashboard in Tableau Cloud öffnen (Konto auf der Site nötig)</a></p>
     <figure class="abbildung">
-      <img src="assets/img/tableau-cloud.png" alt="Tableau Cloud im Browser, Site tableau_demos, Projekt Standard: die Arbeitsmappe Hotel_Dashboard mit ihrer Ansicht Hotel Dashboard und der Meldung Veröffentlichung abgeschlossen" width="1800" height="1125" loading="lazy" />
+      <img src="assets/img/tableau-cloud.png" alt="Tableau Cloud im Browser, Site tableau_demos, Projekt Standard: die Arbeitsmappe Hotel_Dashboard mit ihrer Ansicht Hotel Dashboard und der Meldung Veröffentlichung abgeschlossen" width="1400" height="875" loading="lazy" />
       <figcaption>Tableau Cloud (Site tableau_demos, Projekt Standard) direkt nach dem Veröffentlichen: Die Arbeitsmappe
         Hotel_Dashboard enthält nur die eine Ansicht, weil unter Blätter „Nur Dashboards“ gewählt war; links die
         Navigation der Site, oben Bearbeiten und Freigeben. Sichtbar nur für angemeldete Nutzer der Site.</figcaption>
@@ -579,7 +583,7 @@ THEN (IF [is_canceled] = 0 THEN [revenue] END) END</pre>
       </div>
       <div class="karte">
         <div class="kopfzeile">Σ von booking_id</div>
-        <p>Zieht man eine Zahlenspalte auf ein Regal, summiert das Werkzeug sie. „Summe von booking_id“ ist eine Zahl mit
+        <p>Zieht man eine Zahlenspalte in ein Field Well (Power BI) oder auf ein Shelf (Tableau), summiert das Werkzeug sie. „Summe von booking_id“ ist eine Zahl mit
           elf Stellen. Zählen heißt <code>Anzahl Buchungen</code> beziehungsweise <code>COUNT([booking_id])</code>.</p>
       </div>
       <div class="karte">
@@ -617,10 +621,8 @@ THEN (IF [is_canceled] = 0 THEN [revenue] END) END</pre>
   </section>
 
   <section class="section-block" id="spielplatz">
-    <h2>Spielplatz</h2>
-    <p>Ein nachgebildetes Feldfenster mit den Feldern des Projekts und einer Stichprobe von 5.000 Buchungen, einmal mit
-      den Regalen von Power BI, einmal mit denen von Tableau. Legen Sie Felder auf die Regale; das Diagramm folgt aus der
-      Belegung. Die Stichprobe liefert andere absolute Zahlen als das Dashboard, aber dieselben Muster – und die Σ-Falle
+    <h2>Sandbox</h2>
+    <p>Ein nachgebildeter Feldbereich mit den Feldern des Projekts und einer Stichprobe von 5.000 Buchungen, einmal mit den Field Wells von Power BI (X-Achse, Y-Achse, Legende), einmal mit den Shelves von Tableau (Columns, Rows, Color). Ziehen Sie Felder hinein; das Diagramm folgt aus der Belegung. Die Stichprobe liefert andere absolute Zahlen als das Dashboard, aber dieselben Muster – und die Σ-Falle
       ist eingebaut.</p>
     <h3>Power BI: X-Achse, Y-Achse, Legende</h3>
     <div data-regal="frei" data-variante="powerbi"></div>
@@ -630,7 +632,7 @@ THEN (IF [is_canceled] = 0 THEN [revenue] END) END</pre>
 
   <section class="section-block" id="uebungen">
     <h2>Übungen</h2>
-    <p>Sechs Übungen: zwei am Feldfenster (Power BI und Tableau), eine Zuordnung von Measures zu DAX, die Reihenfolge der
+    <p>Sechs Übungen: zwei am nachgebildeten Feldbereich (Field Wells von Power BI, Shelves von Tableau), eine Zuordnung von Measures zu DAX, die Reihenfolge der
       Anbindung, Verständnisfragen zu Import, Beziehungen und Kacheln sowie die Gestaltungsregeln an Beispielen.</p>
     <div data-uebung="W07-01"></div>
     <div data-uebung="W07-02"></div>

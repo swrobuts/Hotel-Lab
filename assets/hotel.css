@@ -990,6 +990,8 @@ tr:nth-child(even) td { background: var(--bg-soft); }
 /* Echte Bildschirmfotos mit Bildunterschrift (Ausnahme von der Nachbildungsregel, siehe Lab 07). */
 .abbildung { border: 1px solid var(--line); border-radius: 8px; background: #fff; padding: 0.6rem 0.6rem 0.5rem; margin: 1.2rem 0; }
 .abbildung img { display: block; width: 100%; height: auto; border-radius: 4px; }
+.abbildung.schmal { max-width: 560px; }
+.abbildung.mittel { max-width: 860px; }
 .abbildung figcaption { font-size: 0.82rem; color: var(--ink-soft); margin-top: 0.55rem; padding: 0 0.2rem; line-height: 1.55; }
 .abbildung figcaption strong { color: var(--ink); }
 .code-note { font-size: 0.8rem; color: var(--ink-soft); margin: 0.4rem 0 0; line-height: 1.55; }

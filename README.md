@@ -9,10 +9,10 @@ Colab-Notebook, Sternschema, PostgreSQL-Datenbank, Kennzahlenkatalog, Power-BI-B
 [Dashboard](https://hotel.butscher.cloud) – und lässt Studierende jeden Schritt
 selbst ausprobieren.
 
-Zehn Labs, **48 Übungen** in acht Formen mit sofortiger Rückmeldung; **PostgreSQL im Browser**
+Zehn Labs, **49 Übungen** in acht Formen mit sofortiger Rückmeldung; **PostgreSQL im Browser**
 (PGlite) mit dem echten Sternschema `hotel_bi` und allen 119.390 Buchungen, sodass jede
-SQL-Übung dieselben Zahlen liefert wie Notebook, Power BI und Dashboard; ein **Feldfenster** nach
-dem Vorbild von Power BI und ein **Deploy-Simulator** nach dem Vorbild von Render.
+SQL-Übung dieselben Zahlen liefert wie Notebook, Power BI und Dashboard; ein nachgebildeter **Feldbereich**
+(Field Wells wie in Power BI, Shelves wie in Tableau) und ein **Deploy-Simulator** nach dem Vorbild von Render.
 
 Die Umgebung ist deutsch (englische Fachbegriffe bleiben englisch) und läuft als statische Seite auf
 GitHub Pages: ohne Build-Schritt, ohne Server, ohne Anmeldung. Laufzeit und Formsprache stammen aus
@@ -32,16 +32,16 @@ lab-03-notebook.html          Die acht Abschnitte des Projekt-Notebooks, Zelle f
 lab-04-sternschema.html       Fakten, Dimensionen, Schlüssel, Datumsrollen, erste Joins in SQL        (5)
 lab-05-datenbank.html         Supabase/PostgreSQL, Rolle studi_hotel, Verbinden, Fehlermeldungen      (5)
 lab-06-kennzahlen.html        Katalog, drei Umsatzbegriffe, Zeitbezug, Farbe als Werturteil, SQL      (5)
-lab-07-powerbi.html           Anbinden, Beziehungen, DAX-Measures, Felder und Regale                  (5)
+lab-07-powerbi.html           Dashboard in Power BI und Tableau: Konzept, Measures, Kacheln, Deploy   (6)
 lab-08-dashboard.html         FastAPI + Observable Plot, Routen, Gestaltungsregeln, Docker, Render     (5)
 lab-09-befunde.html           Aussagen lesen, Abweichungen einordnen, Empfehlungen, Fehlschlüsse      (4)
 
 assets/
   hotel.css                   Gemeinsames Stylesheet: Anthrazit #2E3238, Kupfer #C0662B
-  hotel.js                    Laufzeit: LABS, Übungsboxen, Datenbank, Regal- und Deploy-Simulator
+  hotel.js                    Laufzeit: LABS, Übungsboxen, Datenbank, Feldbereich- und Deploy-Simulator
   sqlpruefung.js              SQL-Auftragsreihenfolge und Prüfung auf dem Ausgangsbestand
   jsonpruefung.js             Prüfung von JSON-Übungen (JSON Pointer, Regeln)
-  regal.js                    Aggregation und Zielprüfung des Feldfensters
+  regal.js                    Aggregation und Zielprüfung des Feldbereichs
   deploy.js                   Protokoll und Zielprüfung des Deploy-Simulators
   pruefung.js, terminal.js    Teil der Laufzeit (nachgebildete Shell; in diesem Lab nicht verwendet)
   pglite/                     PostgreSQL als WebAssembly (PGlite), lokal statt vom CDN
@@ -49,8 +49,11 @@ assets/
 data/
   schema.sql                  Sternschema hotel_bi (identisch mit sql/01_schema.sql im Projekt)
   fact_bookings.csv, dim_*.csv  die neun Tabellen, identisch mit data/ im Projekt (119.390 Buchungen)
-  regal-buchungen.json        Stichprobe von 5.000 Buchungen, flach, für das Feldfenster (Lab 07)
+  regal-buchungen.json        Stichprobe von 5.000 Buchungen, flach, für den Feldbereich (Lab 07)
   uebungen/lab-XX.json        Befehlskarten, Übungen, Felder und Repository je Lab
+
+starter/
+  Hotel.pbix, Hotel_pbip.zip, Hotel_Dashboard.twbx  Referenzlösungen aus Lab 07 (Power BI und Tableau)
 
 tools/
   verify.mjs                  Abnahmelauf ohne Browser (siehe unten)
@@ -98,7 +101,7 @@ node tools/sql.mjs "SELECT count(*) FROM fact_bookings"
 ```
 
 Der Lauf prüft, dass Platzhalter und JSON deckungsgleich sind, jeder Text vorhanden ist, die
-Übungszahlen in `LABS` stimmen, jede JSON-, Reihenfolge-, Regal- und Deploy-Übung mit ihrer
+Übungszahlen in `LABS` stimmen, jede JSON-, Reihenfolge-, Feldbereich- und Deploy-Übung mit ihrer
 Lösung lösbar ist und ihr Starttext noch nicht, und dass jede SQL-Musterlösung auf dem Sternschema
 Zeilen liefert.
 

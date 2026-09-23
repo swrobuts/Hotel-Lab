@@ -37,8 +37,8 @@
     {
       "id": "W06-02",
       "typ": "sql",
-      "titel": { "de": "Stornoquote je Kautionstyp" },
-      "aufgabe": { "de": "<p>Wie hoch ist die Stornoquote je Kautionstyp? Drei Spalten: <code>deposit_type</code> aus <code>dim_deposit_type</code>, <code>buchungen</code> (Anzahl) und <code>stornoquote</code> in Prozent mit einer Nachkommastelle; eine Zeile je Kautionstyp, nach Kautionstyp sortiert.</p>" },
+      "titel": { "de": "Stornoquote je Anzahlungsart" },
+      "aufgabe": { "de": "<p>Wie hoch ist die Stornoquote je Anzahlungsart? Drei Spalten: <code>deposit_type</code> aus <code>dim_deposit_type</code>, <code>buchungen</code> (Anzahl) und <code>stornoquote</code> in Prozent mit einer Nachkommastelle; eine Zeile je Anzahlungsart, nach Anzahlungsart sortiert.</p>" },
       "start": "SELECT k.deposit_type,\n       count(*) AS buchungen,\n       \nFROM fact_bookings f\nJOIN dim_deposit_type k USING (deposit_type_id)\nGROUP BY k.deposit_type\nORDER BY k.deposit_type;",
       "hinweis": { "de": "round(avg(f.is_canceled::int) * 100, 1) AS stornoquote. Erwartet: No Deposit 28,4 %, Non Refund 99,4 %, Refundable 22,2 %." },
       "loesung": "SELECT k.deposit_type,\n       count(*) AS buchungen,\n       round(avg(f.is_canceled::int) * 100, 1) AS stornoquote\nFROM fact_bookings f\nJOIN dim_deposit_type k USING (deposit_type_id)\nGROUP BY k.deposit_type\nORDER BY k.deposit_type;",

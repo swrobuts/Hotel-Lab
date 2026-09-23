@@ -64,13 +64,13 @@
         {
           "was": "==2.2.2",
           "bedeutet": {
-            "de": "Eine festgenagelte Version. Ohne sie liefert dasselbe Notebook in sechs Monaten ein anderes Ergebnis, weil die Bibliothek sich geändert hat. Reproduzierbarkeit beginnt hier, nicht beim Modell."
+            "de": "Eine fest angegebene Version (Pinning). Ohne sie liefert dasselbe Notebook in sechs Monaten ein anderes Ergebnis, weil die Bibliothek sich geändert hat. Reproduzierbarkeit beginnt hier, nicht beim Modell."
           }
         },
         {
           "was": "import ... as pd",
           "bedeutet": {
-            "de": "Alle Einbindungen in der ersten Zelle. Dann genügt nach einem Neustart ein Blick nach oben, um zu wissen, was gebraucht wird."
+            "de": "Alle import-Anweisungen in der ersten Zelle. Dann genügt nach einem Neustart ein Blick nach oben, um zu wissen, was gebraucht wird."
           }
         },
         {
@@ -211,7 +211,7 @@
         {
           "was": "Badge im README",
           "bedeutet": {
-            "de": "[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/ORG/REPO/blob/main/analyse.ipynb) – derselbe Link als Bildmarke. So findet man ihn in vielen Repositories."
+            "de": "[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/ORG/REPO/blob/main/analyse.ipynb) – derselbe Link als Badge. So findet man ihn in vielen Repositories."
           }
         }
       ]
@@ -221,7 +221,7 @@
         "de": "Zurückspeichern nach GitHub"
       },
       "prompt": "☰",
-      "befehl": "Datei → Kopie in GitHub speichern\n\n  1  Beim ersten Mal: Zugriff für Colab bestätigen (Schreibrechte)\n  2  Repository und Zweig wählen\n  3  Dateipfad angeben\n  4  Commit-Nachricht schreiben  ← sagt, was sich geändert hat",
+      "befehl": "Datei → Kopie in GitHub speichern\n\n  1  Beim ersten Mal: Zugriff für Colab bestätigen (Schreibrechte)\n  2  Repository und Branch wählen\n  3  Dateipfad angeben\n  4  Commit-Nachricht schreiben  ← sagt, was sich geändert hat",
       "teile": [
         {
           "was": "Schreibrechte",
@@ -546,7 +546,7 @@
       "schritte": [
         {
           "text": {
-            "de": "Alle <code>import</code>- und <code>%pip install</code>-Zeilen in die erste Zelle verschoben, Versionen festgenagelt."
+            "de": "Alle <code>import</code>- und <code>%pip install</code>-Zeilen in die erste Zelle verschoben, Versionen fest angegeben."
           }
         },
         {

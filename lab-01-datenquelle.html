@@ -35,7 +35,7 @@
   <h1 class="lab-title">Die Datenquelle</h1>
   <p class="lab-intro">Die Rohdatei des Projekts hat 119.390 Zeilen und 32
     Spalten, und mindestens sechs davon haben eine Eigenheit, die eine Kennzahl still verfälscht, wenn man sie nicht
-    kennt: ein Zimmerpreis von 5.400 €, ein Kautionstyp, der zu 99 % storniert wird, ein Wort „NULL“, das kein NULL
+    kennt: ein Zimmerpreis von 5.400 €, eine Anzahlungsart, die zu 99 % storniert wird, ein Wort „NULL“, das kein NULL
     ist. Herkunft, Bedeutung jeder Spalte und die Fallen sind die Grundlage für alles, was das Notebook in Lab 03 daraus macht.</p>
   <div class="lernziele">
     <span class="lernziel-chip">Antonio, de Almeida, Nunes (2019)</span>
@@ -97,7 +97,7 @@
           <tr><td><code>is_repeated_guest</code>, <code>previous_cancellations</code>, <code>previous_bookings_not_canceled</code></td><td>Vorgeschichte des Gasts</td><td>Zahlen</td></tr>
           <tr><td rowspan="4">Vertrieb und Vertrag</td><td><code>market_segment</code></td><td>über welchen Markt die Buchung kam</td><td>Online TA, Offline TA/TO, Groups, Direct, Corporate, Complementary, Aviation, Undefined</td></tr>
           <tr><td><code>distribution_channel</code></td><td>Vertriebskanal</td><td>TA/TO, Direct, Corporate, GDS, Undefined</td></tr>
-          <tr><td><code>customer_type</code>, <code>deposit_type</code></td><td>Kundentyp und Kautionsart</td><td>Transient, Transient-Party, Contract, Group · No Deposit, Non Refund, Refundable</td></tr>
+          <tr><td><code>customer_type</code>, <code>deposit_type</code></td><td>Kundentyp und Anzahlungsart</td><td>Transient, Transient-Party, Contract, Group · No Deposit, Non Refund, Refundable</td></tr>
           <tr><td><code>agent</code>, <code>company</code></td><td>Kennnummer der Agentur bzw. Firma</td><td>„NULL“ als Text, wenn keine</td></tr>
           <tr><td rowspan="4">Zimmer und Preis</td><td><code>meal</code></td><td>Verpflegung</td><td>BB, HB, FB, SC, Undefined</td></tr>
           <tr><td><code>reserved_room_type</code>, <code>assigned_room_type</code></td><td>gebuchter und zugeteilter Zimmertyp</td><td>Buchstabencodes A–L</td></tr>
@@ -106,7 +106,7 @@
         </tbody>
       </table>
     </div>
-    <p>Was der Datensatz <strong>nicht</strong> enthält, ist ebenso wichtig: keine Zimmerzahl je Haus, keinen
+    <p>Vier Dinge enthält der Datensatz <strong>nicht</strong>: keine Zimmerzahl je Haus, keinen
       Nebenumsatz, keinen Buchungspreis für Frühstück oder Parkplatz, keinen Namen. Lab 00 hat daraus die Grenzen
       des Projekts abgeleitet.</p>
   </section>
